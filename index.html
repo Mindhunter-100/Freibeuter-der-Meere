@@ -39,9 +39,7 @@
   }
 
   /* SCREEN SHAKE */
-  .shake {
-    animation: screenShake 0.45s cubic-bezier(.36,.07,.19,.97) both;
-  }
+  .shake { animation: screenShake 0.45s cubic-bezier(.36,.07,.19,.97) both; }
   @keyframes screenShake {
     10%, 90% { transform: translate3d(-5px, 3px, 0); }
     20%, 80% { transform: translate3d(7px, -5px, 0); }
@@ -60,13 +58,7 @@
   }
 
   /* SCREENS */
-  .screen {
-    position: absolute;
-    inset: 0;
-    display: none;
-    flex-direction: column;
-    z-index: 10;
-  }
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; z-index: 10; }
   .screen.active { display: flex; }
 
   /* SPLASH */
@@ -113,6 +105,12 @@
     color: var(--gold);
     font-weight: bold;
   }
+  .hud-badge.endgame-alert {
+    background: #8b0000;
+    border-color: #ffd700;
+    color: #ffd700;
+    animation: beaconPulse 0.9s infinite alternate;
+  }
   .hud-controls { display: flex; align-items: center; gap: 8px; }
   .btn-icon {
     background: linear-gradient(180deg, #3d2314, #1b0f07);
@@ -132,12 +130,7 @@
   .btn-icon:hover { background: var(--gold); color: #1a0f00; transform: translateY(-1px); }
 
   /* WORKSPACE */
-  #play-area {
-    flex: 1;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-  }
+  #play-area { flex: 1; display: flex; position: relative; overflow: hidden; }
 
   /* MAP VIEW */
   #map-view {
@@ -157,9 +150,16 @@
     stroke: rgba(184, 134, 11, 0.75);
     stroke-width: 2.5;
     stroke-dasharray: 4 4;
+    transition: stroke 0.3s;
+  }
+  .route-line.trajectory-line {
+    stroke: #00ffff !important;
+    stroke-width: 4 !important;
+    stroke-dasharray: none !important;
+    filter: drop-shadow(0 0 6px #00ffff);
   }
 
-  /* REGULÄRE WEGPUNKTE */
+  /* WEGPUNKTE */
   .node-point {
     position: absolute;
     width: 28px;
@@ -178,7 +178,7 @@
     z-index: 12;
   }
 
-  /* OZEAN-DREHKREUZE (TRIVIAL PURSUIT HABEN) */
+  /* OZEAN-DREHKREUZE */
   .node-point.ocean-hub {
     width: 38px;
     height: 38px;
@@ -189,7 +189,7 @@
     z-index: 15;
   }
 
-  /* RIESIGE BOSS-MEDAILLON-KNOTENPUNKTE */
+  /* BOSS-MEDAILLON-KNOTENPUNKTE */
   .node-point.boss-node {
     width: 52px;
     height: 52px;
@@ -213,6 +213,19 @@
     box-shadow: 0 0 20px #00ff66;
   }
 
+  /* ENDGAME HAMBURG BEACON */
+  .node-point.hamburg-goal {
+    border-color: #ffd700 !important;
+    background: radial-gradient(circle, #ffcc00, #ff6600) !important;
+    animation: goalBeacon 0.8s infinite alternate !important;
+    z-index: 22 !important;
+    font-size: 28px !important;
+  }
+  @keyframes goalBeacon {
+    from { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 20px #ffd700; }
+    to { transform: translate(-50%, -50%) scale(1.4); box-shadow: 0 0 45px #ff4400; }
+  }
+
   .node-point.selectable-course {
     border-color: #00ffff;
     background: #004455;
@@ -222,6 +235,52 @@
     from { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 10px #00ffff; }
     to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffff; }
   }
+
+  /* ====================================================================
+     BLINKENDE SEEROUTEN-LANDEBAHN (TRAJEKTORIE)
+  ==================================================================== */
+  .node-point.path-waypoint {
+    border-color: #00ffff !important;
+    background: #002b3d !important;
+    box-shadow: 0 0 18px #00ffff !important;
+    z-index: 20 !important;
+    animation: stepBlink 0.6s infinite alternate;
+  }
+  @keyframes stepBlink {
+    from { transform: translate(-50%, -50%) scale(1.0); }
+    to { transform: translate(-50%, -50%) scale(1.25); }
+  }
+
+  .node-point.path-destination {
+    border-color: #ffd700 !important;
+    background: #8b0000 !important;
+    box-shadow: 0 0 30px #ffd700 !important;
+    z-index: 21 !important;
+    animation: destFlash 0.4s infinite alternate;
+  }
+  @keyframes destFlash {
+    from { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 20px #ffd700; }
+    to { transform: translate(-50%, -50%) scale(1.45); box-shadow: 0 0 40px #ff3300; }
+  }
+
+  .step-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #00ffff;
+    color: #000;
+    font-size: 11px;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+    pointer-events: none;
+  }
+  .step-badge.dest { background: #ffd700; color: #8b0000; font-size: 12px; width: 22px; height: 22px; }
 
   /* SHIP */
   #ship-wrapper {
@@ -647,7 +706,7 @@
   /* REGELN */
   .rules-content {
     text-align: left;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
     display: flex;
     flex-direction: column;
@@ -655,10 +714,11 @@
   }
   .rules-section {
     background: #f5eedb;
-    padding: 10px;
+    padding: 10px 12px;
     border-radius: 6px;
     border-left: 4px solid var(--dark-gold);
   }
+  .rules-section strong { color: var(--crimson); }
 </style>
 </head>
 <body>
@@ -844,6 +904,8 @@ const TXT = {
     sailOnBtn: "Weitersegeln",
     missing: "Fehlt",
     earned: "Geholt ✅",
+    endgameAlert: "🏁 KURS HAMBURG: Rückkehr zum Festmahl!",
+    endgameDialogue: "BÄM! Alle 6 Kontinente erobert! Jetzt volle Kraft voraus nach Hamburg – der Kaiser und die Pfanne warten!",
     battleTitle: "⚔️ KAPER-DUELL IM NEBEL!",
     battleDesc: "Ein Piratenschiff blockiert deinen Kurs! Käpt'n Knorrenbart fordert dich zum Duell!",
     battleRollBtn: "⚔️ Knochen werfen!",
@@ -860,13 +922,15 @@ const TXT = {
     buyBtn: "Kaufen",
     ownedBtn: "Bereits erworben",
     jokerBtn: "🧂 50:50 TRÜFFEL-JOKER EINSETZEN",
-    rulesTitle: "📜 DIE FREIBEUTER-REGELN",
-    rules1Title: "1. Das große Ziel",
-    rules1Desc: "Bereise die Weltkarte, erobere alle 6 riesigen Kontinent-Medaillons durch Quizfragen und kehre mit mindestens 25 Gold-Pins vor Ablauf von 35 Tagen nach Hamburg zurück!",
-    rules2Title: "2. Kurs-Wahl & Seeweg-Stationen",
-    rules2Desc: "Wähle ZUERST auf der Karte deine Route. Dein Schiff segelt stur auf geradem Vektor vorwärts! Trifft dein Schiff auf ein fehlendes Kontinent-Medaillon, läuft es automatisch im Hafen ein!",
-    rules3Title: "3. Ozean-Drehkreuze",
-    rules3Desc: "Die 3 leuchtenden Ozean-Kreuze (Atlantik, Indik, Pazifik) verbinden die Kontinente wie bei Trivial Pursuit: Von dort aus kannst du blitzschnell in jede Himmelsrichtung der Welt ausströmen!"
+    rulesTitle: "📜 DIE VOLLSTÄNDIGEN FREIBEUTER-REGELN",
+    rules1Title: "1. Das große Ziel & Der Heimsieg",
+    rules1Desc: "Bereise die Weltkarte, erobere alle 6 Kontinent-Medaillons durch Quizfragen und kehre mit mindestens 25 Gold-Pins vor Ablauf von 35 Tagen nach Hamburg zurück! Sobald du alle 6 Medaillons hast, leuchtet Hamburg als goldenes Siegestor auf!",
+    rules2Title: "2. Direkttreffer-Pflicht für Medaillons!",
+    rules2Desc: "Du erhältst ein Medaillon NUR, wenn du mit deinem Wurf <b>punktgenau direkt auf dem Boss-Feld landest</b>! Segelst du darüber hinaus, fährst du am Hafen vorbei und musst wenden. Vor dem Wurf leuchtet deine gesamte Seeroute mit Nummern auf – du siehst sofort, wo du landest!",
+    rules3Title: "3. Ozean-Drehkreuze (Trivial-Pursuit-System)",
+    rules3Desc: "Die 3 leuchtenden Naben 🌐 (Atlantik, Indik, Pazifik) verbinden die Kontinente. Wer dort anlegt, kann seinen Kurs frei in jede Himmelsrichtung der Welt neu wählen!",
+    rules4Title: "4. Seeweg-Ereignisse & Ausrüstung",
+    rules4Desc: "🐙 <b>Krake:</b> Zieht 5 Gold ab (Rum wehrt ab!)<br>🔪 <b>Wrack:</b> Mit Damaszener-Messer +6 Gold (ohne Messer -3 Gold!)<br>⚓ <b>Zoll:</b> Zahle 4 Gold (oder bestich mit Rum!)<br>💨 <b>Passatwind:</b> Katapultiert dich +2 Felder vor!<br>📦 <b>Treibgut:</b> Gratis Gold oder Trüffel!<br>💀 <b>Havarie:</b> Sturm vernichtet Vorräte (außer Rum schützt!)."
   },
   en: {
     startBtn: "Set Sail & Start Voyage!",
@@ -887,6 +951,8 @@ const TXT = {
     sailOnBtn: "Sail On",
     missing: "Missing",
     earned: "Claimed ✅",
+    endgameAlert: "🏁 HEADING HAMBURG: Return for the feast!",
+    endgameDialogue: "BOOM! All 6 relics captured! Set full sail for Hamburg – the feast awaits!",
     battleTitle: "⚔️ BOARDING DUEL IN THE MIST!",
     battleDesc: "A pirate vessel blocks your path! Captain Knorrenbart challenges you to a dice duel!",
     battleRollBtn: "⚔️ Roll the Bones!",
@@ -903,13 +969,15 @@ const TXT = {
     buyBtn: "Buy",
     ownedBtn: "Owned",
     jokerBtn: "🧂 USE 50:50 TRUFFLE JOKER",
-    rulesTitle: "📜 PIRATE EXPEDITION RULES",
-    rules1Title: "1. The Grand Objective",
-    rules1Desc: "Circumnavigate the globe, claim all 6 giant continent medallions via culinary trivia, and return to Hamburg with 25+ gold within 35 days!",
-    rules2Title: "2. Direction & Sailing",
-    rules2Desc: "FIRST choose your direction. Your ship sails in a straight directional vector! If you reach a missing continent, your ship automatically drops anchor in port!",
-    rules3Title: "3. Ocean Hubs",
-    rules3Desc: "The 3 glowing ocean hubs (Atlantic, Indian, Pacific) act like central spokes in Trivial Pursuit: branch out in any direction across the world!"
+    rulesTitle: "📜 COMPLETE PIRATE EXPEDITION RULES",
+    rules1Title: "1. The Grand Objective & Victory",
+    rules1Desc: "Circumnavigate the globe, claim all 6 continent medallions via culinary trivia, and return to Hamburg with 25+ gold within 35 days! Once all 6 are secured, Hamburg lights up as the golden finish line!",
+    rules2Title: "2. Exact Landing Required for Medallions!",
+    rules2Desc: "You only trigger the Continent Quiz if you land <b>directly on the Boss Node with an exact roll</b>! If you overshoot, you sail past it. The entire trajectory lights up beforehand so you see exactly where you will land!",
+    rules3Title: "3. Ocean Hubs (Trivial Pursuit System)",
+    rules3Desc: "The 3 glowing ocean hubs 🌐 (Atlantic, Indian, Pacific) connect the continents. Landing there lets you branch out in any direction!",
+    rules4Title: "4. Sea Encounters & Gear",
+    rules4Desc: "🐙 <b>Kraken:</b> Deals 5 gold damage (Rum defends!)<br>🔪 <b>Wreck:</b> With knife +6 gold (without knife -3 gold!)<br>⚓ <b>Customs:</b> Pay 4 gold (or bribe with rum!)<br>💨 <b>Trade Winds:</b> Boosts +2 nodes ahead!<br>📦 <b>Flotsam:</b> Free gold or truffles!<br>💀 <b>Hazard:</b> Storm destroys supplies (unless Rum shields you!)."
   }
 };
 
@@ -1032,7 +1100,7 @@ const Sound = {
 };
 
 /* ====================================================================
-   WELTKARTEN-NETZWERK MIT 3 GROSSEN OZEAN-DREHKREUZEN
+   WELTKARTEN-NETZWERK
 ==================================================================== */
 const NODES = [
   // 1. EUROPA & START
@@ -1042,7 +1110,7 @@ const NODES = [
   { id: 'newfoundland', name: 'Neufundland Nebel', x: 32, y: 25, type: 'battle', neighbors: ['north_atlantic_1', 'boston'] },
   { id: 'boston', name: 'Boston Reede', x: 27, y: 28, type: 'flotsam', neighbors: ['newfoundland', 'na_boss'] },
 
-  // OZEAN-DREHKREUZ 1: ATLANTIK (Nabe wie bei Trivial Pursuit)
+  // OZEAN-DREHKREUZ 1: ATLANTIK
   { id: 'hub_atlantic', name: 'Atlantik-Drehkreuz (Azoren)', isHub: true, x: 38, y: 36, type: 'hub', neighbors: ['eu_start', 'na_boss', 'carib_1', 'dakar', 'canaries'] },
 
   // 2. NORDAMERIKA (BOSS)
@@ -1071,7 +1139,7 @@ const NODES = [
   { id: 'angola', name: 'Angola-Bucht', x: 49, y: 66, type: 'customs', neighbors: ['tristan', 'afrika_boss', 'niger_delta', 'cape_town'] },
   { id: 'cape_town', name: 'Kap der Guten Hoffnung', x: 54, y: 78, type: 'port', neighbors: ['south_atlantic_sea', 'angola', 'madagascar', 'hub_indian'] },
 
-  // OZEAN-DREHKREUZ 2: INDIK (Malediven / Sansibar)
+  // OZEAN-DREHKREUZ 2: INDIK
   { id: 'hub_indian', name: 'Indik-Drehkreuz (Malediven)', isHub: true, x: 67, y: 62, type: 'hub', neighbors: ['cape_town', 'madagascar', 'asien_boss', 'singapore', 'indonesia'] },
 
   // 5. INDISCHER OZEAN & ASIEN
@@ -1092,10 +1160,10 @@ const NODES = [
   { id: 'barrier_reef', name: 'Great Barrier Reef', x: 89, y: 64, type: 'wreck', neighbors: ['australia_boss', 'hub_pacific'] },
   { id: 'new_zealand', name: 'Neuseeland Fjorde', x: 92, y: 82, type: 'treasure', neighbors: ['australia_boss', 'south_pacific_sea'] },
 
-  // OZEAN-DREHKREUZ 3: PAZIFIK (Hawaii / Tahiti)
+  // OZEAN-DREHKREUZ 3: PAZIFIK
   { id: 'hub_pacific', name: 'Pazifik-Drehkreuz (Hawaii)', isHub: true, x: 14, y: 50, type: 'hub', neighbors: ['tokyo', 'north_pacific', 'australia_boss', 'barrier_reef', 'panama', 'san_francisco'] },
 
-  // 7. PAZIFIK-QUERUNG (RUND UM DIE WELT!)
+  // 7. PAZIFIK-QUERUNG
   { id: 'north_pacific', name: 'Nordpazifik-Route', x: 93, y: 35, type: 'wind', neighbors: ['tokyo', 'hub_pacific'] },
   { id: 'san_francisco', name: 'San Francisco Bucht', x: 18, y: 34, type: 'treasure', neighbors: ['hub_pacific', 'na_boss'] },
   { id: 'south_pacific_sea', name: 'Südpazifik Sturm', x: 22, y: 82, type: 'danger', neighbors: ['hub_pacific', 'new_zealand', 'cape_horn'] }
@@ -1137,11 +1205,11 @@ const QUESTIONS = [
 ];
 
 /* ====================================================================
-   SPIEL ENGINE MIT VEKTOR-NAVIGATION (ANTI-ZICKZACK!)
+   SPIEL ENGINE MIT TRAJEKTORIEN-VORSCHAU & ENDGAME
 ==================================================================== */
 const Game = {
   days: 1,
-  maxDays: 35, // Auf faire 35 Tage angehoben
+  maxDays: 35,
   gold: 10,
   currentNode: 'eu_start',
   selectedCourseNeighbor: null,
@@ -1219,6 +1287,9 @@ const Game = {
         <div class="rules-section">
           <strong>${t.rules3Title}</strong><br>${t.rules3Desc}
         </div>
+        <div class="rules-section">
+          <strong>${t.rules4Title}</strong><br>${t.rules4Desc}
+        </div>
       </div>
     `;
     document.getElementById('modal-actions').innerHTML = `
@@ -1251,7 +1322,16 @@ const Game = {
     document.getElementById('travel-days').innerText = `${this.days} / ${this.maxDays}`;
     document.getElementById('gold-count').innerText = `${this.gold} / 50`;
     const curr = NODES.find(n => n.id === this.currentNode);
-    document.getElementById('current-location').innerText = `${curr.name.toUpperCase()}`;
+    const locBadge = document.getElementById('current-location');
+
+    // ENDGAME STATUS PRÜFUNG: Alle 6 Medaillons gesammelt?
+    if (this.earnedMedals.size >= 6) {
+      locBadge.classList.add('endgame-alert');
+      locBadge.innerText = TXT[currentLang].endgameAlert;
+    } else {
+      locBadge.classList.remove('endgame-alert');
+      locBadge.innerText = `${curr.name.toUpperCase()}`;
+    }
 
     for (let i = 0; i < 50; i++) {
       const pin = document.getElementById('pin-' + i);
@@ -1345,6 +1425,7 @@ const Game = {
           line.setAttribute('x2', `${target.x}%`);
           line.setAttribute('y2', `${target.y}%`);
           line.setAttribute('class', 'route-line');
+          line.id = `line-${n.id}-${target.id}`;
           svg.appendChild(line);
         }
       });
@@ -1367,6 +1448,13 @@ const Game = {
         } else {
           div.classList.add('missing-continent');
           div.innerHTML = '⭐';
+        }
+
+        // HAMBURG ZIEL-BEACON IM ENDGAME!
+        if (n.id === 'eu_start' && this.earnedMedals.size >= 6) {
+          div.classList.add('hamburg-goal');
+          div.innerHTML = '🏁';
+          div.title = 'HAMBURG: ZIELHAFEN!';
         }
       } else if (n.isHub) {
         div.classList.add('ocean-hub');
@@ -1411,6 +1499,7 @@ const Game = {
   ==================================================================== */
   prepareCourseSelection() {
     this.selectedCourseNeighbor = null;
+    this.clearTrajectory();
     const btnRoll = document.getElementById('btn-roll');
     btnRoll.disabled = true;
     btnRoll.innerText = '🧭 ' + (currentLang === 'de' ? 'Wähle erst deinen Kurs!' : 'Choose course first!');
@@ -1421,7 +1510,11 @@ const Game = {
       if (el) el.classList.add('selectable-course');
     });
 
-    this.setCaptainMood('normal', TXT[currentLang].selectCoursePrompt);
+    if (this.earnedMedals.size >= 6) {
+      this.setCaptainMood('win', TXT[currentLang].endgameDialogue);
+    } else {
+      this.setCaptainMood('normal', TXT[currentLang].selectCoursePrompt);
+    }
   },
 
   handleNodeClick(clickedId) {
@@ -1443,6 +1536,9 @@ const Game = {
     }
   },
 
+  /* ====================================================================
+     WÜRFELN MIT VOLLER SEEROUTEN-LANDEBAHN (BLINK-EFFEKT)
+  ==================================================================== */
   rollDice() {
     if (!this.selectedCourseNeighbor) return;
     Sound.play('roll');
@@ -1453,25 +1549,33 @@ const Game = {
     const cube = document.getElementById('dice-cube');
     arena.style.display = 'block';
 
-    const steps = Math.floor(Math.random() * 3) + 1;
+    // Volle 1 bis 4 Schritte
+    const steps = Math.floor(Math.random() * 4) + 1;
     this.diceResult = steps;
 
     const rotations = {
       1: { x: 0, y: 0 },
       2: { x: 0, y: 90 },
-      3: { x: -90, y: 0 }
+      3: { x: -90, y: 0 },
+      4: { x: 90, y: 0 }
     };
 
     const extraTurns = 720;
     const target = rotations[steps];
     cube.style.transform = `rotateX(${target.x + extraTurns}deg) rotateY(${target.y + extraTurns}deg)`;
 
+    // BERECHNE DIE EXAKTE SEEROUTE
+    const trajectory = this.calculateTrajectory(this.selectedCourseNeighbor, steps);
+
+    // LANDEBAHN SOFORT AUFLEUCHTEN LASSEN!
+    this.highlightTrajectory(trajectory);
+
     setTimeout(() => {
       arena.style.display = 'none';
       cube.style.transform = 'none';
       document.querySelectorAll('.node-point').forEach(el => el.classList.remove('selectable-course'));
 
-      this.executeMultiStepMovement(this.selectedCourseNeighbor, steps);
+      this.executeMultiStepMovement(trajectory);
     }, 1300);
   },
 
@@ -1479,14 +1583,57 @@ const Game = {
     if (this.compasses <= 0) return;
     this.compasses--;
     Sound.play('buy');
+    this.clearTrajectory();
     this.rollDice();
   },
 
-  /* ====================================================================
-     VEKTOR-NAVIGATION: ZIEHT STUR GERADEAUS OHNE ZICKZACK!
-  ==================================================================== */
+  /* BERECHNET DIE GERADE ROUTE */
+  calculateTrajectory(firstStepNodeId, totalSteps) {
+    const path = [];
+    let prevNode = NODES.find(n => n.id === this.currentNode);
+    let nextNode = NODES.find(n => n.id === firstStepNodeId);
+
+    for (let s = 1; s <= totalSteps; s++) {
+      path.push({ node: nextNode, step: s });
+      if (s < totalSteps) {
+        const nextId = this.getNextNodeInDirection(prevNode, nextNode);
+        prevNode = nextNode;
+        nextNode = NODES.find(n => n.id === nextId);
+      }
+    }
+    return path;
+  },
+
+  /* BRINGT DIE GESAMTE SEEROUTE ZUM BLINKEN MIT SCHRITTNUMMERN! */
+  highlightTrajectory(trajectory) {
+    this.clearTrajectory();
+    trajectory.forEach((item, idx) => {
+      const isDest = idx === trajectory.length - 1;
+      const el = document.getElementById('node-' + item.node.id);
+      if (el) {
+        if (isDest) {
+          el.classList.add('path-destination');
+        } else {
+          el.classList.add('path-waypoint');
+        }
+        const badge = document.createElement('div');
+        badge.className = 'step-badge' + (isDest ? ' dest' : '');
+        badge.innerText = item.step;
+        badge.id = 'badge-' + item.node.id;
+        el.appendChild(badge);
+      }
+    });
+  },
+
+  clearTrajectory() {
+    document.querySelectorAll('.path-waypoint, .path-destination').forEach(el => {
+      el.classList.remove('path-waypoint', 'path-destination');
+    });
+    document.querySelectorAll('.step-badge').forEach(el => el.remove());
+    document.querySelectorAll('.trajectory-line').forEach(el => el.classList.remove('trajectory-line'));
+  },
+
   getNextNodeInDirection(prevNode, currNode) {
-    // Richtungs-Vektor der bisherigen Fahrt berechnen
     const vx = currNode.x - prevNode.x;
     const vy = currNode.y - prevNode.y;
     const vLen = Math.hypot(vx, vy) || 1;
@@ -1494,7 +1641,6 @@ const Game = {
     const candidates = currNode.neighbors.filter(id => id !== prevNode.id);
     if (candidates.length === 0) return prevNode.id;
 
-    // Den Nachbarn wählen, der am genauesten in der gleichen Himmelsrichtung weiterführt (Dot-Product)
     let bestNode = candidates[0];
     let bestDot = -999;
     for (let nid of candidates) {
@@ -1511,48 +1657,51 @@ const Game = {
     return bestNode;
   },
 
-  executeMultiStepMovement(firstStepNodeId, totalSteps) {
-    let currentStep = 0;
-    let prevNode = NODES.find(n => n.id === this.currentNode);
-    let nextNode = NODES.find(n => n.id === firstStepNodeId);
+  /* MULTI-STEP NAVIGATION ENTLANG DER BLINKENDEN ROUTE */
+  executeMultiStepMovement(trajectory) {
+    let currentIdx = 0;
 
     const stepInterval = setInterval(() => {
-      currentStep++;
+      const targetItem = trajectory[currentIdx];
       Sound.play('step');
-      this.positionShip(nextNode.id, true);
-      this.currentNode = nextNode.id;
+      this.positionShip(targetItem.node.id, true);
+      this.currentNode = targetItem.node.id;
 
-      // TRIVIAL-PURSUIT-REGEL: Trifft das Schiff auf ein fehlendes Kontinent-Medaillon, läuft es SOFORT im Hafen ein!
-      const isMissingBoss = nextNode.isBoss && !this.earnedMedals.has(nextNode.continent);
+      currentIdx++;
 
-      if (currentStep >= totalSteps || isMissingBoss) {
+      if (currentIdx >= trajectory.length) {
         clearInterval(stepInterval);
         this.days++;
         this.updateHUD();
 
         setTimeout(() => {
+          this.clearTrajectory();
           this.triggerNodeEvent(NODES.find(n => n.id === this.currentNode));
         }, 500);
-      } else {
-        const nextId = this.getNextNodeInDirection(prevNode, nextNode);
-        prevNode = nextNode;
-        nextNode = NODES.find(n => n.id === nextId);
       }
     }, 600);
   },
 
   /* ====================================================================
-     EREIGNIS-TRIGGER
+     EREIGNIS-TRIGGER (DIREKTTREFFER-PFLICHT FÜR MEDAILLONS!)
   ==================================================================== */
   triggerNodeEvent(node) {
+    // 1. ENDSPIEL-SIEG: Rückkehr nach Hamburg mit allen 6 Medaillons & >= 25 Gold
     if (node.id === 'eu_start' && this.earnedMedals.size >= 6 && this.gold >= 25) {
       this.triggerVictory();
       return;
     }
 
+    // 2. BOSS-QUIZ: NUR WENN MAN DIREKT DRAUF LANDET!
     if (node.isBoss) {
-      this.openQuiz(node.continent);
-    } else if (node.type === 'kraken') {
+      if (!this.earnedMedals.has(node.continent)) {
+        this.openQuiz(node.continent);
+      } else {
+        this.setCaptainMood('normal', 'Diesen Kontinent haben wir bereits erobert! Weiter nach vorn!');
+        this.prepareCourseSelection();
+      }
+    } 
+    else if (node.type === 'kraken') {
       this.openKraken();
     } else if (node.type === 'wind') {
       this.openWind();
@@ -1630,7 +1779,9 @@ const Game = {
     this.closeModal();
     const currNode = NODES.find(n => n.id === this.currentNode);
     if (currNode.neighbors.length > 0) {
-      this.executeMultiStepMovement(currNode.neighbors[0], 2);
+      const traj = this.calculateTrajectory(currNode.neighbors[0], 2);
+      this.highlightTrajectory(traj);
+      setTimeout(() => this.executeMultiStepMovement(traj), 500);
     }
   },
 
@@ -2072,15 +2223,15 @@ const Game = {
 
   triggerVictory() {
     Sound.play('win');
-    this.spawnFlyingCoins(15);
-    this.setCaptainMood('win', 'BÄM! Da ist das Ding! Alle 6 Kontinente vereint!');
-    document.getElementById('modal-title').innerText = 'KAPITÄNS-TRIUMPH!';
+    this.spawnFlyingCoins(25);
+    this.setCaptainMood('win', 'BÄM! Da ist das Ding! Alle 6 Kontinente vereint und die Taschen voll Gold!');
+    document.getElementById('modal-title').innerText = 'KAPITÄNS-TRIUMPH IN HAMBURG!';
     document.getElementById('timer-text').innerText = '';
     document.getElementById('timer-bar').style.width = '0%';
     document.getElementById('modal-content').innerHTML = `
       <h1 style="color:gold;">KULINARISCHER WELTMEISTER!</h1>
-      <p>Alle 6 Medaillons und ${this.gold} Goldbarren!</p>
-      <p>Stefan wirft die Betonmisch-Pfanne an – heute Nacht wird gefeiert!</p>
+      <p style="font-size:16px; margin:15px 0;">Du bist im Heimathafen Hamburg eingelaufen mit allen 6 Medaillons und satten <strong>${this.gold} Gold-Pins</strong>!</p>
+      <p>Stefan wirft die Betonmisch-Pfanne an – heute Nacht brennt die Hotelbar!</p>
     `;
     document.getElementById('modal-actions').innerHTML = `<button class="btn-epic" onclick="location.reload()">Nochmal kapern!</button>`;
     document.getElementById('event-modal').classList.add('active');
