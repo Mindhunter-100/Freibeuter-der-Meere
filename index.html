@@ -190,9 +190,7 @@
     50% { transform: translateY(-5px) rotate(3deg); }
   }
 
-  /* ====================================================================
-     ULTRA-SCHARFER 3D KNOCHEN-WÜRFEL (REAL PIPS)
-  ==================================================================== */
+  /* 3D DICE SYSTEM */
   #dice-arena {
     position: absolute;
     top: 50%;
@@ -240,7 +238,6 @@
     background: radial-gradient(circle at 35% 35%, #ff4d4d, #990000);
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.7), 0 0 8px rgba(255,0,0,0.4);
   }
-
   .face-1 { transform: rotateY(0deg) translateZ(45px); }
   .face-6 { transform: rotateY(180deg) translateZ(45px); }
   .face-2 { transform: rotateY(-90deg) translateZ(45px); }
@@ -256,38 +253,61 @@
     display: flex;
     flex-direction: column;
     padding: 12px;
-    gap: 10px;
+    gap: 8px;
     z-index: 15;
   }
   #captain-avatar {
     width: 100%;
-    height: 175px;
+    height: 160px;
     border-radius: 8px;
     border: 2px solid var(--gold);
     background-size: cover;
     background-position: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-    transition: transform 0.2s;
   }
   #captain-dialogue {
     flex: 1;
     background: #fff8e7;
     color: #2b180a;
     border-radius: 8px;
-    padding: 12px;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 13px;
     line-height: 1.4;
     border: 2px solid var(--dark-gold);
     box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
     overflow-y: auto;
   }
+
+  /* INVENTAR-LEISTE */
+  #inventory-bar {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--dark-gold);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  .inv-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
+  }
+  .inv-item.active { color: var(--gold); font-weight: bold; }
+
+  #turn-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
   .btn-turn {
     background: linear-gradient(180deg, #8b0000, #4a0000);
     border: 2px solid var(--gold);
     color: #fff;
-    padding: 12px;
+    padding: 10px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 15px;
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
@@ -295,6 +315,22 @@
   }
   .btn-turn:hover:not(:disabled) { transform: translateY(-2px); background: linear-gradient(180deg, #b22222, #600000); }
   .btn-turn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-shop {
+    background: linear-gradient(180deg, #2e4a1f, #14290a);
+    border: 2px solid #85bb65;
+    color: #fff;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-shop:hover { background: linear-gradient(180deg, #3f682a, #1f3f10); }
 
   /* BOTTOM STECKBRETT */
   #bottom-hud {
@@ -387,10 +423,10 @@
     background: #fff8e7;
     color: #2b180a;
     width: 90%;
-    max-width: 640px;
+    max-width: 650px;
     border: 4px solid var(--dark-gold);
     border-radius: 14px;
-    padding: 24px;
+    padding: 22px;
     box-shadow: 0 0 40px rgba(0,0,0,0.9);
     position: relative;
     text-align: center;
@@ -404,7 +440,7 @@
   .modal-timer { height: 8px; background: #ddd; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
   .timer-fill { height: 100%; background: var(--crimson); width: 100%; }
   
-  /* BATTLE ARENA UI */
+  /* BATTLE ARENA */
   .battle-stage {
     display: flex;
     justify-content: space-around;
@@ -427,15 +463,10 @@
     background-position: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   }
-  .battle-vs {
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--crimson);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
+  .battle-vs { font-size: 32px; font-weight: bold; color: var(--crimson); }
   .static-dice {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
     background: #fff;
     border: 2px solid #333;
     border-radius: 8px;
@@ -462,6 +493,8 @@
     transition: all 0.2s;
   }
   .btn-answer:hover { background: #ffe4b5; transform: scale(1.02); }
+  .btn-answer.disabled { opacity: 0.25; pointer-events: none; text-decoration: line-through; }
+
   .btn-close-modal {
     margin-top: 15px;
     background: var(--dark-wood);
@@ -472,6 +505,56 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
+  }
+
+  /* SHOP UI */
+  .shop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 15px 0;
+    text-align: left;
+  }
+  .shop-item {
+    background: #fcf6ea;
+    border: 2px solid var(--dark-gold);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .shop-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: var(--crimson);
+  }
+  .shop-item-desc { font-size: 12px; line-height: 1.3; color: #444; margin-bottom: 8px; }
+  .btn-buy {
+    background: linear-gradient(180deg, #2e4a1f, #14290a);
+    border: 1px solid #85bb65;
+    color: #fff;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-end;
+  }
+  .btn-buy:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-joker {
+    background: linear-gradient(180deg, #4b0082, #2e0854);
+    border: 2px solid var(--gold);
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
   }
 </style>
 </head>
@@ -498,40 +581,34 @@
         <svg id="map-svg"></svg>
         <div id="nodes-container"></div>
         
-        <!-- 3D DICE MIT ECHTEN PIPS -->
+        <!-- 3D DICE -->
         <div id="dice-arena">
           <div id="dice-cube">
-            <!-- 1 -->
             <div class="dice-face face-1">
               <div></div><div></div><div></div>
               <div></div><div class="pip red"></div><div></div>
               <div></div><div></div><div></div>
             </div>
-            <!-- 2 -->
             <div class="dice-face face-2">
               <div class="pip"></div><div></div><div></div>
               <div></div><div></div><div></div>
               <div></div><div></div><div class="pip"></div>
             </div>
-            <!-- 3 -->
             <div class="dice-face face-3">
               <div class="pip"></div><div></div><div></div>
               <div></div><div class="pip"></div><div></div>
               <div></div><div></div><div class="pip"></div>
             </div>
-            <!-- 4 -->
             <div class="dice-face face-4">
               <div class="pip"></div><div></div><div class="pip"></div>
               <div></div><div></div><div></div>
               <div class="pip"></div><div></div><div class="pip"></div>
             </div>
-            <!-- 5 -->
             <div class="dice-face face-5">
               <div class="pip"></div><div></div><div class="pip"></div>
               <div></div><div class="pip"></div><div></div>
               <div class="pip"></div><div></div><div class="pip"></div>
             </div>
-            <!-- 6 -->
             <div class="dice-face face-6">
               <div class="pip"></div><div></div><div class="pip"></div>
               <div class="pip"></div><div></div><div class="pip"></div>
@@ -545,11 +622,24 @@
         </div>
       </div>
 
+      <!-- CAPTAIN SIDEBAR MIT INVENTAR & SHOP -->
       <div id="captain-sidebar">
         <div id="captain-avatar"></div>
+        
+        <!-- INVENTAR-LEISTE -->
+        <div id="inventory-bar">
+          <div id="inv-knife" class="inv-item" title="Damaszener-Messer: +1 im Kampf">🔪 <span>-</span></div>
+          <div id="inv-truffle" class="inv-item" title="Trüffel-Joker (50:50 im Quiz)">🧂 <span id="cnt-truffle">0</span></div>
+          <div id="inv-rum" class="inv-item" title="Fass Rum (Schutz vor Sturm)">🥃 <span id="cnt-rum">0</span></div>
+          <div id="inv-compass" class="inv-item" title="Gewürz-Kompass (Reroll)">🧭 <span id="cnt-compass">0</span></div>
+        </div>
+
         <div id="captain-dialogue"></div>
+
         <div id="turn-controls">
           <button id="btn-roll" class="btn-turn" onclick="Game.rollDice()">🎲 Kompass &amp; Würfel werfen</button>
+          <button id="btn-reroll" class="btn-turn" style="display:none; background:#8a5a00;" onclick="Game.rerollDice()">🧭 Neu würfeln (Kompass)</button>
+          <button class="btn-shop" onclick="Game.openShop()">🏴‍☠️ Kombüsen-Schwarzmarkt</button>
         </div>
       </div>
     </div>
@@ -589,7 +679,7 @@ const ASSETS = {
   board: 'board.png',
   medals: 'medals.png',
   actions: 'actions.png',
-  pirateEnemy: 'pirate_enemy.png' // Lädt deinen neuen Feind, falls vorhanden!
+  pirateEnemy: 'pirate_enemy.png'
 };
 
 const Sound = {
@@ -626,6 +716,18 @@ const Sound = {
       gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
       osc.start(t);
       osc.stop(t + 0.35);
+    } else if (type === 'buy') {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, t);
+      osc.frequency.setValueAtTime(880, t + 0.1);
+      gain.gain.setValueAtTime(0.25, t);
+      gain.gain.linearRampToValueAtTime(0.01, t + 0.3);
+      osc.start(t);
+      osc.stop(t + 0.3);
     } else if (type === 'correct') {
       [523, 659, 783].forEach((f, i) => {
         const osc = this.ctx.createOscillator();
@@ -711,6 +813,9 @@ const QUESTIONS = [
   { c: 'stefan', q: 'Mit welchem Show-Gerät rührte Stefan auf der Essener Messe Riesen-Portionen an?', a: ['Betonmischmaschine', 'Dampfwalze', 'Schweißbrenner', 'Kettensäge'], correct: 0, tip: 'Die Betonmisch-Pfanne! Da wurde gerührt wie auf der Großbaustelle!' }
 ];
 
+/* ====================================================================
+   GAME ENGINE & INVENTAR SYSTEM (PAKET B)
+==================================================================== */
 const Game = {
   days: 1,
   maxDays: 30,
@@ -720,6 +825,12 @@ const Game = {
   earnedMedals: new Set(),
   activeTimer: null,
 
+  /* INVENTAR */
+  hasKnife: false,
+  truffles: 1,
+  rum: 0,
+  compasses: 1,
+
   start() {
     Sound.play('coin');
     document.getElementById('splash-screen').classList.remove('active');
@@ -727,7 +838,7 @@ const Game = {
     this.renderSteckbrett();
     this.renderMap();
     this.updateHUD();
-    this.setCaptainMood('normal', 'Ahoi Marco! Bring mir die 6 Kontinente und reichlich Gold nach Hamburg zurück!');
+    this.setCaptainMood('normal', 'Ahoi Marco! Bring mir die 6 Kontinente nach Hamburg zurück. Besorg dir Ausrüstung im Schwarzmarkt!');
   },
 
   renderSteckbrett() {
@@ -747,15 +858,38 @@ const Game = {
     const curr = NODES.find(n => n.id === this.currentNode);
     document.getElementById('current-location').innerText = `${curr.name.toUpperCase()}`;
 
+    // Pins
     for (let i = 0; i < 50; i++) {
       const pin = document.getElementById('pin-' + i);
       if (pin) pin.className = 'pin-hole' + (i < this.gold ? ' filled' : '');
     }
 
+    // Medaillen
     ['europa', 'asien', 'afrika', 'nordamerika', 'suedamerika', 'australien'].forEach(c => {
       const el = document.getElementById('medal-' + c);
       if (this.earnedMedals.has(c)) el.classList.add('earned');
     });
+
+    // Inventar-Anzeige aktualisieren
+    const kEl = document.getElementById('inv-knife');
+    if (this.hasKnife) {
+      kEl.classList.add('active');
+      kEl.querySelector('span').innerText = '+1';
+    } else {
+      kEl.classList.remove('active');
+      kEl.querySelector('span').innerText = '-';
+    }
+    document.getElementById('cnt-truffle').innerText = this.truffles;
+    document.getElementById('cnt-rum').innerText = this.rum;
+    document.getElementById('cnt-compass').innerText = this.compasses;
+
+    // Kompass Reroll-Button anzeigen, falls vorhanden und gewürfelt wurde
+    const btnReroll = document.getElementById('btn-reroll');
+    if (this.compasses > 0 && this.diceResult > 0 && document.getElementById('btn-roll').disabled) {
+      btnReroll.style.display = 'block';
+    } else {
+      btnReroll.style.display = 'none';
+    }
   },
 
   setCaptainMood(mood, text) {
@@ -860,7 +994,6 @@ const Game = {
     wrapper.style.top = `${node.y}%`;
   },
 
-  /* 3D WÜRFEL WURF */
   rollDice() {
     Sound.play('roll');
     const btn = document.getElementById('btn-roll');
@@ -896,8 +1029,16 @@ const Game = {
         if (el) el.classList.add('reachable');
       });
 
+      this.updateHUD();
       this.setCaptainMood('normal', `Eine ${result} gewürfelt! Wähle deinen nächsten Kurs!`);
     }, 1300);
+  },
+
+  rerollDice() {
+    if (this.compasses <= 0) return;
+    this.compasses--;
+    Sound.play('buy');
+    this.rollDice();
   },
 
   selectNode(targetId) {
@@ -908,6 +1049,7 @@ const Game = {
     this.positionShip(targetId, true);
     this.currentNode = targetId;
     this.days++;
+    this.diceResult = 0;
     this.updateHUD();
 
     setTimeout(() => {
@@ -930,11 +1072,105 @@ const Game = {
       this.openTreasure();
     } else if (node.type === 'danger') {
       this.openDanger();
+    } else if (node.type === 'port') {
+      this.setCaptainMood('win', 'Heimathafen erreicht! Zeit, deine Kombüse aufzurüsten!');
+      this.openShop();
     } else {
-      this.setCaptainMood('normal', 'Ein ruhiger Hafen zum Nachbunkern. Weiter gehts!');
+      this.setCaptainMood('normal', 'Ruhige See. Weiter gehts!');
     }
   },
 
+  /* ====================================================================
+     SCHWARZMARKT (SHOP)
+  ==================================================================== */
+  openShop() {
+    const modal = document.getElementById('event-modal');
+    document.getElementById('modal-title').innerText = '🏴‍☠️ STEFANS KOMBÜSEN-SCHWARZMARKT';
+    document.getElementById('timer-bar').style.width = '0%';
+    if (this.activeTimer) clearInterval(this.activeTimer);
+
+    document.getElementById('modal-content').innerHTML = `
+      <p style="font-size:14px; margin-bottom:12px;">Rüste dein Schiff auf! Gold ist zum Ausgeben da, mein Freund!</p>
+      
+      <div class="shop-grid">
+        <!-- MESSER -->
+        <div class="shop-item">
+          <div>
+            <div class="shop-item-header"><span>🔪 Damaszener-Messer</span><span>10 Gold</span></div>
+            <div class="shop-item-desc">Dauerhafter Bonus: <strong>+1 auf jeden Würfelwurf</strong> in Seeschlachten!</div>
+          </div>
+          <button class="btn-buy" onclick="Game.buyItem('knife')" ${this.hasKnife || this.gold < 10 ? 'disabled' : ''}>
+            ${this.hasKnife ? 'Bereits erworben' : 'Kaufen (10 Gold)'}
+          </button>
+        </div>
+
+        <!-- TRÜFFEL -->
+        <div class="shop-item">
+          <div>
+            <div class="shop-item-header"><span>🧂 Trüffel-Joker</span><span>5 Gold</span></div>
+            <div class="shop-item-desc">Schärft den Geist: Löscht im Quiz <strong>zwei falsche Antworten</strong> weg (50:50)!</div>
+          </div>
+          <button class="btn-buy" onclick="Game.buyItem('truffle')" ${this.gold < 5 ? 'disabled' : ''}>
+            Kaufen (5 Gold)
+          </button>
+        </div>
+
+        <!-- RUM -->
+        <div class="shop-item">
+          <div>
+            <div class="shop-item-header"><span>🥃 Fass Hochsee-Rum</span><span>8 Gold</span></div>
+            <div class="shop-item-desc">Löscht Brände: Schützt dich automatisch vor <strong>Goldverlust bei Havarie</strong>!</div>
+          </div>
+          <button class="btn-buy" onclick="Game.buyItem('rum')" ${this.gold < 8 ? 'disabled' : ''}>
+            Kaufen (8 Gold)
+          </button>
+        </div>
+
+        <!-- KOMPASS -->
+        <div class="shop-item">
+          <div>
+            <div class="shop-item-header"><span>🧭 Gewürz-Kompass</span><span>6 Gold</span></div>
+            <div class="shop-item-desc">Erlaubt dir auf hoher See einen <strong>zweiten Würfelwurf</strong>!</div>
+          </div>
+          <button class="btn-buy" onclick="Game.buyItem('compass')" ${this.gold < 6 ? 'disabled' : ''}>
+            Kaufen (6 Gold)
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('modal-actions').innerHTML = `
+      <button class="btn-close-modal" onclick="Game.closeModal()">Zurück aufs Deck</button>
+    `;
+
+    modal.classList.add('active');
+  },
+
+  buyItem(type) {
+    if (type === 'knife' && this.gold >= 10 && !this.hasKnife) {
+      this.gold -= 10;
+      this.hasKnife = true;
+      Sound.play('buy');
+    } else if (type === 'truffle' && this.gold >= 5) {
+      this.gold -= 5;
+      this.truffles++;
+      Sound.play('buy');
+    } else if (type === 'rum' && this.gold >= 8) {
+      this.gold -= 8;
+      this.rum++;
+      Sound.play('buy');
+    } else if (type === 'compass' && this.gold >= 6) {
+      this.gold -= 6;
+      this.compasses++;
+      Sound.play('buy');
+    }
+    this.updateHUD();
+    this.openShop();
+  },
+
+  /* ====================================================================
+     QUIZ MIT 50:50 JOKER
+  ==================================================================== */
   openQuiz(continent) {
     const pool = QUESTIONS.filter(q => q.c === continent || q.c === 'stefan');
     const qObj = pool[Math.floor(Math.random() * pool.length)];
@@ -946,19 +1182,31 @@ const Game = {
     const bar = document.getElementById('timer-bar');
 
     title.innerText = `KOMBÜSEN-QUIZ: ${continent.toUpperCase()}`;
-    content.innerHTML = `<h2 style="font-size:18px; margin-bottom:15px;">${qObj.q}</h2>`;
+    content.innerHTML = `<h2 style="font-size:18px; margin-bottom:12px;">${qObj.q}</h2>`;
 
     const answersDiv = document.createElement('div');
     answersDiv.className = 'quiz-answers';
+    answersDiv.id = 'quiz-answers-box';
     qObj.a.forEach((ans, idx) => {
       const btn = document.createElement('button');
       btn.className = 'btn-answer';
+      btn.id = 'ans-btn-' + idx;
       btn.innerText = ans;
       btn.onclick = () => this.handleAnswer(idx === qObj.correct, qObj, continent);
       answersDiv.appendChild(btn);
     });
     content.appendChild(answersDiv);
+
+    // 50:50 Joker-Button einbauen falls vorhanden
     actions.innerHTML = '';
+    if (this.truffles > 0) {
+      const jBtn = document.createElement('button');
+      jBtn.className = 'btn-joker';
+      jBtn.id = 'btn-use-joker';
+      jBtn.innerText = `🧂 Trüffel-Joker einsetzen (50:50) [Noch ${this.truffles}x]`;
+      jBtn.onclick = () => this.useTruffleJoker(qObj);
+      actions.appendChild(jBtn);
+    }
 
     modal.classList.add('active');
 
@@ -973,6 +1221,27 @@ const Game = {
         this.handleAnswer(false, qObj, continent);
       }
     }, 200);
+  },
+
+  useTruffleJoker(qObj) {
+    if (this.truffles <= 0) return;
+    this.truffles--;
+    Sound.play('buy');
+    this.updateHUD();
+
+    document.getElementById('btn-use-joker').style.display = 'none';
+
+    // 2 falsche Antworten streichen
+    let disabledCount = 0;
+    for (let i = 0; i < 4; i++) {
+      if (i !== qObj.correct && disabledCount < 2) {
+        const btn = document.getElementById('ans-btn-' + i);
+        if (btn) {
+          btn.classList.add('disabled');
+          disabledCount++;
+        }
+      }
+    }
   },
 
   handleAnswer(correct, qObj, continent) {
@@ -999,31 +1268,29 @@ const Game = {
   },
 
   /* ====================================================================
-     DAS NEUE VISUELLE SEESCHLACHT-DUELL (FACE-OFF!)
+     SEESCHLACHT MIT MESSER-BONUS
   ==================================================================== */
   openBattle() {
     const modal = document.getElementById('event-modal');
     document.getElementById('modal-title').innerText = '⚔️ KAPER-DUELL IM NEBEL!';
-    
-    // Prüfen, ob pirate_enemy vorhanden ist, sonst Fallback auf actions.png Skull
-    const enemyImg = ASSETS.pirateEnemy;
+    document.getElementById('timer-bar').style.width = '0%';
+    if (this.activeTimer) clearInterval(this.activeTimer);
 
     document.getElementById('modal-content').innerHTML = `
       <p style="font-size:15px; margin-bottom:10px;">Ein berüchtigtes Piratenschiff blockiert deinen Kurs! Käpt'n Knorrenbart fordert dich zum Duell!</p>
       
       <div class="battle-stage">
-        <!-- SPIELER -->
         <div class="fighter-card">
           <div class="fighter-portrait" style="background-image:url('${ASSETS.stefanNormal}');"></div>
           <strong>DU (STEFAN)</strong>
           <div id="player-dice-box" class="static-dice">?</div>
+          <span style="font-size:11px; color:gold;">${this.hasKnife ? '🔪 +1 Messer-Bonus!' : ''}</span>
         </div>
 
         <div class="battle-vs">VS</div>
 
-        <!-- GEGNER -->
         <div class="fighter-card">
-          <div class="fighter-portrait" id="enemy-portrait" style="background-image:url('${enemyImg}'); background-color:#3a1100;"></div>
+          <div class="fighter-portrait" id="enemy-portrait" style="background-image:url('${ASSETS.pirateEnemy}'); background-color:#3a1100;"></div>
           <strong>KNORRENBART</strong>
           <div id="enemy-dice-box" class="static-dice enemy">?</div>
         </div>
@@ -1036,7 +1303,6 @@ const Game = {
       <button id="btn-fight" class="btn-epic" style="font-size:18px; padding:10px 30px;" onclick="Game.resolveBattle()">⚔️ Knochen werfen!</button>
     `;
 
-    // Fallback falls pirate_enemy.png (noch) nicht existiert
     const imgTest = new Image();
     imgTest.onerror = () => {
       const p = document.getElementById('enemy-portrait');
@@ -1046,7 +1312,7 @@ const Game = {
         p.style.backgroundSize = '200% 200%';
       }
     };
-    imgTest.src = enemyImg;
+    imgTest.src = ASSETS.pirateEnemy;
 
     modal.classList.add('active');
   },
@@ -1060,7 +1326,6 @@ const Game = {
     const eBox = document.getElementById('enemy-dice-box');
     const resText = document.getElementById('battle-result-text');
 
-    // Würfel-Schüttel-Effekt
     let rolls = 0;
     const interval = setInterval(() => {
       pBox.innerText = Math.floor(Math.random() * 6) + 1;
@@ -1069,8 +1334,12 @@ const Game = {
       if (rolls >= 8) {
         clearInterval(interval);
         
-        const pRoll = Math.floor(Math.random() * 6) + 1;
+        let pRoll = Math.floor(Math.random() * 6) + 1;
         const eRoll = Math.floor(Math.random() * 6) + 1;
+        
+        // Damaszener Messer Bonus
+        if (this.hasKnife) pRoll += 1;
+        
         pBox.innerText = pRoll;
         eBox.innerText = eRoll;
         const diff = Math.max(1, Math.abs(pRoll - eRoll));
@@ -1108,16 +1377,37 @@ const Game = {
     document.getElementById('event-modal').classList.add('active');
   },
 
+  /* ====================================================================
+     HAVARIE MIT RUM-SCHUTZSCHILD
+  ==================================================================== */
   openDanger() {
-    this.triggerDamageEffect();
-    const loss = Math.floor(Math.random() * 4) + 2;
-    this.gold = Math.max(0, this.gold - loss);
-    this.updateHUD();
-    this.setCaptainMood('burn', 'Verdammte Klabautermänner! Die Kombüse stand lichterloh in Flammen!');
+    const modal = document.getElementById('event-modal');
     document.getElementById('modal-title').innerText = 'STEFAN-ROGERS-FELD!';
-    document.getElementById('modal-content').innerHTML = `<h2>🔥 HAVARIE &amp; FEUER!</h2><p>Schwerer Sturm hat Vorräte zerstört! Du verlierst <strong>-${loss} Gold-Pins</strong>!</p>`;
+
+    if (this.rum > 0) {
+      this.rum--;
+      this.updateHUD();
+      Sound.play('win');
+      this.setCaptainMood('win', 'Gott sei Dank hatten wir das Fass Rum an Bord! Brand gelöscht, Mannschaft gerettet!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2 style="color:green;">🥃 RUM-RETTUNG!</h2>
+        <p>Der Sturm wütete, aber dein <strong>Fass Hochsee-Rum</strong> hat die Kombüse gerettet!</p>
+        <p><strong>Kein Gold verloren!</strong> (1x Rum verbraucht)</p>
+      `;
+    } else {
+      this.triggerDamageEffect();
+      const loss = Math.floor(Math.random() * 4) + 2;
+      this.gold = Math.max(0, this.gold - loss);
+      this.updateHUD();
+      this.setCaptainMood('burn', 'Verdammte Klabautermänner! Die Kombüse stand lichterloh in Flammen!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2>🔥 HAVARIE &amp; FEUER!</h2>
+        <p>Schwerer Sturm hat Vorräte zerstört! Du verlierst <strong>-${loss} Gold-Pins</strong>!</p>
+      `;
+    }
+
     document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Schäden reparieren</button>`;
-    document.getElementById('event-modal').classList.add('active');
+    modal.classList.add('active');
   },
 
   closeModal() {
