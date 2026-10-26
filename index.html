@@ -213,7 +213,7 @@
     box-shadow: 0 0 20px #00ff66;
   }
 
-  /* ENDGAME HAMBURG BEACON */
+  /* HAMBURG ENDGAME BEACON */
   .node-point.hamburg-goal {
     border-color: #ffd700 !important;
     background: radial-gradient(circle, #ffcc00, #ff6600) !important;
@@ -236,9 +236,7 @@
     to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffff; }
   }
 
-  /* ====================================================================
-     BLINKENDE SEEROUTEN-LANDEBAHN (TRAJEKTORIE)
-  ==================================================================== */
+  /* BLINKENDE SEEROUTEN-LANDEBAHN */
   .node-point.path-waypoint {
     border-color: #00ffff !important;
     background: #002b3d !important;
@@ -557,10 +555,7 @@
     max-height: 90vh;
     overflow-y: auto;
   }
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(0.85); }
-    to { opacity: 1; transform: scale(1); }
-  }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
   .modal-title { font-size: 22px; color: var(--crimson); margin-bottom: 8px; text-transform: uppercase; }
   .timer-header {
     display: flex;
@@ -666,13 +661,7 @@
   }
 
   /* SHOP UI */
-  .shop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 15px 0;
-    text-align: left;
-  }
+  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; text-align: left; }
   .shop-item {
     background: #fcf6ea;
     border: 2px solid var(--dark-gold);
@@ -682,13 +671,7 @@
     flex-direction: column;
     justify-content: space-between;
   }
-  .shop-item-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: var(--crimson);
-  }
+  .shop-item-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; color: var(--crimson); }
   .shop-item-desc { font-size: 12px; line-height: 1.3; color: #444; margin-bottom: 8px; }
   .btn-buy {
     background: linear-gradient(180deg, #2e4a1f, #14290a);
@@ -704,20 +687,8 @@
   .btn-buy:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* REGELN */
-  .rules-content {
-    text-align: left;
-    font-size: 13px;
-    line-height: 1.5;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .rules-section {
-    background: #f5eedb;
-    padding: 10px 12px;
-    border-radius: 6px;
-    border-left: 4px solid var(--dark-gold);
-  }
+  .rules-content { text-align: left; font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 10px; }
+  .rules-section { background: #f5eedb; padding: 10px 12px; border-radius: 6px; border-left: 4px solid var(--dark-gold); }
   .rules-section strong { color: var(--crimson); }
 </style>
 </head>
@@ -756,36 +727,12 @@
         <!-- 3D DICE -->
         <div id="dice-arena">
           <div id="dice-cube">
-            <div class="dice-face face-1">
-              <div></div><div></div><div></div>
-              <div></div><div class="pip red"></div><div></div>
-              <div></div><div></div><div></div>
-            </div>
-            <div class="dice-face face-2">
-              <div class="pip"></div><div></div><div></div>
-              <div></div><div></div><div></div>
-              <div></div><div></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-3">
-              <div class="pip"></div><div></div><div></div>
-              <div></div><div class="pip"></div><div></div>
-              <div></div><div></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-4">
-              <div class="pip"></div><div></div><div class="pip"></div>
-              <div></div><div></div><div></div>
-              <div class="pip"></div><div></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-5">
-              <div class="pip"></div><div></div><div class="pip"></div>
-              <div></div><div class="pip"></div><div></div>
-              <div class="pip"></div><div></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-6">
-              <div class="pip"></div><div></div><div class="pip"></div>
-              <div class="pip"></div><div></div><div class="pip"></div>
-              <div class="pip"></div><div></div><div class="pip"></div>
-            </div>
+            <div class="dice-face face-1"><div></div><div></div><div></div><div></div><div class="pip red"></div><div></div><div></div><div></div><div></div></div>
+            <div class="dice-face face-2"><div class="pip"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div class="pip"></div></div>
+            <div class="dice-face face-3"><div class="pip"></div><div></div><div></div><div></div><div class="pip"></div><div></div><div></div><div></div><div class="pip"></div></div>
+            <div class="dice-face face-4"><div class="pip"></div><div></div><div class="pip"></div><div></div><div></div><div></div><div class="pip"></div><div></div><div class="pip"></div></div>
+            <div class="dice-face face-5"><div class="pip"></div><div></div><div class="pip"></div><div></div><div class="pip"></div><div></div><div class="pip"></div><div></div><div class="pip"></div></div>
+            <div class="dice-face face-6"><div class="pip"></div><div></div><div class="pip"></div><div class="pip"></div><div></div><div class="pip"></div><div class="pip"></div><div></div><div class="pip"></div></div>
           </div>
         </div>
 
@@ -891,8 +838,8 @@ const TXT = {
     days: "⏳ REISETAG:",
     gold: "💰 GOLDPINS:",
     rules: "Regeln",
-    selectCoursePrompt: "Setz die Segel! Klicke auf der Karte auf die nächste Seeroute!",
-    rollPrompt: "Kurs gewählt! Jetzt würfeln!",
+    selectCoursePrompt: "Klicke auf eine der leuchtenden Routen, um die Vorschau zu sehen!",
+    rollPrompt: "Route gewählt! Klicke 'Würfeln' oder teste eine andere Seeroute!",
     rollBtn: "🎲 Würfel & Wind werfen",
     rerollBtn: "🧭 Neu würfeln (Kompass)",
     shopBtn: "🏴‍☠️ Kombüsen-Schwarzmarkt",
@@ -938,8 +885,8 @@ const TXT = {
     days: "⏳ DAY:",
     gold: "💰 GOLD PINS:",
     rules: "Rules",
-    selectCoursePrompt: "Set sails! Click an adjacent route on the map to set your course!",
-    rollPrompt: "Course set! Now roll the dice!",
+    selectCoursePrompt: "Click any adjacent route to preview where it leads!",
+    rollPrompt: "Route selected! Roll the dice or click another route to change heading!",
     rollBtn: "🎲 Roll Wind & Dice",
     rerollBtn: "🧭 Reroll Dice (Compass)",
     shopBtn: "🏴‍☠️ Galley Black Market",
@@ -1100,72 +1047,73 @@ const Sound = {
 };
 
 /* ====================================================================
-   WELTKARTEN-NETZWERK
+   VOLL VERNETZTE WELTKARTE (ALLE RICHTUNGEN OFFEN!)
 ==================================================================== */
 const NODES = [
   // 1. EUROPA & START
   { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', isBoss: true, x: 48, y: 28, type: 'boss_quiz', neighbors: ['channel', 'canaries', 'north_atlantic_1', 'hub_atlantic'] },
   { id: 'channel', name: 'Ärmelkanal', x: 44, y: 24, type: 'wind', neighbors: ['eu_start', 'north_atlantic_1'] },
-  { id: 'north_atlantic_1', name: 'Neufundlandbank', x: 38, y: 24, type: 'wreck', neighbors: ['channel', 'eu_start', 'newfoundland'] },
-  { id: 'newfoundland', name: 'Neufundland Nebel', x: 32, y: 25, type: 'battle', neighbors: ['north_atlantic_1', 'boston'] },
-  { id: 'boston', name: 'Boston Reede', x: 27, y: 28, type: 'flotsam', neighbors: ['newfoundland', 'na_boss'] },
+  { id: 'north_atlantic_1', name: 'Neufundlandbank', x: 38, y: 24, type: 'wreck', neighbors: ['channel', 'eu_start', 'newfoundland', 'hub_atlantic'] },
+  { id: 'newfoundland', name: 'Neufundland Nebel', x: 32, y: 25, type: 'battle', neighbors: ['north_atlantic_1', 'boston', 'bermuda'] },
+  { id: 'boston', name: 'Boston Reede', x: 27, y: 28, type: 'flotsam', neighbors: ['newfoundland', 'na_boss', 'bermuda'] },
 
-  // OZEAN-DREHKREUZ 1: ATLANTIK
-  { id: 'hub_atlantic', name: 'Atlantik-Drehkreuz (Azoren)', isHub: true, x: 38, y: 36, type: 'hub', neighbors: ['eu_start', 'na_boss', 'carib_1', 'dakar', 'canaries'] },
+  // OZEAN-DREHKREUZ 1: ATLANTIK (Verbindet Nord- und Südhalbkugel)
+  { id: 'hub_atlantic', name: 'Atlantik-Drehkreuz (Azoren)', isHub: true, x: 38, y: 36, type: 'hub', neighbors: ['eu_start', 'na_boss', 'bermuda', 'carib_1', 'canaries', 'dakar', 'sa_north', 'recife'] },
 
   // 2. NORDAMERIKA (BOSS)
-  { id: 'na_boss', name: 'New York (Nordamerika)', continent: 'nordamerika', isBoss: true, x: 23, y: 32, type: 'boss_quiz', neighbors: ['boston', 'hub_atlantic', 'carib_1', 'san_francisco'] },
+  { id: 'na_boss', name: 'New York (Nordamerika)', continent: 'nordamerika', isBoss: true, x: 23, y: 32, type: 'boss_quiz', neighbors: ['boston', 'hub_atlantic', 'carib_1', 'san_francisco', 'bermuda'] },
+  { id: 'bermuda', name: 'Bermuda-Dreieck', x: 28, y: 38, type: 'danger', neighbors: ['boston', 'na_boss', 'carib_1', 'hub_atlantic', 'newfoundland'] },
   { id: 'canaries', name: 'Kanarische Inseln', x: 45, y: 38, type: 'customs', neighbors: ['hub_atlantic', 'eu_start', 'dakar'] },
-  { id: 'carib_1', name: 'Bahamas-Passage', x: 23, y: 41, type: 'wind', neighbors: ['na_boss', 'hub_atlantic', 'tortuga'] },
-  { id: 'tortuga', name: 'Tortuga (Piratenbucht)', x: 26, y: 46, type: 'port', neighbors: ['carib_1', 'panama', 'sa_north'] },
-  { id: 'panama', name: 'Panama Isthmus', x: 22, y: 52, type: 'treasure', neighbors: ['tortuga', 'sa_boss', 'hub_pacific'] },
+  { id: 'carib_1', name: 'Bahamas-Passage', x: 23, y: 41, type: 'wind', neighbors: ['na_boss', 'bermuda', 'tortuga', 'hub_atlantic'] },
+  { id: 'tortuga', name: 'Tortuga (Piratenbucht)', x: 26, y: 46, type: 'port', neighbors: ['carib_1', 'panama', 'sa_north', 'sa_boss'] },
+  { id: 'panama', name: 'Panama Isthmus', x: 22, y: 52, type: 'treasure', neighbors: ['tortuga', 'sa_boss', 'hub_pacific', 'chile'] },
 
-  // 3. SÜDAMERIKA (BOSS)
-  { id: 'sa_north', name: 'Orinoco Mündung', x: 30, y: 54, type: 'wreck', neighbors: ['tortuga', 'sa_boss', 'recife'] },
-  { id: 'sa_boss', name: 'Peru / Amazonien', continent: 'suedamerika', isBoss: true, x: 29, y: 64, type: 'boss_quiz', neighbors: ['panama', 'sa_north', 'chile', 'recife'] },
-  { id: 'recife', name: 'Recife Kap', x: 37, y: 62, type: 'wind', neighbors: ['sa_north', 'sa_boss', 'rio'] },
-  { id: 'rio', name: 'Rio de Janeiro', x: 34, y: 72, type: 'treasure', neighbors: ['recife', 'patagonia', 'south_atlantic_sea'] },
-  { id: 'chile', name: 'Humboldt-Strom', x: 26, y: 74, type: 'flotsam', neighbors: ['sa_boss', 'cape_horn'] },
-  { id: 'patagonia', name: 'Patagonische Küste', x: 28, y: 80, type: 'battle', neighbors: ['rio', 'cape_horn'] },
-  { id: 'cape_horn', name: 'Kap Hoorn (Sturmwinde)', x: 26, y: 86, type: 'danger', neighbors: ['chile', 'patagonia', 'south_atlantic_sea', 'antarctica_pass'] },
+  // 3. SÜDAMERIKA (BOSS: PERU) - JETZT VOLL VERNETZT!
+  { id: 'sa_north', name: 'Orinoco Mündung', x: 30, y: 54, type: 'wreck', neighbors: ['tortuga', 'sa_boss', 'recife', 'hub_atlantic'] },
+  { id: 'sa_boss', name: 'Peru / Amazonien', continent: 'suedamerika', isBoss: true, x: 29, y: 64, type: 'boss_quiz', neighbors: ['panama', 'sa_north', 'chile', 'recife', 'rio', 'hub_pacific'] },
+  { id: 'recife', name: 'Recife Kap', x: 37, y: 62, type: 'wind', neighbors: ['sa_north', 'sa_boss', 'rio', 'tristan', 'dakar', 'hub_atlantic'] },
+  { id: 'rio', name: 'Rio de Janeiro', x: 34, y: 72, type: 'treasure', neighbors: ['recife', 'sa_boss', 'patagonia', 'south_atlantic_sea', 'tristan'] },
+  { id: 'chile', name: 'Humboldt-Strom', x: 26, y: 74, type: 'flotsam', neighbors: ['sa_boss', 'panama', 'patagonia', 'cape_horn', 'hub_pacific'] },
+  { id: 'patagonia', name: 'Patagonische Küste', x: 28, y: 80, type: 'battle', neighbors: ['rio', 'chile', 'cape_horn', 'south_atlantic_sea'] },
+  { id: 'cape_horn', name: 'Kap Hoorn (Sturmwinde)', x: 26, y: 86, type: 'danger', neighbors: ['chile', 'patagonia', 'south_atlantic_sea', 'antarctica_pass', 'south_pacific_sea'] },
   { id: 'antarctica_pass', name: 'Drake-Passage', x: 32, y: 90, type: 'kraken', neighbors: ['cape_horn', 'south_atlantic_sea'] },
 
-  // 4. SÜDATLANTIK & AFRIKA
-  { id: 'south_atlantic_sea', name: 'Südatlantik Weite', x: 42, y: 76, type: 'wind', neighbors: ['rio', 'cape_horn', 'antarctica_pass', 'tristan', 'cape_town'] },
-  { id: 'tristan', name: 'Tristan da Cunha', x: 40, y: 68, type: 'treasure', neighbors: ['south_atlantic_sea', 'dakar', 'angola'] },
-  { id: 'dakar', name: 'Dakar / Elfenbeinküste', x: 44, y: 48, type: 'port', neighbors: ['canaries', 'hub_atlantic', 'tristan', 'afrika_boss'] },
-  { id: 'afrika_boss', name: 'Goldküste (Afrika)', continent: 'afrika', isBoss: true, x: 47, y: 52, type: 'boss_quiz', neighbors: ['dakar', 'niger_delta', 'angola'] },
-  { id: 'niger_delta', name: 'Niger-Delta', x: 50, y: 58, type: 'wreck', neighbors: ['afrika_boss', 'angola'] },
+  // 4. SÜDATLANTIK & AFRIKA (TRISTAN HAT NUN WEGE NACH WESTEN!)
+  { id: 'south_atlantic_sea', name: 'Südatlantik Weite', x: 42, y: 76, type: 'wind', neighbors: ['rio', 'patagonia', 'cape_horn', 'antarctica_pass', 'tristan', 'cape_town'] },
+  { id: 'tristan', name: 'Tristan da Cunha', x: 40, y: 68, type: 'treasure', neighbors: ['recife', 'rio', 'south_atlantic_sea', 'dakar', 'angola', 'cape_town'] },
+  { id: 'dakar', name: 'Dakar / Elfenbeinküste', x: 44, y: 48, type: 'port', neighbors: ['canaries', 'hub_atlantic', 'tristan', 'afrika_boss', 'recife'] },
+  { id: 'afrika_boss', name: 'Goldküste (Afrika)', continent: 'afrika', isBoss: true, x: 47, y: 52, type: 'boss_quiz', neighbors: ['dakar', 'niger_delta', 'angola', 'hub_atlantic'] },
+  { id: 'niger_delta', name: 'Niger-Delta', x: 50, y: 58, type: 'wreck', neighbors: ['afrika_boss', 'angola', 'cape_town'] },
   { id: 'angola', name: 'Angola-Bucht', x: 49, y: 66, type: 'customs', neighbors: ['tristan', 'afrika_boss', 'niger_delta', 'cape_town'] },
-  { id: 'cape_town', name: 'Kap der Guten Hoffnung', x: 54, y: 78, type: 'port', neighbors: ['south_atlantic_sea', 'angola', 'madagascar', 'hub_indian'] },
+  { id: 'cape_town', name: 'Kap der Guten Hoffnung', x: 54, y: 78, type: 'port', neighbors: ['south_atlantic_sea', 'angola', 'tristan', 'madagascar', 'hub_indian'] },
 
   // OZEAN-DREHKREUZ 2: INDIK
-  { id: 'hub_indian', name: 'Indik-Drehkreuz (Malediven)', isHub: true, x: 67, y: 62, type: 'hub', neighbors: ['cape_town', 'madagascar', 'asien_boss', 'singapore', 'indonesia'] },
+  { id: 'hub_indian', name: 'Indik-Drehkreuz (Malediven)', isHub: true, x: 67, y: 62, type: 'hub', neighbors: ['cape_town', 'madagascar', 'zanzibar', 'asien_boss', 'ceylon', 'singapore', 'indonesia'] },
 
   // 5. INDISCHER OZEAN & ASIEN
   { id: 'madagascar', name: 'Straße von Mosambik', x: 58, y: 72, type: 'battle', neighbors: ['cape_town', 'zanzibar', 'hub_indian'] },
-  { id: 'zanzibar', name: 'Gewürzinsel Sansibar', x: 55, y: 62, type: 'treasure', neighbors: ['madagascar', 'asien_boss'] },
+  { id: 'zanzibar', name: 'Gewürzinsel Sansibar', x: 55, y: 62, type: 'treasure', neighbors: ['madagascar', 'asien_boss', 'hub_indian'] },
   { id: 'asien_boss', name: 'Goa / Indien (Asien)', continent: 'asien', isBoss: true, x: 70, y: 48, type: 'boss_quiz', neighbors: ['zanzibar', 'hub_indian', 'ceylon', 'bengal'] },
   { id: 'ceylon', name: 'Ceylon (Sri Lanka)', x: 73, y: 56, type: 'treasure', neighbors: ['asien_boss', 'hub_indian', 'malacca'] },
   { id: 'bengal', name: 'Golf von Bengalen', x: 75, y: 44, type: 'wreck', neighbors: ['asien_boss', 'malacca', 'hongkong'] },
   { id: 'malacca', name: 'Straße von Malakka', x: 78, y: 54, type: 'customs', neighbors: ['ceylon', 'bengal', 'singapore'] },
   { id: 'singapore', name: 'Singapur Reede', x: 80, y: 58, type: 'port', neighbors: ['malacca', 'hub_indian', 'hongkong', 'indonesia'] },
   { id: 'hongkong', name: 'Kanton / Hongkong', x: 81, y: 40, type: 'battle', neighbors: ['bengal', 'singapore', 'tokyo'] },
-  { id: 'tokyo', name: 'Edo / Tokio Bucht', x: 86, y: 34, type: 'treasure', neighbors: ['hongkong', 'north_pacific'] },
+  { id: 'tokyo', name: 'Edo / Tokio Bucht', x: 86, y: 34, type: 'treasure', neighbors: ['hongkong', 'north_pacific', 'hub_pacific'] },
 
   // 6. AUSTRALIEN & SÜDSEE
   { id: 'indonesia', name: 'Java-See', x: 82, y: 64, type: 'wind', neighbors: ['singapore', 'hub_indian', 'darwin', 'australia_boss'] },
-  { id: 'darwin', name: 'Arafura-See', x: 85, y: 66, type: 'flotsam', neighbors: ['indonesia', 'australia_boss'] },
+  { id: 'darwin', name: 'Arafura-See', x: 85, y: 66, type: 'flotsam', neighbors: ['indonesia', 'australia_boss', 'barrier_reef'] },
   { id: 'australia_boss', name: 'Sydney (Australien)', continent: 'australien', isBoss: true, x: 87, y: 74, type: 'boss_quiz', neighbors: ['indonesia', 'darwin', 'barrier_reef', 'new_zealand', 'hub_pacific'] },
-  { id: 'barrier_reef', name: 'Great Barrier Reef', x: 89, y: 64, type: 'wreck', neighbors: ['australia_boss', 'hub_pacific'] },
-  { id: 'new_zealand', name: 'Neuseeland Fjorde', x: 92, y: 82, type: 'treasure', neighbors: ['australia_boss', 'south_pacific_sea'] },
+  { id: 'barrier_reef', name: 'Great Barrier Reef', x: 89, y: 64, type: 'wreck', neighbors: ['australia_boss', 'darwin', 'hub_pacific'] },
+  { id: 'new_zealand', name: 'Neuseeland Fjorde', x: 92, y: 82, type: 'treasure', neighbors: ['australia_boss', 'south_pacific_sea', 'hub_pacific'] },
 
   // OZEAN-DREHKREUZ 3: PAZIFIK
-  { id: 'hub_pacific', name: 'Pazifik-Drehkreuz (Hawaii)', isHub: true, x: 14, y: 50, type: 'hub', neighbors: ['tokyo', 'north_pacific', 'australia_boss', 'barrier_reef', 'panama', 'san_francisco'] },
+  { id: 'hub_pacific', name: 'Pazifik-Drehkreuz (Hawaii)', isHub: true, x: 14, y: 50, type: 'hub', neighbors: ['tokyo', 'north_pacific', 'australia_boss', 'barrier_reef', 'new_zealand', 'panama', 'san_francisco', 'sa_boss', 'south_pacific_sea'] },
 
-  // 7. PAZIFIK-QUERUNG
-  { id: 'north_pacific', name: 'Nordpazifik-Route', x: 93, y: 35, type: 'wind', neighbors: ['tokyo', 'hub_pacific'] },
-  { id: 'san_francisco', name: 'San Francisco Bucht', x: 18, y: 34, type: 'treasure', neighbors: ['hub_pacific', 'na_boss'] },
+  // 7. PAZIFIK-QUERUNG (RUND UM DIE WELT!)
+  { id: 'north_pacific', name: 'Nordpazifik-Route', x: 93, y: 35, type: 'wind', neighbors: ['tokyo', 'hub_pacific', 'san_francisco'] },
+  { id: 'san_francisco', name: 'San Francisco Bucht', x: 18, y: 34, type: 'treasure', neighbors: ['hub_pacific', 'north_pacific', 'na_boss', 'panama'] },
   { id: 'south_pacific_sea', name: 'Südpazifik Sturm', x: 22, y: 82, type: 'danger', neighbors: ['hub_pacific', 'new_zealand', 'cape_horn'] }
 ];
 
@@ -1205,7 +1153,7 @@ const QUESTIONS = [
 ];
 
 /* ====================================================================
-   SPIEL ENGINE MIT TRAJEKTORIEN-VORSCHAU & ENDGAME
+   GAME ENGINE: INTERAKTIVE ROUTEN-VORSCHAU & KURS-WAHL
 ==================================================================== */
 const Game = {
   days: 1,
@@ -1278,23 +1226,13 @@ const Game = {
     document.getElementById('timer-text').innerText = '';
     document.getElementById('modal-content').innerHTML = `
       <div class="rules-content">
-        <div class="rules-section">
-          <strong>${t.rules1Title}</strong><br>${t.rules1Desc}
-        </div>
-        <div class="rules-section">
-          <strong>${t.rules2Title}</strong><br>${t.rules2Desc}
-        </div>
-        <div class="rules-section">
-          <strong>${t.rules3Title}</strong><br>${t.rules3Desc}
-        </div>
-        <div class="rules-section">
-          <strong>${t.rules4Title}</strong><br>${t.rules4Desc}
-        </div>
+        <div class="rules-section"><strong>${t.rules1Title}</strong><br>${t.rules1Desc}</div>
+        <div class="rules-section"><strong>${t.rules2Title}</strong><br>${t.rules2Desc}</div>
+        <div class="rules-section"><strong>${t.rules3Title}</strong><br>${t.rules3Desc}</div>
+        <div class="rules-section"><strong>${t.rules4Title}</strong><br>${t.rules4Desc}</div>
       </div>
     `;
-    document.getElementById('modal-actions').innerHTML = `
-      <button class="btn-close-modal" onclick="Game.closeModal()">${t.closeBtn}</button>
-    `;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${t.closeBtn}</button>`;
     modal.classList.add('active');
   },
 
@@ -1324,7 +1262,6 @@ const Game = {
     const curr = NODES.find(n => n.id === this.currentNode);
     const locBadge = document.getElementById('current-location');
 
-    // ENDGAME STATUS PRÜFUNG: Alle 6 Medaillons gesammelt?
     if (this.earnedMedals.size >= 6) {
       locBadge.classList.add('endgame-alert');
       locBadge.innerText = TXT[currentLang].endgameAlert;
@@ -1450,7 +1387,6 @@ const Game = {
           div.innerHTML = '⭐';
         }
 
-        // HAMBURG ZIEL-BEACON IM ENDGAME!
         if (n.id === 'eu_start' && this.earnedMedals.size >= 6) {
           div.classList.add('hamburg-goal');
           div.innerHTML = '🏁';
@@ -1495,7 +1431,7 @@ const Game = {
   },
 
   /* ====================================================================
-     KURS-WAHL VOR DEM WURF
+     KURS-WAHL MIT INTERAKTIVER VORSCHAU (BELIEBIG TESTBAR!)
   ==================================================================== */
   prepareCourseSelection() {
     this.selectedCourseNeighbor = null;
@@ -1519,17 +1455,26 @@ const Game = {
 
   handleNodeClick(clickedId) {
     const curr = NODES.find(n => n.id === this.currentNode);
+    // Klick auf einen Nachbarn setzt/wechselt den Kurs sofort interaktiv!
     if (curr.neighbors.includes(clickedId)) {
       document.querySelectorAll('.node-point').forEach(el => el.classList.remove('selectable-course'));
+      
+      // Nachbarn wieder als wählbar anzeigen, damit man den Kurs jederzeit ändern kann
+      curr.neighbors.forEach(nid => {
+        const el = document.getElementById('node-' + nid);
+        if (el) el.classList.add('selectable-course');
+      });
+
       this.selectedCourseNeighbor = clickedId;
 
       const chosenNode = NODES.find(n => n.id === clickedId);
-      const targetEl = document.getElementById('node-' + clickedId);
-      if (targetEl) targetEl.classList.add('selectable-course');
-
       const btnRoll = document.getElementById('btn-roll');
       btnRoll.disabled = false;
       btnRoll.innerText = TXT[currentLang].rollBtn + ` [Kurs: ${chosenNode.name.split('(')[0].trim()}]`;
+
+      // ROUTEN-VORSCHAU FÜR DEN GEWÄHLTEN KURS SOFORT ANZEIGEN (3 Schritte Vorschau)
+      const previewTraj = this.calculateTrajectory(clickedId, 3);
+      this.highlightTrajectory(previewTraj);
 
       Sound.play('step');
       this.setCaptainMood('normal', TXT[currentLang].rollPrompt);
@@ -1537,7 +1482,7 @@ const Game = {
   },
 
   /* ====================================================================
-     WÜRFELN MIT VOLLER SEEROUTEN-LANDEBAHN (BLINK-EFFEKT)
+     WÜRFELN MIT EXAKTER SEEROUTEN-TRAJEKTORIE
   ==================================================================== */
   rollDice() {
     if (!this.selectedCourseNeighbor) return;
@@ -1549,7 +1494,7 @@ const Game = {
     const cube = document.getElementById('dice-cube');
     arena.style.display = 'block';
 
-    // Volle 1 bis 4 Schritte
+    // Würfel rollt 1 bis 4 Schritte
     const steps = Math.floor(Math.random() * 4) + 1;
     this.diceResult = steps;
 
@@ -1564,10 +1509,8 @@ const Game = {
     const target = rotations[steps];
     cube.style.transform = `rotateX(${target.x + extraTurns}deg) rotateY(${target.y + extraTurns}deg)`;
 
-    // BERECHNE DIE EXAKTE SEEROUTE
+    // BERECHNE DIE FINALE SEEROUTE FÜR DIE GEWÜRFELTE SCHRITTANZAHL
     const trajectory = this.calculateTrajectory(this.selectedCourseNeighbor, steps);
-
-    // LANDEBAHN SOFORT AUFLEUCHTEN LASSEN!
     this.highlightTrajectory(trajectory);
 
     setTimeout(() => {
@@ -1587,7 +1530,6 @@ const Game = {
     this.rollDice();
   },
 
-  /* BERECHNET DIE GERADE ROUTE */
   calculateTrajectory(firstStepNodeId, totalSteps) {
     const path = [];
     let prevNode = NODES.find(n => n.id === this.currentNode);
@@ -1604,7 +1546,6 @@ const Game = {
     return path;
   },
 
-  /* BRINGT DIE GESAMTE SEEROUTE ZUM BLINKEN MIT SCHRITTNUMMERN! */
   highlightTrajectory(trajectory) {
     this.clearTrajectory();
     trajectory.forEach((item, idx) => {
@@ -1657,7 +1598,6 @@ const Game = {
     return bestNode;
   },
 
-  /* MULTI-STEP NAVIGATION ENTLANG DER BLINKENDEN ROUTE */
   executeMultiStepMovement(trajectory) {
     let currentIdx = 0;
 
@@ -1683,21 +1623,21 @@ const Game = {
   },
 
   /* ====================================================================
-     EREIGNIS-TRIGGER (DIREKTTREFFER-PFLICHT FÜR MEDAILLONS!)
+     EREIGNIS-TRIGGER (EXAKTER TREFFER FÜR MEDAILLONS!)
   ==================================================================== */
   triggerNodeEvent(node) {
-    // 1. ENDSPIEL-SIEG: Rückkehr nach Hamburg mit allen 6 Medaillons & >= 25 Gold
+    // 1. ENDSPIEL: Hamburg erreichen mit allen 6 Medaillons & >= 25 Gold
     if (node.id === 'eu_start' && this.earnedMedals.size >= 6 && this.gold >= 25) {
       this.triggerVictory();
       return;
     }
 
-    // 2. BOSS-QUIZ: NUR WENN MAN DIREKT DRAUF LANDET!
+    // 2. BOSS-QUIZ: NUR BEI DIREKTER PUNKTGELANDUNG!
     if (node.isBoss) {
       if (!this.earnedMedals.has(node.continent)) {
         this.openQuiz(node.continent);
       } else {
-        this.setCaptainMood('normal', 'Diesen Kontinent haben wir bereits erobert! Weiter nach vorn!');
+        this.setCaptainMood('normal', 'Diesen Kontinent haben wir bereits erobert! Neuer Kurs!');
         this.prepareCourseSelection();
       }
     } 
