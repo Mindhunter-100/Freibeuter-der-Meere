@@ -154,60 +154,71 @@
     pointer-events: none;
   }
   .route-line {
-    stroke: rgba(184, 134, 11, 0.75);
-    stroke-width: 3;
-    stroke-dasharray: 6 6;
+    stroke: rgba(184, 134, 11, 0.7);
+    stroke-width: 2.5;
+    stroke-dasharray: 4 4;
   }
 
+  /* REGULÄRE WEGPUNKTE (KLEIN, FEIN) */
   .node-point {
     position: absolute;
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     background: #2a1a08;
     border: 2px solid var(--gold);
     cursor: pointer;
-    box-shadow: 0 0 12px rgba(0,0,0,0.9);
+    box-shadow: 0 0 10px rgba(0,0,0,0.85);
     transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 13px;
     z-index: 12;
   }
-  /* KONTINENT STATUS EFFEKTE */
-  .node-point.missing-continent {
+
+  /* RIESIGE BOSS-MEDAILLON-KNOTENPUNKTE */
+  .node-point.boss-node {
+    width: 52px;
+    height: 52px;
+    border-width: 3.5px;
+    font-size: 24px;
+    z-index: 18;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+  .node-point.boss-node.missing-continent {
     border-color: #ffd700;
-    box-shadow: 0 0 15px #ffd700;
-    animation: beaconPulse 1.2s infinite alternate;
+    background: radial-gradient(circle, #5a1a00, #200700);
+    animation: bossPulse 1.2s infinite alternate;
   }
-  @keyframes beaconPulse {
-    from { transform: translate(-50%, -50%) scale(1.0); }
-    to { transform: translate(-50%, -50%) scale(1.25); box-shadow: 0 0 25px #ffd700; }
+  @keyframes bossPulse {
+    from { transform: translate(-50%, -50%) scale(1.0); box-shadow: 0 0 15px #ffd700; }
+    to { transform: translate(-50%, -50%) scale(1.22); box-shadow: 0 0 35px #ffaa00; }
   }
-  .node-point.completed-continent {
+  .node-point.boss-node.completed-continent {
     border-color: #00ff66;
-    background: #003311;
-    box-shadow: 0 0 8px #00ff66;
+    background: radial-gradient(circle, #004d20, #001f0c);
+    box-shadow: 0 0 20px #00ff66;
   }
+
   .node-point.selectable-course {
     border-color: #00ffff;
     background: #004455;
     animation: pulseCourse 0.8s infinite alternate;
   }
   @keyframes pulseCourse {
-    from { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 10px #00ffff; }
+    from { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 10px #00ffff; }
     to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffff; }
   }
 
   /* SHIP */
   #ship-wrapper {
     position: absolute;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     transform: translate(-50%, -50%);
-    transition: left 0.65s cubic-bezier(0.25, 1, 0.5, 1), top 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: left 0.55s cubic-bezier(0.25, 1, 0.5, 1), top 0.55s cubic-bezier(0.25, 1, 0.5, 1);
     pointer-events: none;
     z-index: 25;
   }
@@ -356,7 +367,7 @@
   }
   .btn-shop:hover { background: linear-gradient(180deg, #3f682a, #1f3f10); }
 
-  /* BOTTOM STECKBRETT MIT BESCHRIFTUNG */
+  /* BOTTOM STECKBRETT */
   #bottom-hud {
     height: 145px;
     background: url('board.png') center/cover no-repeat #1b120c;
@@ -399,10 +410,7 @@
     color: var(--parchment);
     text-shadow: 0 1px 3px #000;
   }
-  .medal-status {
-    font-size: 8px;
-    font-weight: bold;
-  }
+  .medal-status { font-size: 8px; font-weight: bold; }
   .medal-status.missing { color: #ff6b6b; }
   .medal-status.earned { color: #51cf66; }
 
@@ -536,9 +544,7 @@
   .static-dice.enemy { background: #8b0000; color: #fff; border-color: #ffd700; }
 
   /* 50:50 PROMINENT JOKER BUTTON */
-  .joker-banner {
-    margin: 10px 0 14px 0;
-  }
+  .joker-banner { margin: 10px 0 14px 0; }
   .btn-joker-prominent {
     background: linear-gradient(180deg, #6a0dad, #38006b);
     border: 2px solid var(--gold);
@@ -659,7 +665,7 @@
   <div id="main-screen" class="screen">
     <div id="top-hud">
       <div class="hud-stats">
-        <div><span id="lbl-port">📍 HAFEN:</span> <span id="current-location" class="hud-badge">HAMBURG / LISSABON</span></div>
+        <div><span id="lbl-port">📍 HAFEN:</span> <span id="current-location" class="hud-badge">HAMBURG (EUROPA)</span></div>
         <div><span id="lbl-days">⏳ REISETAG:</span> <span id="travel-days" class="hud-badge">1 / 30</span></div>
         <div><span id="lbl-gold">💰 GOLDPINS:</span> <span id="gold-count" class="hud-badge">10 / 50</span></div>
       </div>
@@ -723,9 +729,9 @@
         <div id="captain-avatar"></div>
         
         <div id="inventory-bar">
-          <div id="inv-knife" class="inv-item" title="Damaszener-Messer: +1 im Kampf">🔪 <span>-</span></div>
-          <div id="inv-truffle" class="inv-item" title="Trüffel-Joker (50:50 im Quiz)">🧂 <span id="cnt-truffle">0</span></div>
-          <div id="inv-rum" class="inv-item" title="Fass Rum (Schutz vor Sturm)">🥃 <span id="cnt-rum">0</span></div>
+          <div id="inv-knife" class="inv-item" title="Damaszener-Messer: +1 im Kampf & schützt bei Wracks">🔪 <span>-</span></div>
+          <div id="inv-truffle" class="inv-item" title="Trüffel-Joker (50:50 im Quiz & Monster-Bestechung)">🧂 <span id="cnt-truffle">0</span></div>
+          <div id="inv-rum" class="inv-item" title="Fass Rum (Schutz vor Sturm, Kraken & Zoll)">🥃 <span id="cnt-rum">0</span></div>
           <div id="inv-compass" class="inv-item" title="Gewürz-Kompass (Reroll)">🧭 <span id="cnt-compass">0</span></div>
         </div>
 
@@ -834,11 +840,11 @@ const TXT = {
     shopTitle: "🏴‍☠️ STEFANS KOMBÜSEN-SCHWARZMARKT",
     shopDesc: "Rüste dein Schiff auf! Gold ist zum Ausgeben da, mein Freund!",
     knifeName: "🔪 Damaszener-Messer",
-    knifeDesc: "Dauerhafter Bonus: +1 auf jeden Würfelwurf in Seeschlachten!",
+    knifeDesc: "Bonus: +1 bei Battles & birgt Schätze bei Wracks (+6 Gold)!",
     truffleName: "🧂 Trüffel-Joker",
-    truffleDesc: "Löscht im Quiz zwei falsche Antworten weg (50:50)!",
+    truffleDesc: "Löscht im Quiz 2 falsche Antworten (50:50) oder besänftigt Monster!",
     rumName: "🥃 Fass Hochsee-Rum",
-    rumDesc: "Löscht Brände: Schützt dich automatisch vor Goldverlust bei Havarie!",
+    rumDesc: "Löscht Brände, besticht Zollschiffe & wehrt Kraken ab!",
     compassName: "🧭 Gewürz-Kompass",
     compassDesc: "Erlaubt dir auf hoher See einen zweiten Würfelwurf!",
     buyBtn: "Kaufen",
@@ -846,11 +852,11 @@ const TXT = {
     jokerBtn: "🧂 50:50 TRÜFFEL-JOKER EINSETZEN",
     rulesTitle: "📜 DIE FREIBEUTER-REGELN",
     rules1Title: "1. Das große Ziel",
-    rules1Desc: "Bereise die Weltkarte, sammle alle 6 Kontinent-Medaillons durch Quizfragen ein und kehre mit mindestens 25 Gold-Pins vor Ablauf von 30 Tagen in den Heimathafen zurück!",
-    rules2Title: "2. Kurs-Wahl & Würfeln",
-    rules2Desc: "Wähle ZUERST auf der Karte deine Fahrtrichtung. Dann würfelst du und dein Schiff segelt genau diese Schrittanzahl vorwärts! Pass auf: Liegt ein Sturm auf deinem Kurs, triffst du ihn!",
-    rules3Title: "3. Der Schwarzmarkt",
-    rules3Desc: "Kombüsen-Messer geben +1 im Kampf, Trüffel halbieren falsche Antworten im Quiz (50:50) und Rum rettet dein Gold bei Havarien!"
+    rules1Desc: "Bereise die Weltkarte, erobere alle 6 riesigen Kontinent-Medaillons durch Quizfragen und kehre mit mindestens 25 Gold-Pins vor Ablauf von 30 Tagen nach Hamburg zurück!",
+    rules2Title: "2. Kurs-Wahl & Seeweg-Stationen",
+    rules2Desc: "Wähle ZUERST auf der Karte deine Route. Dann würfelst du und dein Schiff segelt Schritt für Schritt vorwärts. Pass auf: Kraken, Wracks, Zollschiffe und Stürme lauern auf See!",
+    rules3Title: "3. Ausrüstung & Abwehr",
+    rules3Desc: "Messer bergen Wrackschätze (+6 Gold). Rum wehrt Kraken & Zoll ab. Trüffel halbieren falsche Antworten im Quiz (50:50)!"
   },
   en: {
     startBtn: "Set Sail & Start Voyage!",
@@ -858,7 +864,7 @@ const TXT = {
     days: "⏳ DAY:",
     gold: "💰 GOLD PINS:",
     rules: "Rules",
-    selectCoursePrompt: "Set sails! Click an adjacent waypoint on the map to set your course!",
+    selectCoursePrompt: "Set sails! Click an adjacent route on the map to set your course!",
     rollPrompt: "Course set! Now roll the dice!",
     rollBtn: "🎲 Roll Wind & Dice",
     rerollBtn: "🧭 Reroll Dice (Compass)",
@@ -877,11 +883,11 @@ const TXT = {
     shopTitle: "🏴‍☠️ STEFAN'S GALLEY BLACK MARKET",
     shopDesc: "Upgrade your vessel! Gold is meant to be spent, mate!",
     knifeName: "🔪 Damascus Chef Knife",
-    knifeDesc: "Permanent perk: +1 to your dice roll in all sea battles!",
+    knifeDesc: "Bonus: +1 in Battles & salvages wrecks (+6 Gold)!",
     truffleName: "🧂 Truffle Joker",
-    truffleDesc: "Eliminates two incorrect options in the trivia quiz (50:50)!",
+    truffleDesc: "Eliminates 2 wrong quiz options (50:50) or appeases sea monsters!",
     rumName: "🥃 Cask of Navy Rum",
-    rumDesc: "Extinguishes fires: Automatically shields you from gold loss on hazard nodes!",
+    rumDesc: "Extinguishes fires, bribes customs & fends off the Kraken!",
     compassName: "🧭 Spice Compass",
     compassDesc: "Allows a second dice roll attempt on the open seas!",
     buyBtn: "Buy",
@@ -889,11 +895,11 @@ const TXT = {
     jokerBtn: "🧂 USE 50:50 TRUFFLE JOKER",
     rulesTitle: "📜 PIRATE EXPEDITION RULES",
     rules1Title: "1. The Grand Objective",
-    rules1Desc: "Circumnavigate the globe, earn all 6 continent medallions through culinary trivia, and return to home port with at least 25 gold pins within 30 days!",
+    rules1Desc: "Circumnavigate the globe, claim all 6 giant continent medallions via culinary trivia, and return to Hamburg with 25+ gold within 30 days!",
     rules2Title: "2. Direction & Sailing",
-    rules2Desc: "FIRST choose your direction by clicking an adjacent route. Then roll the dice to advance that exact number of waypoints along the route!",
-    rules3Title: "3. The Black Market",
-    rules3Desc: "Damascus knives grant +1 in battles, truffles provide 50:50 quiz lifelines, and rum casks protect your gold during disasters!"
+    rules2Desc: "FIRST choose your direction by clicking an adjacent route. Then roll the dice to advance step-by-step. Beware of krakens, wrecks, customs, and storms!",
+    rules3Title: "3. Gear & Countermeasures",
+    rules3Desc: "Knives salvage shipwrecks (+6 Gold). Rum repels the Kraken & customs. Truffles offer 50:50 quiz lifelines!"
   }
 };
 
@@ -1016,23 +1022,72 @@ const Sound = {
 };
 
 /* ====================================================================
-   WELTKARTE MIT ROUTEN-NETZWERK
+   DAS ERWEITERTE WELTKARTEN-NETZWERK (45 STATIONEN!)
 ==================================================================== */
 const NODES = [
-  { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', x: 48, y: 28, type: 'port', neighbors: ['nordatlantik', 'westafrika'] },
-  { id: 'nordatlantik', name: 'Nordatlantik', continent: 'europa', x: 34, y: 26, type: 'battle', neighbors: ['eu_start', 'nordamerika', 'karibik'] },
-  { id: 'nordamerika', name: 'New York / Boston', continent: 'nordamerika', x: 23, y: 32, type: 'quiz', neighbors: ['nordatlantik', 'karibik', 'pazifik_nord'] },
-  { id: 'karibik', name: 'Karibik (Tortuga)', continent: 'nordamerika', x: 26, y: 46, type: 'treasure', neighbors: ['nordatlantik', 'nordamerika', 'suedamerika'] },
-  { id: 'pazifik_nord', name: 'Nordpazifik', continent: 'nordamerika', x: 12, y: 35, type: 'gamble', neighbors: ['nordamerika', 'asien_ost'] },
-  { id: 'suedamerika', name: 'Peru / Amazonien', continent: 'suedamerika', x: 30, y: 64, type: 'quiz', neighbors: ['karibik', 'kap_hoorn', 'suedatlantik'] },
-  { id: 'kap_hoorn', name: 'Kap Hoorn', continent: 'suedamerika', x: 26, y: 84, type: 'danger', neighbors: ['suedamerika', 'suedatlantik', 'australien'] },
-  { id: 'westafrika', name: 'Elfenbeinküste', continent: 'afrika', x: 47, y: 48, type: 'quiz', neighbors: ['eu_start', 'suedatlantik', 'kap_stadt'] },
-  { id: 'suedatlantik', name: 'Südatlantik', continent: 'afrika', x: 40, y: 72, type: 'treasure', neighbors: ['suedamerika', 'kap_hoorn', 'westafrika', 'kap_stadt'] },
-  { id: 'kap_stadt', name: 'Kap der Guten Hoffnung', continent: 'afrika', x: 54, y: 76, type: 'battle', neighbors: ['westafrika', 'suedatlantik', 'indischer_ozean'] },
-  { id: 'indischer_ozean', name: 'Indischer Ozean', continent: 'asien', x: 67, y: 60, type: 'gamble', neighbors: ['kap_stadt', 'asien_sued', 'australien'] },
-  { id: 'asien_sued', name: 'Indien / Gewürzstraße', continent: 'asien', x: 71, y: 46, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost'] },
-  { id: 'asien_ost', name: 'Kanton / Tokio', continent: 'asien', x: 82, y: 36, type: 'treasure', neighbors: ['asien_sued', 'pazifik_nord', 'australien'] },
-  { id: 'australien', name: 'Sydney / Korallenmeer', continent: 'australien', x: 86, y: 72, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost', 'kap_hoorn'] }
+  // 1. EUROPA & START
+  { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', isBoss: true, x: 48, y: 28, type: 'boss_quiz', neighbors: ['channel', 'canaries', 'north_atlantic_1'] },
+  { id: 'channel', name: 'Ärmelkanal', x: 44, y: 24, type: 'wind', neighbors: ['eu_start', 'north_atlantic_1'] },
+  { id: 'north_atlantic_1', name: 'Große Neufundlandbank', x: 38, y: 24, type: 'wreck', neighbors: ['channel', 'eu_start', 'newfoundland'] },
+  { id: 'newfoundland', name: 'Neufundland Nebelmeer', x: 32, y: 25, type: 'battle', neighbors: ['north_atlantic_1', 'boston'] },
+  { id: 'boston', name: 'Boston Reede', x: 27, y: 28, type: 'flotsam', neighbors: ['newfoundland', 'na_boss'] },
+
+  // 2. NORDAMERIKA (BOSS)
+  { id: 'na_boss', name: 'New York (Nordamerika)', continent: 'nordamerika', isBoss: true, x: 23, y: 32, type: 'boss_quiz', neighbors: ['boston', 'bermuda', 'carib_1'] },
+  { id: 'bermuda', name: 'Bermuda-Dreieck', x: 28, y: 38, type: 'danger', neighbors: ['na_boss', 'carib_1', 'azores'] },
+  { id: 'azores', name: 'Azoren-Stützpunkt', x: 38, y: 35, type: 'treasure', neighbors: ['bermuda', 'canaries'] },
+  { id: 'canaries', name: 'Kanarische Inseln', x: 45, y: 38, type: 'customs', neighbors: ['azores', 'eu_start', 'dakar'] },
+  { id: 'carib_1', name: 'Bahamas-Passage', x: 23, y: 41, type: 'wind', neighbors: ['na_boss', 'bermuda', 'tortuga'] },
+  { id: 'tortuga', name: 'Tortuga (Piratenbucht)', x: 26, y: 46, type: 'port', neighbors: ['carib_1', 'panama', 'sa_north'] },
+  { id: 'panama', name: 'Panama Isthmus', x: 22, y: 52, type: 'treasure', neighbors: ['tortuga', 'sa_boss', 'pacific_mid'] },
+
+  // 3. SÜDAMERIKA (BOSS)
+  { id: 'sa_north', name: 'Orinoco Mündung', x: 30, y: 54, type: 'wreck', neighbors: ['tortuga', 'sa_boss', 'recife'] },
+  { id: 'sa_boss', name: 'Peru / Amazonien', continent: 'suedamerika', isBoss: true, x: 29, y: 64, type: 'boss_quiz', neighbors: ['panama', 'sa_north', 'chile', 'recife'] },
+  { id: 'recife', name: 'Recife Kap', x: 37, y: 62, type: 'wind', neighbors: ['sa_north', 'sa_boss', 'rio'] },
+  { id: 'rio', name: 'Rio de Janeiro', x: 34, y: 72, type: 'treasure', neighbors: ['recife', 'patagonia', 'south_atlantic_sea'] },
+  { id: 'chile', name: 'Humboldt-Strom', x: 26, y: 74, type: 'flotsam', neighbors: ['sa_boss', 'cape_horn'] },
+  { id: 'patagonia', name: 'Patagonische Küste', x: 28, y: 80, type: 'battle', neighbors: ['rio', 'cape_horn'] },
+  { id: 'cape_horn', name: 'Kap Hoorn (Sturmwinde)', x: 26, y: 86, type: 'danger', neighbors: ['chile', 'patagonia', 'south_atlantic_sea', 'antarctica_pass'] },
+  { id: 'antarctica_pass', name: 'Drake-Passage', x: 32, y: 90, type: 'kraken', neighbors: ['cape_horn', 'south_atlantic_sea'] },
+
+  // 4. SÜDATLANTIK & AFRIKA
+  { id: 'south_atlantic_sea', name: 'Südatlantik Weite', x: 42, y: 76, type: 'wind', neighbors: ['rio', 'cape_horn', 'antarctica_pass', 'tristan', 'cape_town'] },
+  { id: 'tristan', name: 'Tristan da Cunha', x: 40, y: 68, type: 'treasure', neighbors: ['south_atlantic_sea', 'dakar', 'angola'] },
+  { id: 'dakar', name: 'Dakar / Elfenbeinküste', x: 44, y: 48, type: 'port', neighbors: ['canaries', 'tristan', 'afrika_boss'] },
+  { id: 'afrika_boss', name: 'Goldküste (Afrika)', continent: 'afrika', isBoss: true, x: 47, y: 52, type: 'boss_quiz', neighbors: ['dakar', 'niger_delta', 'angola'] },
+  { id: 'niger_delta', name: 'Niger-Delta', x: 50, y: 58, type: 'wreck', neighbors: ['afrika_boss', 'angola'] },
+  { id: 'angola', name: 'Angola-Bucht', x: 49, y: 66, type: 'customs', neighbors: ['tristan', 'afrika_boss', 'niger_delta', 'cape_town'] },
+  { id: 'cape_town', name: 'Kap der Guten Hoffnung', x: 54, y: 78, type: 'port', neighbors: ['south_atlantic_sea', 'angola', 'madagascar', 'indian_ocean_1'] },
+
+  // 5. INDISCHER OZEAN & ASIEN
+  { id: 'madagascar', name: 'Straße von Mosambik', x: 58, y: 72, type: 'battle', neighbors: ['cape_town', 'zanzibar', 'indian_ocean_1'] },
+  { id: 'zanzibar', name: 'Gewürzinsel Sansibar', x: 55, y: 62, type: 'treasure', neighbors: ['madagascar', 'arabian_sea'] },
+  { id: 'indian_ocean_1', name: 'Indischer Ozean Riff', x: 64, y: 68, type: 'kraken', neighbors: ['cape_town', 'madagascar', 'maldives'] },
+  { id: 'arabian_sea', name: 'Arabisches Meer', x: 63, y: 52, type: 'wind', neighbors: ['zanzibar', 'asien_boss', 'maldives'] },
+  { id: 'maldives', name: 'Malediven Atolle', x: 68, y: 58, type: 'flotsam', neighbors: ['indian_ocean_1', 'arabian_sea', 'asien_boss', 'ceylon'] },
+  { id: 'asien_boss', name: 'Goa / Indien (Asien)', continent: 'asien', isBoss: true, x: 70, y: 48, type: 'boss_quiz', neighbors: ['arabian_sea', 'maldives', 'ceylon', 'bengal'] },
+  { id: 'ceylon', name: 'Ceylon (Sri Lanka)', x: 73, y: 56, type: 'treasure', neighbors: ['maldives', 'asien_boss', 'malacca'] },
+  { id: 'bengal', name: 'Golf von Bengalen', x: 75, y: 44, type: 'wreck', neighbors: ['asien_boss', 'malacca', 'hongkong'] },
+  { id: 'malacca', name: 'Straße von Malakka', x: 78, y: 54, type: 'customs', neighbors: ['ceylon', 'bengal', 'singapore'] },
+  { id: 'singapore', name: 'Singapur Reede', x: 80, y: 58, type: 'port', neighbors: ['malacca', 'hongkong', 'indonesia'] },
+  { id: 'hongkong', name: 'Kanton / Hongkong', x: 81, y: 40, type: 'battle', neighbors: ['bengal', 'singapore', 'tokyo'] },
+  { id: 'tokyo', name: 'Edo / Tokio Bucht', x: 86, y: 34, type: 'treasure', neighbors: ['hongkong', 'north_pacific'] },
+
+  // 6. AUSTRALIEN & SÜDSEE
+  { id: 'indonesia', name: 'Java-See', x: 82, y: 64, type: 'wind', neighbors: ['singapore', 'darwin', 'australia_boss'] },
+  { id: 'darwin', name: 'Arafura-See', x: 85, y: 66, type: 'flotsam', neighbors: ['indonesia', 'australia_boss'] },
+  { id: 'australia_boss', name: 'Sydney (Australien)', continent: 'australien', isBoss: true, x: 87, y: 74, type: 'boss_quiz', neighbors: ['indonesia', 'darwin', 'barrier_reef', 'new_zealand'] },
+  { id: 'barrier_reef', name: 'Great Barrier Reef', x: 89, y: 64, type: 'wreck', neighbors: ['australia_boss', 'south_pacific_islands'] },
+  { id: 'new_zealand', name: 'Neuseeland Fjorde', x: 92, y: 82, type: 'treasure', neighbors: ['australia_boss', 'south_pacific_sea'] },
+
+  // 7. PAZIFIK-QUERUNG (RUND UM DIE WELT!)
+  { id: 'north_pacific', name: 'Nordpazifik-Route', x: 93, y: 35, type: 'wind', neighbors: ['tokyo', 'hawaii'] },
+  { id: 'hawaii', name: 'Königreich Hawaii', x: 12, y: 42, type: 'port', neighbors: ['north_pacific', 'san_francisco', 'south_pacific_islands'] },
+  { id: 'san_francisco', name: 'San Francisco Bucht', x: 18, y: 34, type: 'treasure', neighbors: ['hawaii', 'na_boss'] },
+  { id: 'south_pacific_islands', name: 'Tahiti / Südsee', x: 15, y: 60, type: 'flotsam', neighbors: ['hawaii', 'barrier_reef', 'pacific_mid'] },
+  { id: 'pacific_mid', name: 'Osterinsel Weiten', x: 18, y: 72, type: 'kraken', neighbors: ['south_pacific_islands', 'panama', 'south_pacific_sea'] },
+  { id: 'south_pacific_sea', name: 'Südpazifik Sturm', x: 22, y: 82, type: 'danger', neighbors: ['pacific_mid', 'new_zealand', 'cape_horn'] }
 ];
 
 /* FRAGEN-BATTERIE */
@@ -1071,14 +1126,14 @@ const QUESTIONS = [
 ];
 
 /* ====================================================================
-   SPIEL ENGINE MIT ECHTER KURS-WAHL & WÜRFELSCHRITTEN
+   SPIEL ENGINE MIT VERZWEIGTEM 45-STATIONEN-SYSTEM
 ==================================================================== */
 const Game = {
   days: 1,
   maxDays: 30,
   gold: 10,
   currentNode: 'eu_start',
-  selectedCourseNeighbor: null, // Vor dem Wurf gewählter Kurs
+  selectedCourseNeighbor: null,
   diceResult: 0,
   earnedMedals: new Set(),
   activeTimer: null,
@@ -1127,6 +1182,7 @@ const Game = {
     if (this.isPaused) {
       document.getElementById('modal-title').innerText = TXT[currentLang].paused;
       document.getElementById('timer-bar').style.width = '0%';
+      document.getElementById('timer-text').innerText = '';
       document.getElementById('modal-content').innerHTML = `<p style="font-size:16px; margin:20px 0;">${TXT[currentLang].pausedDesc}</p>`;
       document.getElementById('modal-actions').innerHTML = `<button class="btn-epic" style="font-size:16px; padding:10px 30px;" onclick="Game.togglePause()">${TXT[currentLang].resumeBtn}</button>`;
       modal.classList.add('active');
@@ -1140,6 +1196,7 @@ const Game = {
     const t = TXT[currentLang];
     document.getElementById('modal-title').innerText = t.rulesTitle;
     document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
     document.getElementById('modal-content').innerHTML = `
       <div class="rules-content">
         <div class="rules-section">
@@ -1169,7 +1226,6 @@ const Game = {
       rack.appendChild(pin);
     }
 
-    // Medaillen-Status Beschriftung aktualisieren
     ['europa', 'asien', 'afrika', 'nordamerika', 'suedamerika', 'australien'].forEach(c => {
       const stEl = document.getElementById('st-' + c);
       const isEarned = this.earnedMedals.has(c);
@@ -1268,6 +1324,7 @@ const Game = {
     svg.innerHTML = '';
     container.innerHTML = '';
 
+    // Linien zeichnen
     NODES.forEach(n => {
       n.neighbors.forEach(nid => {
         const target = NODES.find(t => t.id === nid);
@@ -1283,6 +1340,7 @@ const Game = {
       });
     });
 
+    // Knotenpunkte zeichnen
     NODES.forEach(n => {
       const div = document.createElement('div');
       div.className = 'node-point';
@@ -1291,18 +1349,30 @@ const Game = {
       div.style.top = `${n.y}%`;
       div.title = n.name;
 
-      // Visuelle Kennzeichnung fehlend vs. geholt
-      if (n.type === 'quiz') {
+      // 1. BOSS-KONTINENT-FELDER (RIESIG!)
+      if (n.isBoss) {
+        div.classList.add('boss-node');
         const earned = this.earnedMedals.has(n.continent);
         if (earned) {
           div.classList.add('completed-continent');
-          div.innerHTML = '✅';
+          div.innerHTML = '👑';
         } else {
           div.classList.add('missing-continent');
-          div.innerHTML = '❓';
+          div.innerHTML = '⭐';
         }
-      } else {
-        div.innerHTML = n.type === 'battle' ? '⚔️' : n.type === 'treasure' ? '💰' : n.type === 'danger' ? '💀' : '🧭';
+      } 
+      // 2. DYNAMISCHE EREIGNIS-FELDER
+      else {
+        if (n.type === 'battle') div.innerHTML = '⚔️';
+        else if (n.type === 'treasure') div.innerHTML = '💰';
+        else if (n.type === 'danger') div.innerHTML = '💀';
+        else if (n.type === 'kraken') div.innerHTML = '🐙';
+        else if (n.type === 'wind') div.innerHTML = '💨';
+        else if (n.type === 'wreck') div.innerHTML = '🔪';
+        else if (n.type === 'customs') div.innerHTML = '⚓';
+        else if (n.type === 'flotsam') div.innerHTML = '📦';
+        else if (n.type === 'port') div.innerHTML = '🏠';
+        else div.innerHTML = '🧭';
       }
 
       div.onclick = () => this.handleNodeClick(n.id);
@@ -1328,13 +1398,13 @@ const Game = {
   },
 
   /* ====================================================================
-     KURS-WAHL VOR DEM WURF (NAVIGATIONS-ENGINE)
+     KURS-WAHL VOR DEM WURF
   ==================================================================== */
   prepareCourseSelection() {
     this.selectedCourseNeighbor = null;
     const btnRoll = document.getElementById('btn-roll');
     btnRoll.disabled = true;
-    btnRoll.innerText = '🧭 ' + (currentLang === 'de' ? 'Wähle erst deinen Kurs!' : 'Choose your course first!');
+    btnRoll.innerText = '🧭 ' + (currentLang === 'de' ? 'Wähle erst deinen Kurs!' : 'Choose course first!');
 
     const curr = NODES.find(n => n.id === this.currentNode);
     curr.neighbors.forEach(nid => {
@@ -1347,7 +1417,6 @@ const Game = {
 
   handleNodeClick(clickedId) {
     const curr = NODES.find(n => n.id === this.currentNode);
-    // Klick auf Nachbarn wählt den Kurs VOR dem Wurf
     if (curr.neighbors.includes(clickedId)) {
       document.querySelectorAll('.node-point').forEach(el => el.classList.remove('selectable-course'));
       this.selectedCourseNeighbor = clickedId;
@@ -1358,7 +1427,7 @@ const Game = {
 
       const btnRoll = document.getElementById('btn-roll');
       btnRoll.disabled = false;
-      btnRoll.innerText = TXT[currentLang].rollBtn + ` [Kurs: ${chosenNode.name.split('/')[0]}]`;
+      btnRoll.innerText = TXT[currentLang].rollBtn + ` [Kurs: ${chosenNode.name.split('(')[0].trim()}]`;
 
       Sound.play('step');
       this.setCaptainMood('normal', TXT[currentLang].rollPrompt);
@@ -1375,7 +1444,6 @@ const Game = {
     const cube = document.getElementById('dice-cube');
     arena.style.display = 'block';
 
-    // Schritte: 1 bis 3 (perfekt kalkuliert für echte Schiffsreisen)
     const steps = Math.floor(Math.random() * 3) + 1;
     this.diceResult = steps;
 
@@ -1405,7 +1473,7 @@ const Game = {
     this.rollDice();
   },
 
-  /* ZIEHT FELDER GENAU ENTLANG DER GEWÄHLTEN ROUTE VORWÄRTS */
+  /* MULTI-STEP NAVIGATION ENTLANG DER ROUTE */
   executeMultiStepMovement(firstStepNodeId, totalSteps) {
     let currentStep = 0;
     let prevNodeId = this.currentNode;
@@ -1426,24 +1494,50 @@ const Game = {
           this.triggerNodeEvent(NODES.find(n => n.id === this.currentNode));
         }, 500);
       } else {
-        // Nächsten Knoten entlang der Reiseroute suchen
         const currNode = NODES.find(n => n.id === nextNodeId);
         const furtherNodes = currNode.neighbors.filter(id => id !== prevNodeId);
         prevNodeId = nextNodeId;
         nextNodeId = furtherNodes.length > 0 ? furtherNodes[0] : currNode.neighbors[0];
       }
-    }, 700);
+    }, 600);
   },
 
+  /* ====================================================================
+     DAS NEUE DYNAMISCHE EREIGNISSYSTEM
+  ==================================================================== */
   triggerNodeEvent(node) {
+    // Siegprüfung in Hamburg
     if (node.id === 'eu_start' && this.earnedMedals.size >= 6 && this.gold >= 25) {
       this.triggerVictory();
       return;
     }
 
-    if (node.type === 'quiz') {
+    // 1. BOSS QUIZ
+    if (node.isBoss) {
       this.openQuiz(node.continent);
-    } else if (node.type === 'battle') {
+    } 
+    // 2. KRAKEN ANGRIFF (Rum schützt!)
+    else if (node.type === 'kraken') {
+      this.openKraken();
+    }
+    // 3. PASSATWIND (2 Schritte vorwärts!)
+    else if (node.type === 'wind') {
+      this.openWind();
+    }
+    // 4. SCHIFFSWRACK (Messer bringt Beute!)
+    else if (node.type === 'wreck') {
+      this.openWreck();
+    }
+    // 5. ZOLLSCHIFF (Bestechung oder Gold)
+    else if (node.type === 'customs') {
+      this.openCustoms();
+    }
+    // 6. TREIBGUT / FLASCHENPOST
+    else if (node.type === 'flotsam') {
+      this.openFlotsam();
+    }
+    // 7. KLASSISCHE FELDER
+    else if (node.type === 'battle') {
       this.openBattle();
     } else if (node.type === 'treasure') {
       this.openTreasure();
@@ -1456,6 +1550,161 @@ const Game = {
     }
   },
 
+  /* NEUES EVENT: 🐙 KRAKEN */
+  openKraken() {
+    const modal = document.getElementById('event-modal');
+    document.getElementById('modal-title').innerText = '🐙 KRAKEN-ANGRIFF!';
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
+
+    if (this.rum > 0) {
+      this.rum--;
+      this.updateHUD();
+      this.renderSteckbrett();
+      Sound.play('win');
+      this.setCaptainMood('win', currentLang === 'de' ? 'Das Ungeheuer hat das Rumfass verschlungen und schläft selig auf dem Meeresgrund!' : 'The monster drank the rum cask and fell asleep!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2 style="color:green;">🥃 MONSTER BESÄNFTIGT!</h2>
+        <p>${currentLang === 'de' ? 'Du wirfst dem Riesen-Kraken ein <strong>Fass Rum</strong> ins Maul! Er taucht ab – Schiff gerettet!' : 'You fed the beast a cask of rum! Ship saved!'}</p>
+      `;
+    } else {
+      this.triggerDamageEffect();
+      const loss = 5;
+      this.gold = Math.max(0, this.gold - loss);
+      this.updateHUD();
+      this.renderSteckbrett();
+      this.setCaptainMood('burn', currentLang === 'de' ? 'Tentakel zerschmettern die Reling! Wertvolle Vorräte sind im Meer versunken!' : 'Tentacles crushed our rails! Supplies lost!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2>🐙 SCHWERER SCHADEN!</h2>
+        <p>${currentLang === 'de' ? 'Ohne Rum zur Abwehr raubt der Krake <strong>-5 Goldpins</strong>!' : 'Without rum, the kraken crushed <strong>-5 gold pins</strong>!'}</p>
+      `;
+    }
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
+    modal.classList.add('active');
+  },
+
+  /* NEUES EVENT: 💨 PASSATWIND */
+  openWind() {
+    const modal = document.getElementById('event-modal');
+    document.getElementById('modal-title').innerText = '💨 PASSAT-STURMWIND!';
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
+    Sound.play('win');
+    this.setCaptainMood('win', currentLang === 'de' ? 'Volle Fahrt voraus! Die Brise bläst uns direkt in die Segel!' : 'Full speed ahead! Fair winds blow us forward!');
+
+    document.getElementById('modal-content').innerHTML = `
+      <h2 style="color:gold;">💨 GÜNSTIGE STRÖMUNG!</h2>
+      <p>${currentLang === 'de' ? 'Ein stürmischer Passatwind treibt dich sofort <strong>+2 Felder extra</strong> voran!' : 'Favorable trade winds push you <strong>+2 nodes ahead</strong>!'}</p>
+    `;
+
+    document.getElementById('modal-actions').innerHTML = `
+      <button class="btn-epic" style="font-size:16px; padding:10px 30px;" onclick="Game.resolveWindBoost()">Segel setzen!</button>
+    `;
+    modal.classList.add('active');
+  },
+
+  resolveWindBoost() {
+    this.closeModal();
+    const currNode = NODES.find(n => n.id === this.currentNode);
+    if (currNode.neighbors.length > 0) {
+      this.executeMultiStepMovement(currNode.neighbors[0], 2);
+    }
+  },
+
+  /* NEUES EVENT: 🔪 WRACK */
+  openWreck() {
+    const modal = document.getElementById('event-modal');
+    document.getElementById('modal-title').innerText = '🔪 VERSUNKENES SCHIFFSWRACK!';
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
+
+    if (this.hasKnife) {
+      Sound.play('win');
+      this.spawnFlyingCoins(6);
+      this.gold = Math.min(50, this.gold + 6);
+      this.updateHUD();
+      this.renderSteckbrett();
+      this.setCaptainMood('win', currentLang === 'de' ? 'Mit dem Damaszener-Messer Taue gekappt und die Schatzkiste geborgen!' : 'Used our knife to cut free the sunken chest!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2 style="color:green;">🔪 DAMASZENER-BEUTE!</h2>
+        <p>${currentLang === 'de' ? 'Dein scharfes Messer schneidet die Taue im Wrack frei: <strong>+6 Goldpins erbeutet!</strong>' : 'Your razor-sharp knife salvaged the wreckage: <strong>+6 gold pins claimed!</strong>'}</p>
+      `;
+    } else {
+      this.triggerDamageEffect();
+      const loss = 3;
+      this.gold = Math.max(0, this.gold - loss);
+      this.updateHUD();
+      this.renderSteckbrett();
+      this.setCaptainMood('burn', currentLang === 'de' ? 'Verflucht! Ohne anständiges Messer schneidet man sich nur an scharfen Korallen!' : 'Ouch! Without a knife we got hurt on jagged corals!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2>🩸 KEIN MESSER AN BORD!</h2>
+        <p>${currentLang === 'de' ? 'Du konntest die Taue nicht kappen und hast Taucher verloren: <strong>-3 Goldpins</strong>!' : 'Unable to salvage without a blade: <strong>-3 gold pins</strong>!'}</p>
+      `;
+    }
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
+    modal.classList.add('active');
+  },
+
+  /* NEUES EVENT: ⚓ ZOLLSCHIFF */
+  openCustoms() {
+    const modal = document.getElementById('event-modal');
+    document.getElementById('modal-title').innerText = '⚓ KÖNIGLICHE KAPER-PATROUILLE!';
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
+
+    if (this.rum > 0) {
+      this.rum--;
+      this.updateHUD();
+      this.renderSteckbrett();
+      Sound.play('win');
+      this.setCaptainMood('win', currentLang === 'de' ? 'Ein Fässchen Rum für die Zöllner – und wir segeln ungeschoren davon!' : 'Bribed customs with a rum cask – sailed away freely!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2 style="color:green;">🥃 ZOLL BESTOCHEN!</h2>
+        <p>${currentLang === 'de' ? 'Die Patrouille nimmt dein <strong>Fass Rum</strong> mit Freuden an. Freie Fahrt ohne Goldverlust!' : 'Customs accepted your rum cask. Smooth sailing!'}</p>
+      `;
+    } else {
+      this.triggerDamageEffect();
+      const toll = 4;
+      this.gold = Math.max(0, this.gold - toll);
+      this.updateHUD();
+      this.renderSteckbrett();
+      this.setCaptainMood('burn', currentLang === 'de' ? 'Die königlichen Blutsauger haben uns kräftig zur Kasse gebeten!' : 'Royal customs drained our coin pouch!');
+      document.getElementById('modal-content').innerHTML = `
+        <h2>📜 WEGEZOLL GEZAHLT!</h2>
+        <p>${currentLang === 'de' ? 'Ohne Rum zur Bestechung musstest du <strong>-4 Goldpins</strong> Wegezoll entrichten!' : 'Without rum for bribes, you paid <strong>-4 gold pins</strong> customs tax!'}</p>
+      `;
+    }
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
+    modal.classList.add('active');
+  },
+
+  /* NEUES EVENT: 📦 TREIBGUT */
+  openFlotsam() {
+    const modal = document.getElementById('event-modal');
+    document.getElementById('modal-title').innerText = '📦 TREIBGUT GESICHTET!';
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
+    Sound.play('coin');
+
+    const roll = Math.random();
+    let text = '';
+    if (roll < 0.5) {
+      this.gold = Math.min(50, this.gold + 4);
+      this.spawnFlyingCoins(4);
+      text = currentLang === 'de' ? 'Eine schwimmende Kiste voller Dukaten! <strong>+4 Goldpins!</strong>' : 'A floating chest with doubloons! <strong>+4 gold pins!</strong>';
+    } else {
+      this.truffles++;
+      text = currentLang === 'de' ? 'Eine versiegelte Dose Gourmet-Trüffel gefunden! <strong>+1 Trüffel-Joker!</strong>' : 'A sealed tin of rare truffles found! <strong>+1 Truffle Joker!</strong>';
+    }
+
+    this.updateHUD();
+    this.renderSteckbrett();
+    this.setCaptainMood('win', currentLang === 'de' ? 'Wer suchet, der findet! Fette Beute auf hoher See!' : 'Finders keepers on the high seas!');
+    document.getElementById('modal-content').innerHTML = `<h2 style="color:gold;">📦 GUTES AUS DEM MEER!</h2><p>${text}</p>`;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
+    modal.classList.add('active');
+  },
+
   openShop() {
     const modal = document.getElementById('event-modal');
     const t = TXT[currentLang];
@@ -1466,7 +1715,6 @@ const Game = {
 
     document.getElementById('modal-content').innerHTML = `
       <p style="font-size:14px; margin-bottom:12px;">${t.shopDesc}</p>
-      
       <div class="shop-grid">
         <div class="shop-item">
           <div>
@@ -1477,43 +1725,30 @@ const Game = {
             ${this.hasKnife ? t.ownedBtn : t.buyBtn + ' (10)'}
           </button>
         </div>
-
         <div class="shop-item">
           <div>
             <div class="shop-item-header"><span>${t.truffleName}</span><span>5 Gold</span></div>
             <div class="shop-item-desc">${t.truffleDesc}</div>
           </div>
-          <button class="btn-buy" onclick="Game.buyItem('truffle')" ${this.gold < 5 ? 'disabled' : ''}>
-            ${t.buyBtn} (5)
-          </button>
+          <button class="btn-buy" onclick="Game.buyItem('truffle')" ${this.gold < 5 ? 'disabled' : ''}>${t.buyBtn} (5)</button>
         </div>
-
         <div class="shop-item">
           <div>
             <div class="shop-item-header"><span>${t.rumName}</span><span>8 Gold</span></div>
             <div class="shop-item-desc">${t.rumDesc}</div>
           </div>
-          <button class="btn-buy" onclick="Game.buyItem('rum')" ${this.gold < 8 ? 'disabled' : ''}>
-            ${t.buyBtn} (8)
-          </button>
+          <button class="btn-buy" onclick="Game.buyItem('rum')" ${this.gold < 8 ? 'disabled' : ''}>${t.buyBtn} (8)</button>
         </div>
-
         <div class="shop-item">
           <div>
             <div class="shop-item-header"><span>${t.compassName}</span><span>6 Gold</span></div>
             <div class="shop-item-desc">${t.compassDesc}</div>
           </div>
-          <button class="btn-buy" onclick="Game.buyItem('compass')" ${this.gold < 6 ? 'disabled' : ''}>
-            ${t.buyBtn} (6)
-          </button>
+          <button class="btn-buy" onclick="Game.buyItem('compass')" ${this.gold < 6 ? 'disabled' : ''}>${t.buyBtn} (6)</button>
         </div>
       </div>
     `;
-
-    document.getElementById('modal-actions').innerHTML = `
-      <button class="btn-close-modal" onclick="Game.closeModal()">${t.closeBtn}</button>
-    `;
-
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${t.closeBtn}</button>`;
     modal.classList.add('active');
   },
 
@@ -1540,9 +1775,6 @@ const Game = {
     this.openShop();
   },
 
-  /* ====================================================================
-     QUIZ: 15 SEKUNDEN & PROMINENTER 50:50 TRÜFFEL-JOKER
-  ==================================================================== */
   openQuiz(continent) {
     let pool = QUESTIONS.filter(q => (q.c === continent || q.c === 'stefan') && !this.askedQuestionIds.has(q.id));
     if (pool.length === 0) {
@@ -1560,10 +1792,9 @@ const Game = {
     const bar = document.getElementById('timer-bar');
     const timerText = document.getElementById('timer-text');
 
-    title.innerText = `KOMBÜSEN-QUIZ: ${continent.toUpperCase()}`;
+    title.innerText = `👑 KONTINENT-EROBERUNG: ${continent.toUpperCase()}`;
     const questionText = currentLang === 'de' ? qObj.q_de : qObj.q_en;
     
-    // Joker Banner
     let jokerHTML = '';
     if (this.truffles > 0) {
       jokerHTML = `
@@ -1580,7 +1811,6 @@ const Game = {
       ${jokerHTML}
     `;
 
-    // Antworten mischen
     const rawAnswers = currentLang === 'de' ? qObj.a_de : qObj.a_en;
     const shuffledOrder = [0, 1, 2, 3];
     for (let i = shuffledOrder.length - 1; i > 0; i--) {
@@ -1604,7 +1834,6 @@ const Game = {
 
     modal.classList.add('active');
 
-    // 15 Sekunden Timer
     let secondsLeft = 15;
     timerText.innerText = `⏳ ${secondsLeft}s`;
     bar.style.width = '100%';
@@ -1656,7 +1885,7 @@ const Game = {
       this.updateHUD();
       this.renderSteckbrett();
       this.setCaptainMood('win', tipText);
-      content.innerHTML = `<h2 style="color:green;">${currentLang === 'de' ? 'RICHTIG!' : 'CORRECT!'}</h2><p>${tipText}</p><p><strong>+5 Gold &amp; Medaillon!</strong></p>`;
+      content.innerHTML = `<h2 style="color:green;">${currentLang === 'de' ? 'KONTINENT EROBERT!' : 'CONTINENT CLAIMED!'}</h2><p>${tipText}</p><p><strong>+5 Gold &amp; Medaillon!</strong></p>`;
     } else {
       Sound.play('wrong');
       this.triggerDamageEffect();
