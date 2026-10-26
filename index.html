@@ -129,11 +129,7 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.6);
     transition: all 0.2s;
   }
-  .btn-icon:hover {
-    background: var(--gold);
-    color: #1a0f00;
-    transform: translateY(-1px);
-  }
+  .btn-icon:hover { background: var(--gold); color: #1a0f00; transform: translateY(-1px); }
 
   /* WORKSPACE */
   #play-area {
@@ -165,8 +161,8 @@
 
   .node-point {
     position: absolute;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     background: #2a1a08;
@@ -177,17 +173,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 16px;
     z-index: 12;
   }
-  .node-point.reachable {
-    animation: pulseGlow 0.9s infinite alternate;
-    border-color: #00ffcc;
-    background: #004d40;
+  /* KONTINENT STATUS EFFEKTE */
+  .node-point.missing-continent {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px #ffd700;
+    animation: beaconPulse 1.2s infinite alternate;
   }
-  @keyframes pulseGlow {
-    from { transform: translate(-50%, -50%) scale(1.0); box-shadow: 0 0 10px #00ffcc; }
-    to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffcc; }
+  @keyframes beaconPulse {
+    from { transform: translate(-50%, -50%) scale(1.0); }
+    to { transform: translate(-50%, -50%) scale(1.25); box-shadow: 0 0 25px #ffd700; }
+  }
+  .node-point.completed-continent {
+    border-color: #00ff66;
+    background: #003311;
+    box-shadow: 0 0 8px #00ff66;
+  }
+  .node-point.selectable-course {
+    border-color: #00ffff;
+    background: #004455;
+    animation: pulseCourse 0.8s infinite alternate;
+  }
+  @keyframes pulseCourse {
+    from { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 10px #00ffff; }
+    to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffff; }
   }
 
   /* SHIP */
@@ -196,7 +207,7 @@
     width: 48px;
     height: 48px;
     transform: translate(-50%, -50%);
-    transition: left 1s cubic-bezier(0.25, 1, 0.5, 1), top 1s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: left 0.65s cubic-bezier(0.25, 1, 0.5, 1), top 0.65s cubic-bezier(0.25, 1, 0.5, 1);
     pointer-events: none;
     z-index: 25;
   }
@@ -205,7 +216,7 @@
     height: 100%;
     filter: drop-shadow(0 6px 8px rgba(0,0,0,0.85));
     animation: shipBob 2.2s infinite ease-in-out;
-    transition: transform 0.4s ease;
+    transition: transform 0.3s ease;
   }
   @keyframes shipBob {
     0%, 100% { transform: translateY(0px) rotate(-2deg); }
@@ -345,35 +356,56 @@
   }
   .btn-shop:hover { background: linear-gradient(180deg, #3f682a, #1f3f10); }
 
-  /* BOTTOM STECKBRETT */
+  /* BOTTOM STECKBRETT MIT BESCHRIFTUNG */
   #bottom-hud {
-    height: 135px;
+    height: 145px;
     background: url('board.png') center/cover no-repeat #1b120c;
     border-top: 3px solid var(--dark-gold);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 25px;
+    padding: 0 20px;
     position: relative;
     z-index: 20;
   }
-  #medals-rack { display: flex; gap: 14px; }
+  #medals-rack { display: flex; gap: 12px; }
+  .medal-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    width: 68px;
+  }
   .medal-slot {
-    width: 60px;
-    height: 60px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     background-image: url('medals.png');
     background-size: 300% 200%;
-    filter: grayscale(100%) opacity(0.3);
+    filter: grayscale(100%) opacity(0.35);
     border: 2px dashed #666;
     transition: all 0.4s;
   }
   .medal-slot.earned {
     filter: none;
     border: 2px solid var(--gold);
-    box-shadow: 0 0 18px var(--gold);
+    box-shadow: 0 0 16px var(--gold);
     transform: scale(1.08);
   }
+  .medal-label {
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--parchment);
+    text-shadow: 0 1px 3px #000;
+  }
+  .medal-status {
+    font-size: 8px;
+    font-weight: bold;
+  }
+  .medal-status.missing { color: #ff6b6b; }
+  .medal-status.earned { color: #51cf66; }
+
   .medal-europa { background-position: 0% 0%; }
   .medal-asien { background-position: 50% 0%; }
   .medal-afrika { background-position: 100% 0%; }
@@ -436,7 +468,7 @@
     background: #fff8e7;
     color: #2b180a;
     width: 90%;
-    max-width: 650px;
+    max-width: 660px;
     border: 4px solid var(--dark-gold);
     border-radius: 14px;
     padding: 22px;
@@ -451,9 +483,17 @@
     from { opacity: 0; transform: scale(0.85); }
     to { opacity: 1; transform: scale(1); }
   }
-  .modal-title { font-size: 22px; color: var(--crimson); margin-bottom: 12px; text-transform: uppercase; }
-  .modal-timer { height: 8px; background: #ddd; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
-  .timer-fill { height: 100%; background: var(--crimson); width: 100%; }
+  .modal-title { font-size: 22px; color: var(--crimson); margin-bottom: 8px; text-transform: uppercase; }
+  .timer-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--crimson);
+    margin-bottom: 4px;
+  }
+  .modal-timer { height: 10px; background: #ddd; border-radius: 5px; margin-bottom: 15px; overflow: hidden; }
+  .timer-fill { height: 100%; background: var(--crimson); width: 100%; transition: width 0.15s linear; }
   
   /* BATTLE ARENA */
   .battle-stage {
@@ -495,20 +535,48 @@
   }
   .static-dice.enemy { background: #8b0000; color: #fff; border-color: #ffd700; }
 
-  .quiz-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+  /* 50:50 PROMINENT JOKER BUTTON */
+  .joker-banner {
+    margin: 10px 0 14px 0;
+  }
+  .btn-joker-prominent {
+    background: linear-gradient(180deg, #6a0dad, #38006b);
+    border: 2px solid var(--gold);
+    color: #fff;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(106, 13, 173, 0.7);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-joker-prominent:hover { transform: scale(1.04); box-shadow: 0 0 25px rgba(255, 215, 0, 0.9); }
+
+  .quiz-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
   .btn-answer {
     background: #fdf5e6;
     border: 2px solid #8b6508;
-    padding: 12px;
+    padding: 14px 12px;
     border-radius: 8px;
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
     text-align: left;
     transition: all 0.2s;
+    line-height: 1.3;
   }
   .btn-answer:hover { background: #ffe4b5; transform: scale(1.02); }
-  .btn-answer.disabled { opacity: 0.25; pointer-events: none; text-decoration: line-through; }
+  .btn-answer.disabled {
+    opacity: 0.2;
+    pointer-events: none;
+    text-decoration: line-through;
+    background: #ccc !important;
+    border-color: #888 !important;
+  }
 
   .btn-close-modal {
     margin-top: 15px;
@@ -559,18 +627,6 @@
     align-self: flex-end;
   }
   .btn-buy:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .btn-joker {
-    background: linear-gradient(180deg, #4b0082, #2e0854);
-    border: 2px solid var(--gold);
-    color: #fff;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
 
   /* REGELN */
   .rules-content {
@@ -676,21 +732,46 @@
         <div id="captain-dialogue"></div>
 
         <div id="turn-controls">
-          <button id="btn-roll" class="btn-turn" onclick="Game.rollDice()">🎲 Kompass &amp; Würfel werfen</button>
+          <button id="btn-roll" class="btn-turn" disabled onclick="Game.rollDice()">🎲 Wähle erst deinen Kurs!</button>
           <button id="btn-reroll" class="btn-turn" style="display:none; background:#8a5a00;" onclick="Game.rerollDice()">🧭 Neu würfeln (Kompass)</button>
           <button id="btn-shop" class="btn-shop" onclick="Game.openShop()">🏴‍☠️ Kombüsen-Schwarzmarkt</button>
         </div>
       </div>
     </div>
 
+    <!-- BOTTOM HUD MIT BESCHRIFTUNG -->
     <div id="bottom-hud">
       <div id="medals-rack">
-        <div id="medal-europa" class="medal-slot medal-europa" title="Europa"></div>
-        <div id="medal-asien" class="medal-slot medal-asien" title="Asien"></div>
-        <div id="medal-afrika" class="medal-slot medal-afrika" title="Afrika"></div>
-        <div id="medal-nordamerika" class="medal-slot medal-nordamerika" title="Nordamerika"></div>
-        <div id="medal-suedamerika" class="medal-slot medal-suedamerika" title="Südamerika"></div>
-        <div id="medal-australien" class="medal-slot medal-australien" title="Australien"></div>
+        <div class="medal-wrapper">
+          <div id="medal-europa" class="medal-slot medal-europa" title="Europa"></div>
+          <span class="medal-label">Europa</span>
+          <span id="st-europa" class="medal-status missing">Fehlt</span>
+        </div>
+        <div class="medal-wrapper">
+          <div id="medal-asien" class="medal-slot medal-asien" title="Asien"></div>
+          <span class="medal-label">Asien</span>
+          <span id="st-asien" class="medal-status missing">Fehlt</span>
+        </div>
+        <div class="medal-wrapper">
+          <div id="medal-afrika" class="medal-slot medal-afrika" title="Afrika"></div>
+          <span class="medal-label">Afrika</span>
+          <span id="st-afrika" class="medal-status missing">Fehlt</span>
+        </div>
+        <div class="medal-wrapper">
+          <div id="medal-nordamerika" class="medal-slot medal-nordamerika" title="Nordamerika"></div>
+          <span class="medal-label">N-Amerika</span>
+          <span id="st-nordamerika" class="medal-status missing">Fehlt</span>
+        </div>
+        <div class="medal-wrapper">
+          <div id="medal-suedamerika" class="medal-slot medal-suedamerika" title="Südamerika"></div>
+          <span class="medal-label">S-Amerika</span>
+          <span id="st-suedamerika" class="medal-status missing">Fehlt</span>
+        </div>
+        <div class="medal-wrapper">
+          <div id="medal-australien" class="medal-slot medal-australien" title="Australien"></div>
+          <span class="medal-label">Australien</span>
+          <span id="st-australien" class="medal-status missing">Fehlt</span>
+        </div>
       </div>
       <div id="pins-rack"></div>
     </div>
@@ -700,6 +781,10 @@
   <div id="event-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 id="modal-title" class="modal-title">Ereignis</h3>
+      <div class="timer-header">
+        <span>ZEIT / TIME:</span>
+        <span id="timer-text">⏳ 15s</span>
+      </div>
       <div class="modal-timer"><div id="timer-bar" class="timer-fill"></div></div>
       <div id="modal-content"></div>
       <div id="modal-actions"></div>
@@ -721,7 +806,6 @@ const ASSETS = {
   pirateEnemy: 'pirate_enemy.png'
 };
 
-/* I18N SPRACHEN */
 let currentLang = 'de';
 
 const TXT = {
@@ -731,7 +815,9 @@ const TXT = {
     days: "⏳ REISETAG:",
     gold: "💰 GOLDPINS:",
     rules: "Regeln",
-    rollBtn: "🎲 Kompass & Würfel werfen",
+    selectCoursePrompt: "Setz die Segel! Klicke auf der Karte auf die nächste Seeroute!",
+    rollPrompt: "Kurs gewählt! Jetzt würfeln!",
+    rollBtn: "🎲 Würfel & Wind werfen",
     rerollBtn: "🧭 Neu würfeln (Kompass)",
     shopBtn: "🏴‍☠️ Kombüsen-Schwarzmarkt",
     paused: "SPIEL PAUSIERT",
@@ -740,7 +826,8 @@ const TXT = {
     closeBtn: "Schließen",
     continueBtn: "Weiter",
     sailOnBtn: "Weitersegeln",
-    startDialogue: "Ahoi Marco! Bring mir die 6 Kontinente nach Hamburg zurück. Rüste dich im Schwarzmarkt aus!",
+    missing: "Fehlt",
+    earned: "Geholt ✅",
     battleTitle: "⚔️ KAPER-DUELL IM NEBEL!",
     battleDesc: "Ein Piratenschiff blockiert deinen Kurs! Käpt'n Knorrenbart fordert dich zum Duell!",
     battleRollBtn: "⚔️ Knochen werfen!",
@@ -756,14 +843,14 @@ const TXT = {
     compassDesc: "Erlaubt dir auf hoher See einen zweiten Würfelwurf!",
     buyBtn: "Kaufen",
     ownedBtn: "Bereits erworben",
-    jokerBtn: "🧂 Trüffel-Joker einsetzen (50:50)",
+    jokerBtn: "🧂 50:50 TRÜFFEL-JOKER EINSETZEN",
     rulesTitle: "📜 DIE FREIBEUTER-REGELN",
     rules1Title: "1. Das große Ziel",
     rules1Desc: "Bereise die Weltkarte, sammle alle 6 Kontinent-Medaillons durch Quizfragen ein und kehre mit mindestens 25 Gold-Pins vor Ablauf von 30 Tagen in den Heimathafen zurück!",
-    rules2Title: "2. Die Felder",
-    rules2Desc: "❓ <b>Quiz:</b> Beantworte die Kontinent-Frage für Medaillon & Gold!<br>⚔️ <b>Battle:</b> Würfelduell gegen Piraten um Goldpins!<br>💰 <b>Schatz:</b> Fette Goldbeute am Strand!<br>💀 <b>Havarie:</b> Sturm zerstört Vorräte (außer du hast Rum!).",
+    rules2Title: "2. Kurs-Wahl & Würfeln",
+    rules2Desc: "Wähle ZUERST auf der Karte deine Fahrtrichtung. Dann würfelst du und dein Schiff segelt genau diese Schrittanzahl vorwärts! Pass auf: Liegt ein Sturm auf deinem Kurs, triffst du ihn!",
     rules3Title: "3. Der Schwarzmarkt",
-    rules3Desc: "Kombüsen-Messer geben +1 im Kampf, Trüffel halbieren falsche Antworten im Quiz und Rum rettet dein Gold bei Sturm!"
+    rules3Desc: "Kombüsen-Messer geben +1 im Kampf, Trüffel halbieren falsche Antworten im Quiz (50:50) und Rum rettet dein Gold bei Havarien!"
   },
   en: {
     startBtn: "Set Sail & Start Voyage!",
@@ -771,7 +858,9 @@ const TXT = {
     days: "⏳ DAY:",
     gold: "💰 GOLD PINS:",
     rules: "Rules",
-    rollBtn: "🎲 Spin Compass & Roll Dice",
+    selectCoursePrompt: "Set sails! Click an adjacent waypoint on the map to set your course!",
+    rollPrompt: "Course set! Now roll the dice!",
+    rollBtn: "🎲 Roll Wind & Dice",
     rerollBtn: "🧭 Reroll Dice (Compass)",
     shopBtn: "🏴‍☠️ Galley Black Market",
     paused: "GAME PAUSED",
@@ -780,7 +869,8 @@ const TXT = {
     closeBtn: "Close",
     continueBtn: "Continue",
     sailOnBtn: "Sail On",
-    startDialogue: "Ahoy Marco! Bring all 6 continent relics back to Hamburg. Equip yourself in the black market!",
+    missing: "Missing",
+    earned: "Claimed ✅",
     battleTitle: "⚔️ BOARDING DUEL IN THE MIST!",
     battleDesc: "A pirate vessel blocks your path! Captain Knorrenbart challenges you to a dice duel!",
     battleRollBtn: "⚔️ Roll the Bones!",
@@ -796,12 +886,12 @@ const TXT = {
     compassDesc: "Allows a second dice roll attempt on the open seas!",
     buyBtn: "Buy",
     ownedBtn: "Owned",
-    jokerBtn: "🧂 Use Truffle Joker (50:50)",
+    jokerBtn: "🧂 USE 50:50 TRUFFLE JOKER",
     rulesTitle: "📜 PIRATE EXPEDITION RULES",
     rules1Title: "1. The Grand Objective",
     rules1Desc: "Circumnavigate the globe, earn all 6 continent medallions through culinary trivia, and return to home port with at least 25 gold pins within 30 days!",
-    rules2Title: "2. Waypoints",
-    rules2Desc: "❓ <b>Quiz:</b> Answer correctly to claim continent medals & gold!<br>⚔️ <b>Battle:</b> Face rival pirates in dice duels for loot!<br>💰 <b>Treasure:</b> Free gold pins on beaches!<br>💀 <b>Hazard:</b> Storms destroy supplies (unless protected by Rum!).",
+    rules2Title: "2. Direction & Sailing",
+    rules2Desc: "FIRST choose your direction by clicking an adjacent route. Then roll the dice to advance that exact number of waypoints along the route!",
     rules3Title: "3. The Black Market",
     rules3Desc: "Damascus knives grant +1 in battles, truffles provide 50:50 quiz lifelines, and rum casks protect your gold during disasters!"
   }
@@ -836,6 +926,18 @@ const Sound = {
         osc.start(t + i * 0.08);
         osc.stop(t + i * 0.08 + 0.06);
       }
+    } else if (type === 'step') {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, t);
+      osc.frequency.exponentialRampToValueAtTime(160, t + 0.15);
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.linearRampToValueAtTime(0.01, t + 0.15);
+      osc.start(t);
+      osc.stop(t + 0.15);
     } else if (type === 'coin') {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -913,6 +1015,9 @@ const Sound = {
   }
 };
 
+/* ====================================================================
+   WELTKARTE MIT ROUTEN-NETZWERK
+==================================================================== */
 const NODES = [
   { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', x: 48, y: 28, type: 'port', neighbors: ['nordatlantik', 'westafrika'] },
   { id: 'nordatlantik', name: 'Nordatlantik', continent: 'europa', x: 34, y: 26, type: 'battle', neighbors: ['eu_start', 'nordamerika', 'karibik'] },
@@ -930,11 +1035,8 @@ const NODES = [
   { id: 'australien', name: 'Sydney / Korallenmeer', continent: 'australien', x: 86, y: 72, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost', 'kap_hoorn'] }
 ];
 
-/* ====================================================================
-   DIE GROSSE KULINARISCHE & SEEMANNS-FRAGEN-BATTERIE (ZWEISPRACHIG)
-==================================================================== */
+/* FRAGEN-BATTERIE */
 const QUESTIONS = [
-  // STEFAN MARQUARD SPECIALS & MARCO LEUPIZZI EASTER EGG
   { id:'sm1', c:'stefan', q_de:'Wie heißt der geniale Spieleautor, der 2008 das Kultspiel "Stefan Marquards Küchenlatein" erfunden hat?', q_en:'What is the name of the genius game designer who created "Stefan Marquards Küchenlatein" in 2008?', a_de:['Marco Leopizzi','Klaus Teuber','Wolfgang Kramer','Stefan Feld'], a_en:['Marco Leopizzi','Klaus Teuber','Wolfgang Kramer','Stefan Feld'], correct:0, tip_de:'Marco Leopizzi natürlich! Wer sonst hätte so ein geniales Meisterwerk aushecken können?! BÄM!', tip_en:'Marco Leopizzi, of course! Who else could devise such a brilliant masterpiece?!' },
   { id:'sm2', c:'stefan', q_de:'Wie wird Starkoch Stefan Marquard in der Feinschmecker-Szene ehrfürchtig genannt?', q_en:'By what title is celebrity rockstar chef Stefan Marquard known across the gourmet scene?', a_de:['Freibeuter der Küche','Freiherr der Kombüse','Großfürst des Woks','Klabautermann der Pfanne'], a_en:['Pirate of the Kitchen','Galley Baron','Grand Duke of the Wok','Pan Goblin'], correct:0, tip_de:'Freibeuter natürlich! Immer gegen den Strom und mit Piratenherz!', tip_en:'Pirate of the Kitchen! Forever rebellious and rock and roll!' },
   { id:'sm3', c:'stefan', q_de:'Mit welchem verrückten Baugerät rührte Stefan auf der Essener Spielemesse Riesenportionen an?', q_en:'What crazy construction machine did Stefan repurpose as a giant skillet at Essen?', a_de:['Einer Betonmischmaschine','Einer Dampfwalze','Einem Presslufthammer','Einem Teerkocher'], a_en:['A concrete mixer','A steam roller','A jackhammer','A tar boiler'], correct:0, tip_de:'Die Betonmisch-Pfanne! Da wurde gerührt wie auf der Großbaustelle!', tip_en:'The concrete mixer pan! Stirred like an industrial job site!' },
@@ -944,69 +1046,46 @@ const QUESTIONS = [
   { id:'sm7', c:'stefan', q_de:'Welches revolutionäre Gar-Prinzip predigt Stefan für maximalen Saft und Geschmack?', q_en:'What revolutionary cooking philosophy does Stefan champion for juicy flavor?', a_de:['Aktivieren & Niedrigtemperatur','Frittieren auf Stufe 10','In kochendem Wasser ertränken','Gefriertrocknung'], a_en:['Activating & Low-temperature','Deep frying at level 10','Drowning in boiling water','Freeze-drying'], correct:0, tip_de:'Aktivieren! Saft, Vitamine und Geschmack bleiben im Fleisch!', tip_en:'Activating! Locks juices, vitamins and soul right into the food!' },
   { id:'sm8', c:'stefan', q_de:'Welches Markenzeichen trägt Stefan Marquard fast immer auf dem Kopf?', q_en:'What iconic trademark does Stefan Marquard almost always wear on his head?', a_de:['Ein schwarzes Bandana-Kopftuch','Eine klassische weiße Kochmütze','Einen Dreispitz-Kapitänshut','Einen Zylinder'], a_en:['A black bandana headband','A classic tall chef hat','A pirate tricorn','A top hat'], correct:0, tip_de:'Das Bandana! Echte Freibeuter tragen keine weiße Spießer-Mütze!', tip_en:'The bandana! Real buccaneers never wear stuffy white chef toques!' },
 
-  // EUROPA
   { id:'eu1', c:'europa', q_de:'Wie nennt man das feine Schneiden von Gemüse in 1 mm dünne Streifen?', q_en:'What culinary term describes cutting vegetables into thin matchstick strips?', a_de:['Julienne','Brunoise','Chiffonade','Batonnet'], a_en:['Julienne','Brunoise','Chiffonade','Batonnet'], correct:0, tip_de:'Julienne! Wenn die zu dick sind, fliegen sie bei mir über Bord!', tip_en:'Julienne! Anything thicker gets tossed overboard!' },
   { id:'eu2', c:'europa', q_de:'Welche Zutat gehört auf keinen Fall in eine echte Sauce Hollandaise?', q_en:'Which ingredient strictly does not belong in an authentic Hollandaise sauce?', a_de:['Mehl','Eigelb','Geklärte Butter','Zitronensaft'], a_en:['Flour','Egg Yolk','Clarified Butter','Lemon Juice'], correct:0, tip_de:'Hollandaise ist eine reine Emulsion – Mehl hat da nix verloren!', tip_en:'Hollandaise is an emulsion – flour is strictly forbidden!' },
   { id:'eu3', c:'europa', q_de:'Aus welchem Land stammt der weltberühmte luftgetrocknete Pata-Negra-Schinken?', q_en:'Which country produces the famous dry-cured Pata Negra acorn ham?', a_de:['Spanien','Italien','Portugal','Frankreich'], a_en:['Spain','Italy','Portugal','France'], correct:0, tip_de:'Spanien! Die iberischen Eichelschweine sind pures Gold!', tip_en:'Spain! The acorn-fed Iberian pigs are pure culinary gold!' },
   { id:'eu4', c:'europa', q_de:'Was bedeutet der französische Begriff „Mise en Place“ in der Profiküche?', q_en:'What does the French kitchen term "Mise en Place" mean?', a_de:['Komplette Vorbereitung aller Zutaten','Das Putzen der Töpfe','Das Servieren des Desserts','Das Entkorken des Weins'], a_en:['Complete prep of all ingredients','Washing pots','Serving dessert','Uncorking wine'], correct:0, tip_de:'Mise en Place ist das halbe Leben! Wer nicht vorbereitet ist, säuft ab!', tip_en:'Preparation is everything in a galley!' },
-  { id:'eu5', c:'europa', q_de:'Welches Getreide ist die zwingende Basis für echten italienischen Risotto?', q_en:'Which rice grain variety is mandatory for true Italian risotto?', a_de:['Arborio oder Carnaroli','Basmatireis','Jasminreis','Wildreis'], a_en:['Arborio or Carnaroli','Basmati','Jasmine','Wild rice'], correct:0, tip_de:'Carnaroli oder Arborio – die Stärke macht die perfekte Schlotzigkeit!', tip_en:'Arborio or Carnaroli – maximum creaminess!' },
-  { id:'eu6', c:'europa', q_de:'Wie nennt man das kurze Abschrecken von heißem Gemüse in Eiswasser?', q_en:'What is plunging hot blanched vegetables into ice water called?', a_de:['Blanchieren & Abschrecken','Pochieren','Grillieren','Karamellisieren'], a_en:['Shocking in ice water','Poaching','Grilling','Caramelizing'], correct:0, tip_de:'Eiswasser stoppt den Garprozess und erhält die knallgrüne Farbe!', tip_en:'Ice water stops the cooking and keeps vibrant colors!' },
-  { id:'eu7', c:'europa', q_de:'Welches Kraut verleiht der Frankfurter Grünen Soße ihren unverwechselbaren Geschmack?', q_en:'Which herb is a vital staple of the famous Frankfurt Green Sauce?', a_de:['Borretsch & Pimpinelle','Koriander','Basilikum','Oregano'], a_en:['Borage & Burnet','Cilantro','Basil','Oregano'], correct:0, tip_de:'Die sieben Kräuter! Ohne Pimpinelle kein Frankfurter Klassiker!', tip_en:'The sacred seven herbs! A German heritage classic!' },
 
-  // SÜDAMERIKA
   { id:'sa1', c:'suedamerika', q_de:'In welchem Land gilt gegrilltes Meerschweinchen („Cuy“) als Festtags-Delikatesse?', q_en:'In which South American nation is roasted guinea pig ("Cuy") a festive delicacy?', a_de:['Peru','Brasilien','Kolumbien','Argentinien'], a_en:['Peru','Brazil','Colombia','Argentina'], correct:0, tip_de:'Das Original aus den Anden – schmeckt überraschend wie Wachtel!', tip_en:'Traditional Andean specialty – tastes surprisingly like quail!' },
   { id:'sa2', c:'suedamerika', q_de:'Welches Nationalgericht wird roh in kaltem Limettensaft mariniert gegart?', q_en:'Which iconic seafood dish is "cooked" solely in chilled citrus lime juice?', a_de:['Ceviche','Feijoada','Empanada','Asado'], a_en:['Ceviche','Feijoada','Empanada','Asado'], correct:0, tip_de:'Ceviche! Die Säure der Limette denaturiert das Eiweiß!', tip_en:'Ceviche! The natural acid denatures the fish protein!' },
   { id:'sa3', c:'suedamerika', q_de:'Aus welchem Urwaldbecken stammt der Kakaobaum (Theobroma cacao) ursprünglich?', q_en:'From which river basin did the wild cocoa tree originally originate?', a_de:['Amazonasbecken','Kongobecken','Nil-Delta','Mekong-Delta'], a_en:['Amazon Basin','Congo Basin','Nile Delta','Mekong Delta'], correct:0, tip_de:'Amazonas! Das braune Gold der Indios!', tip_en:'The Amazon! The sacred brown gold of the Americas!' },
-  { id:'sa4', c:'suedamerika', q_de:'Wie heißt die berühmte argentinische Kräutersauce zum Rindfleisch-Asado?', q_en:'What is the classic Argentine herbal sauce served with grilled beef?', a_de:['Chimichurri','Guacamole','Salsa Verde','Mole'], a_en:['Chimichurri','Guacamole','Salsa Verde','Mole'], correct:0, tip_de:'Chimichurri! Petersilie, Knoblauch, Chili, Essig und feinstes Öl!', tip_en:'Chimichurri! Fresh parsley, garlic, vinegar, and chili!' },
-  { id:'sa5', c:'suedamerika', q_de:'Welche Knollenfrucht rettete Europa vor Hungersnöten und stammt aus den Anden?', q_en:'Which tuber native to the Andes saved Europe from historic famines?', a_de:['Die Kartoffel','Die Karotte','Die Rote Bete','Die Zwiebel'], a_en:['The Potato','The Carrot','The Beetroot','The Onion'], correct:0, tip_de:'Die Kartoffel! Über 3.000 Ur-Sorten gibt es in Peru!', tip_en:'The potato! Over 3,000 ancient varieties thrive in Peru!' },
-  { id:'sa6', c:'suedamerika', q_de:'Wie heißt der traditionelle herbe Kräutertee aus Südamerika, der aus einer Kalebasse getrunken wird?', q_en:'What traditional South American herbal infusion is sipped through a metal bombilla?', a_de:['Mate-Tee','Chai','Rooibos','Matcha'], a_en:['Mate Tea','Chai','Rooibos','Matcha'], correct:0, tip_de:'Mate! Der Wachmacher der Gauchos am Lagerfeuer!', tip_en:'Mate! The fuel of the gauchos across the pampas!' },
 
-  // NORDAMERIKA
   { id:'na1', c:'nordamerika', q_de:'Welcher US-Bundesstaat ist weltberühmt für „Low & Slow“ geräuchertes Beef-Brisket?', q_en:'Which US state is internationally renowned for low-and-slow smoked beef brisket?', a_de:['Texas','Kalifornien','New York','Florida'], a_en:['Texas','California','New York','Florida'], correct:0, tip_de:'Texas! 16 Stunden im Rauch, saftiger geht Fleisch nicht!', tip_en:'Texas! 16 hours over hardwood smoke, pure bliss!' },
   { id:'na2', c:'nordamerika', q_de:'Wie heißt die weltberühmte kreolische Meeresfrüchte-Reispfanne aus New Orleans?', q_en:'What famous Creole rice, spice, and seafood dish hails from New Orleans?', a_de:['Jambalaya','Clam Chowder','Poutine','Succotash'], a_en:['Jambalaya','Clam Chowder','Poutine','Succotash'], correct:0, tip_de:'Jambalaya! Eine wilde Mischung aus französischer und afrikanischer Küche!', tip_en:'Jambalaya! Soul food with french and african roots!' },
-  { id:'na3', c:'nordamerika', q_de:'Welche Zutat verleiht dem kanadischen Kultgericht „Poutine“ seinen unverwechselbaren Schmelz?', q_en:'Which cheese gives the iconic French-Canadian dish "Poutine" its squeak?', a_de:['Cheese Curds (Käsebruch)','Gouda','Cheddar-Sauce','Parmesan'], a_en:['Cheese Curds','Gouda','Cheddar Sauce','Parmesan'], correct:0, tip_de:'Cheese Curds! Frischer Käsebruch auf heißen Pommes mit Bratensoße!', tip_en:'Fresh cheddar curds melted under rich brown gravy!' },
-  { id:'na4', c:'nordamerika', q_de:'Aus welchem Baumsaft wird der berühmte nordamerikanische Pfannkuchen-Sirup gewonnen?', q_en:'From which tree sap is traditional North American pancake syrup boiled down?', a_de:['Zuckerahorn','Birke','Kiefer','Eiche'], a_en:['Sugar Maple','Birch','Pine','Oak'], correct:0, tip_de:'Ahornsirup Grad A! 40 Liter Saft für einen einzigen Liter Sirup!', tip_en:'Maple syrup! 40 liters of sap for just one liter of syrup!' },
-  { id:'na5', c:'nordamerika', q_de:'Wie nennt man in den Südstaaten die „Heilige Dreifaltigkeit“ aus Zwiebeln, Sellerie und Paprika?', q_en:'What is the Cajun base of celery, bell pepper, and onions called?', a_de:['Holy Trinity','Mirepoix','Sofrito','Bouquet Garni'], a_en:['Holy Trinity','Mirepoix','Sofrito','Bouquet Garni'], correct:0, tip_de:'The Holy Trinity! Die ungeschlagene Basis für jedes gute Gumbo!', tip_en:'The Holy Trinity! The foundation of all great gumbo!' },
 
-  // ASIEN
   { id:'as1', c:'asien', q_de:'Welches ist das teuerste Gewürz der Welt, handgepflückt aus Krokusblüten?', q_en:'Which is the most expensive spice on earth, hand-harvested from crocus flowers?', a_de:['Safran','Vanille','Kardamom','Sternanis'], a_en:['Saffron','Vanilla','Cardamom','Star Anise'], correct:0, tip_de:'Safran macht den Kuchen krumm und die Schatzkiste leer!', tip_en:'Saffron makes the food golden and the treasure light!' },
   { id:'as2', c:'asien', q_de:'Wie nennt man den berühmten Hitzeschlag im Wok, der rauchiges Aroma erzeugt?', q_en:'What Chinese term refers to the intense smoky breath imparted by a roaring hot wok?', a_de:['Wok Hei','Umami','Sous Vide','Tempura'], a_en:['Wok Hei','Umami','Sous Vide','Tempura'], correct:0, tip_de:'Wok Hei – der Atem des Drachen in deiner Pfanne!', tip_en:'Wok Hei – the breath of the dragon in your skillet!' },
   { id:'as3', c:'asien', q_de:'Welche giftige Fischart darf in Japan nur von lizenzierten Meistern filetiert werden?', q_en:'Which deadly poisonous fish in Japan may only be sliced by certified chefs?', a_de:['Fugu (Kugelfisch)','Barracuda','Blauer Rochen','Riesenmuräne'], a_en:['Fugu (Blowfish)','Barracuda','Blue Stingray','Giant Moray'], correct:0, tip_de:'Fugu! Ein falscher Schnitt an der Leber und du siehst die Englein singen!', tip_en:'Fugu! One wrong incision and it is your final dinner!' },
-  { id:'as4', c:'asien', q_de:'Aus welcher fermentierten Zutat wird traditionelle Sojasauce gebraut?', q_en:'From which fermented legume is authentic soy sauce brewed?', a_de:['Sojabohnen & Weizen','Reiskörner','Erbsen','Mungobohnen'], a_en:['Soybeans & Wheat','Rice grains','Peas','Mung beans'], correct:0, tip_de:'Sojabohnen mit Koji-Pilzen monatelang gereift – pure Umami-Bombe!', tip_en:'Soybeans and roasted wheat aged for months – pure umami!' },
-  { id:'as5', c:'asien', q_de:'Welcher Pfeffer erzeugt kein Brennen, sondern ein prickelndes, taubes Gefühl auf den Lippen?', q_en:'Which Asian spice causes a unique tingling, buzzing numbness on the tongue?', a_de:['Sichuanpfeffer','Cayennepfeffer','Schwarzer Pfeffer','Piment'], a_en:['Sichuan Pepper','Cayenne','Black Pepper','Allspice'], correct:0, tip_de:'Sichuanpfeffer! Das Hydroxy-alpha-Sanshool vibriert auf den Nerven!', tip_en:'Sichuan pepper! Molecules that literally buzz on your nerves!' },
-  { id:'as6', c:'asien', q_de:'Aus welcher Knolle wird echter, feuriger grüner Wasabi gerieben?', q_en:'From which root plant is real fresh green Japanese wasabi freshly grated?', a_de:['Japanischer Meerrettich (Wasabia japonica)','Grüne Chili','Färberdistel','Grünkohlwurzel'], a_en:['Wasabia japonica','Green Chili','Safflower','Kale root'], correct:0, tip_de:'Echter Wasabi! Wächst nur an eiskalten Gebirgsbächen in Japan!', tip_en:'Genuine Wasabia japonica! Thrives only in crisp mountain springs!' },
 
-  // AFRIKA
   { id:'af1', c:'afrika', q_de:'Aus welcher südafrikanischen Pflanze wird koffeinfreier roter Tee gewonnen?', q_en:'From which South African shrub is naturally caffeine-free red tea harvested?', a_de:['Rooibos (Rotbusch)','Moringa','Baobab','Hibiskus'], a_en:['Rooibos','Moringa','Baobab','Hibiscus'], correct:0, tip_de:'Rooibos, die rote Sonne Südafrikas im Becher!', tip_en:'Rooibos, the crimson sun of South Africa in a mug!' },
   { id:'af2', c:'afrika', q_de:'Wie heißt die traditionelle nordafrikanische feurige Chilipaste?', q_en:'What is the famous fiery North African red pepper and spice paste?', a_de:['Harissa','Tahini','Hummus','Chermoula'], a_en:['Harissa','Tahini','Hummus','Chermoula'], correct:0, tip_de:'Harissa brennt zweimal, wenn du nicht aufpasst!', tip_en:'Harissa packs a double punch if you overdo it!' },
   { id:'af3', c:'afrika', q_de:'In welchem konischen Lehmgefäß schmoren Marokkaner ihr Fleisch butterweich?', q_en:'In which conical earthenware pot do North Africans slow-cook fragrant stews?', a_de:['Tajine','Wok','Römertopf','Kessel'], a_en:['Tagine','Wok','Dutch oven','Cauldron'], correct:0, tip_de:'Die Tajine! Der Dampf zirkuliert im spitzen Deckel und tropft zurück!', tip_en:'The Tagine! Steam condenses on the cone and bastes the meat!' },
-  { id:'af4', c:'afrika', q_de:'Aus welchem ostafrikanischen Land stammt die edle Arabica-Kaffeepflanze ursprünglich?', q_en:'In which East African country did wild Coffea arabica coffee beans originate?', a_de:['Äthiopien','Kenia','Tansania','Madagaskar'], a_en:['Ethiopia','Kenya','Tanzania','Madagascar'], correct:0, tip_de:'Äthiopien! Die Region Kaffa gab dem braunen Lebenselixier seinen Namen!', tip_en:'Ethiopia! The ancient region of Kaffa gave coffee its very name!' },
-  { id:'af5', c:'afrika', q_de:'Welche gigantische afrikanische Frucht wird auch „Affenbrot“ genannt?', q_en:'Which giant African super-fruit grows on the mystical "Tree of Life"?', a_de:['Baobab','Marula','Papaya','Durian'], a_en:['Baobab','Marula','Papaya','Durian'], correct:0, tip_de:'Baobab! Vollgepackt mit Vitamin C für lange Kaperfahrten!', tip_en:'Baobab! Packed with vitamin C to fight scurvy on the high seas!' },
 
-  // AUSTRALIEN & OZEANIEN
   { id:'au1', c:'australien', q_de:'Welche australische Nuss gilt als edelste und härteste Nuss der Welt?', q_en:'Which native Australian nut is celebrated as the hardest and richest in the world?', a_de:['Macadamia','Pekannuss','Paranuss','Walnuss'], a_en:['Macadamia','Pecan','Brazil nut','Walnut'], correct:0, tip_de:'Macadamia! 20 Tonnen Druck nötig, aber der butterige Schmelz ist göttlich!', tip_en:'Macadamia! Tough as cannonballs, but rich as gold!' },
-  { id:'au2', c:'australien', q_de:'Wie heißt der salzig-würzige Hefe-Brotaufstrich, den alle Australier lieben?', q_en:'What savory dark brown yeast extract spread is an Australian household obsession?', a_de:['Vegemite','Marmite','Dulce de Leche','Nutella'], a_en:['Vegemite','Marmite','Dulce de Leche','Nutella'], correct:0, tip_de:'Vegemite! Entweder du liebst es oder du gehst freiwillig über Bord!', tip_en:'Vegemite! You either love it or jump off the gangplank!' },
-  { id:'au3', c:'australien', q_de:'Welche Zutat verleiht dem berühmten neuseeländischen „Manuka-Honig“ seine Heilkraft?', q_en:'From which native bush blossom do bees gather rare Manuka honey in New Zealand?', a_de:['Südseemyrte (Manuka-Strauch)','Eukalyptus','Akazie','Klee'], a_en:['Manuka Myrtle tree','Eucalyptus','Acacia','Clover'], correct:0, tip_de:'Manuka! Methylglyoxal (MGO) desinfiziert jeden Kratzer auf See!', tip_en:'Manuka! High MGO content makes it pure liquid health!' },
-  { id:'au4', c:'australien', q_de:'Welcher australische Fisch ist für sein feines, schneeweißes Fleisch weltberühmt?', q_en:'Which iconic Australian estuary gamefish is legendary for its tender white fillets?', a_de:['Barramundi','Kabeljau','Seehecht','Seeteufel'], a_en:['Barramundi','Cod','Hake','Monkfish'], correct:0, tip_de:'Barramundi! In Aborigine-Sprache: "Großer Schuppenfisch"!', tip_en:'Barramundi! Aboriginal for large-scaled river fish!' }
+  { id:'au2', c:'australien', q_de:'Wie heißt der salzig-würzige Hefe-Brotaufstrich, den alle Australier lieben?', q_en:'What savory dark brown yeast extract spread is an Australian household obsession?', a_de:['Vegemite','Marmite','Dulce de Leche','Nutella'], a_en:['Vegemite','Marmite','Dulce de Leche','Nutella'], correct:0, tip_de:'Vegemite! Entweder du liebst es oder du gehst freiwillig über Bord!', tip_en:'Vegemite! You either love it or jump off the gangplank!' }
 ];
 
 /* ====================================================================
-   SPIEL ENGINE MIT SHUFFLE & ANTI-REPEAT SYSTEM
+   SPIEL ENGINE MIT ECHTER KURS-WAHL & WÜRFELSCHRITTEN
 ==================================================================== */
 const Game = {
   days: 1,
   maxDays: 30,
   gold: 10,
   currentNode: 'eu_start',
+  selectedCourseNeighbor: null, // Vor dem Wurf gewählter Kurs
   diceResult: 0,
   earnedMedals: new Set(),
   activeTimer: null,
   isPaused: false,
 
-  /* ANTI-REPEAT SESSION SPEICHER */
   askedQuestionIds: new Set(),
 
-  /* INVENTAR */
   hasKnife: false,
   truffles: 1,
   rum: 0,
@@ -1020,7 +1099,7 @@ const Game = {
     this.renderMap();
     this.applyLanguage();
     this.updateHUD();
-    this.setCaptainMood('normal', TXT[currentLang].startDialogue);
+    this.prepareCourseSelection();
   },
 
   toggleLang() {
@@ -1028,6 +1107,7 @@ const Game = {
     document.getElementById('btn-lang').innerText = currentLang === 'de' ? '🇩🇪 DE' : '🇬🇧 EN';
     this.applyLanguage();
     this.updateHUD();
+    this.renderSteckbrett();
   },
 
   applyLanguage() {
@@ -1037,7 +1117,6 @@ const Game = {
     document.getElementById('lbl-days').innerText = t.days;
     document.getElementById('lbl-gold').innerText = t.gold;
     document.getElementById('lbl-rules').innerText = t.rules;
-    document.getElementById('btn-roll').innerText = t.rollBtn;
     document.getElementById('btn-reroll').innerText = t.rerollBtn;
     document.getElementById('btn-shop').innerText = t.shopBtn;
   },
@@ -1089,6 +1168,16 @@ const Game = {
       pin.id = 'pin-' + i;
       rack.appendChild(pin);
     }
+
+    // Medaillen-Status Beschriftung aktualisieren
+    ['europa', 'asien', 'afrika', 'nordamerika', 'suedamerika', 'australien'].forEach(c => {
+      const stEl = document.getElementById('st-' + c);
+      const isEarned = this.earnedMedals.has(c);
+      if (stEl) {
+        stEl.className = 'medal-status ' + (isEarned ? 'earned' : 'missing');
+        stEl.innerText = isEarned ? TXT[currentLang].earned : TXT[currentLang].missing;
+      }
+    });
   },
 
   updateHUD() {
@@ -1119,12 +1208,7 @@ const Game = {
     document.getElementById('cnt-rum').innerText = this.rum;
     document.getElementById('cnt-compass').innerText = this.compasses;
 
-    const btnReroll = document.getElementById('btn-reroll');
-    if (this.compasses > 0 && this.diceResult > 0 && document.getElementById('btn-roll').disabled) {
-      btnReroll.style.display = 'block';
-    } else {
-      btnReroll.style.display = 'none';
-    }
+    this.renderMap();
   },
 
   setCaptainMood(mood, text) {
@@ -1206,8 +1290,22 @@ const Game = {
       div.style.left = `${n.x}%`;
       div.style.top = `${n.y}%`;
       div.title = n.name;
-      div.innerHTML = n.type === 'quiz' ? '❓' : n.type === 'battle' ? '⚔️' : n.type === 'treasure' ? '💰' : n.type === 'danger' ? '💀' : '🧭';
-      div.onclick = () => this.selectNode(n.id);
+
+      // Visuelle Kennzeichnung fehlend vs. geholt
+      if (n.type === 'quiz') {
+        const earned = this.earnedMedals.has(n.continent);
+        if (earned) {
+          div.classList.add('completed-continent');
+          div.innerHTML = '✅';
+        } else {
+          div.classList.add('missing-continent');
+          div.innerHTML = '❓';
+        }
+      } else {
+        div.innerHTML = n.type === 'battle' ? '⚔️' : n.type === 'treasure' ? '💰' : n.type === 'danger' ? '💀' : '🧭';
+      }
+
+      div.onclick = () => this.handleNodeClick(n.id);
       container.appendChild(div);
     });
 
@@ -1229,7 +1327,46 @@ const Game = {
     wrapper.style.top = `${node.y}%`;
   },
 
+  /* ====================================================================
+     KURS-WAHL VOR DEM WURF (NAVIGATIONS-ENGINE)
+  ==================================================================== */
+  prepareCourseSelection() {
+    this.selectedCourseNeighbor = null;
+    const btnRoll = document.getElementById('btn-roll');
+    btnRoll.disabled = true;
+    btnRoll.innerText = '🧭 ' + (currentLang === 'de' ? 'Wähle erst deinen Kurs!' : 'Choose your course first!');
+
+    const curr = NODES.find(n => n.id === this.currentNode);
+    curr.neighbors.forEach(nid => {
+      const el = document.getElementById('node-' + nid);
+      if (el) el.classList.add('selectable-course');
+    });
+
+    this.setCaptainMood('normal', TXT[currentLang].selectCoursePrompt);
+  },
+
+  handleNodeClick(clickedId) {
+    const curr = NODES.find(n => n.id === this.currentNode);
+    // Klick auf Nachbarn wählt den Kurs VOR dem Wurf
+    if (curr.neighbors.includes(clickedId)) {
+      document.querySelectorAll('.node-point').forEach(el => el.classList.remove('selectable-course'));
+      this.selectedCourseNeighbor = clickedId;
+
+      const chosenNode = NODES.find(n => n.id === clickedId);
+      const targetEl = document.getElementById('node-' + clickedId);
+      if (targetEl) targetEl.classList.add('selectable-course');
+
+      const btnRoll = document.getElementById('btn-roll');
+      btnRoll.disabled = false;
+      btnRoll.innerText = TXT[currentLang].rollBtn + ` [Kurs: ${chosenNode.name.split('/')[0]}]`;
+
+      Sound.play('step');
+      this.setCaptainMood('normal', TXT[currentLang].rollPrompt);
+    }
+  },
+
   rollDice() {
+    if (!this.selectedCourseNeighbor) return;
     Sound.play('roll');
     const btn = document.getElementById('btn-roll');
     btn.disabled = true;
@@ -1238,35 +1375,26 @@ const Game = {
     const cube = document.getElementById('dice-cube');
     arena.style.display = 'block';
 
-    const result = Math.floor(Math.random() * 6) + 1;
-    this.diceResult = result;
+    // Schritte: 1 bis 3 (perfekt kalkuliert für echte Schiffsreisen)
+    const steps = Math.floor(Math.random() * 3) + 1;
+    this.diceResult = steps;
 
     const rotations = {
       1: { x: 0, y: 0 },
       2: { x: 0, y: 90 },
-      3: { x: -90, y: 0 },
-      4: { x: 90, y: 0 },
-      5: { x: 0, y: -90 },
-      6: { x: 0, y: 180 }
+      3: { x: -90, y: 0 }
     };
 
     const extraTurns = 720;
-    const target = rotations[result];
+    const target = rotations[steps];
     cube.style.transform = `rotateX(${target.x + extraTurns}deg) rotateY(${target.y + extraTurns}deg)`;
 
     setTimeout(() => {
       arena.style.display = 'none';
       cube.style.transform = 'none';
+      document.querySelectorAll('.node-point').forEach(el => el.classList.remove('selectable-course'));
 
-      const curr = NODES.find(n => n.id === this.currentNode);
-      curr.neighbors.forEach(nid => {
-        const el = document.getElementById('node-' + nid);
-        if (el) el.classList.add('reachable');
-      });
-
-      this.updateHUD();
-      const msg = currentLang === 'de' ? `Eine ${result} gewürfelt! Wähle deinen Kurs!` : `Rolled a ${result}! Choose your course!`;
-      this.setCaptainMood('normal', msg);
+      this.executeMultiStepMovement(this.selectedCourseNeighbor, steps);
     }, 1300);
   },
 
@@ -1277,21 +1405,34 @@ const Game = {
     this.rollDice();
   },
 
-  selectNode(targetId) {
-    const curr = NODES.find(n => n.id === this.currentNode);
-    if (!curr.neighbors.includes(targetId)) return;
+  /* ZIEHT FELDER GENAU ENTLANG DER GEWÄHLTEN ROUTE VORWÄRTS */
+  executeMultiStepMovement(firstStepNodeId, totalSteps) {
+    let currentStep = 0;
+    let prevNodeId = this.currentNode;
+    let nextNodeId = firstStepNodeId;
 
-    document.querySelectorAll('.node-point').forEach(el => el.classList.remove('reachable'));
-    this.positionShip(targetId, true);
-    this.currentNode = targetId;
-    this.days++;
-    this.diceResult = 0;
-    this.updateHUD();
+    const stepInterval = setInterval(() => {
+      currentStep++;
+      Sound.play('step');
+      this.positionShip(nextNodeId, true);
+      this.currentNode = nextNodeId;
 
-    setTimeout(() => {
-      this.triggerNodeEvent(NODES.find(n => n.id === targetId));
-      document.getElementById('btn-roll').disabled = false;
-    }, 1000);
+      if (currentStep >= totalSteps) {
+        clearInterval(stepInterval);
+        this.days++;
+        this.updateHUD();
+
+        setTimeout(() => {
+          this.triggerNodeEvent(NODES.find(n => n.id === this.currentNode));
+        }, 500);
+      } else {
+        // Nächsten Knoten entlang der Reiseroute suchen
+        const currNode = NODES.find(n => n.id === nextNodeId);
+        const furtherNodes = currNode.neighbors.filter(id => id !== prevNodeId);
+        prevNodeId = nextNodeId;
+        nextNodeId = furtherNodes.length > 0 ? furtherNodes[0] : currNode.neighbors[0];
+      }
+    }, 700);
   },
 
   triggerNodeEvent(node) {
@@ -1310,6 +1451,8 @@ const Game = {
       this.openDanger();
     } else if (node.type === 'port') {
       this.openShop();
+    } else {
+      this.prepareCourseSelection();
     }
   },
 
@@ -1318,6 +1461,7 @@ const Game = {
     const t = TXT[currentLang];
     document.getElementById('modal-title').innerText = t.shopTitle;
     document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
     if (this.activeTimer) clearInterval(this.activeTimer);
 
     document.getElementById('modal-content').innerHTML = `
@@ -1392,23 +1536,20 @@ const Game = {
       Sound.play('buy');
     }
     this.updateHUD();
+    this.renderSteckbrett();
     this.openShop();
   },
 
   /* ====================================================================
-     SHUFFLE & ANTI-REPEAT QUIZ ENGINE
+     QUIZ: 15 SEKUNDEN & PROMINENTER 50:50 TRÜFFEL-JOKER
   ==================================================================== */
   openQuiz(continent) {
-    // 1. Fragen filtern, die noch nicht gestellt wurden
     let pool = QUESTIONS.filter(q => (q.c === continent || q.c === 'stefan') && !this.askedQuestionIds.has(q.id));
-    
-    // Falls alle Fragen aufgebraucht sind: Stapel für diesen Kontinent zurücksetzen!
     if (pool.length === 0) {
       QUESTIONS.filter(q => q.c === continent || q.c === 'stefan').forEach(q => this.askedQuestionIds.delete(q.id));
       pool = QUESTIONS.filter(q => q.c === continent || q.c === 'stefan');
     }
 
-    // 2. Zufällige Frage ziehen & als gestellt markieren
     const qObj = pool[Math.floor(Math.random() * pool.length)];
     this.askedQuestionIds.add(qObj.id);
 
@@ -1417,12 +1558,29 @@ const Game = {
     const content = document.getElementById('modal-content');
     const actions = document.getElementById('modal-actions');
     const bar = document.getElementById('timer-bar');
+    const timerText = document.getElementById('timer-text');
 
     title.innerText = `KOMBÜSEN-QUIZ: ${continent.toUpperCase()}`;
     const questionText = currentLang === 'de' ? qObj.q_de : qObj.q_en;
-    content.innerHTML = `<h2 style="font-size:18px; margin-bottom:12px;">${questionText}</h2>`;
+    
+    // Joker Banner
+    let jokerHTML = '';
+    if (this.truffles > 0) {
+      jokerHTML = `
+        <div class="joker-banner">
+          <button id="btn-use-joker" class="btn-joker-prominent" onclick="Game.useTruffleJoker('${qObj.id}')">
+            ${TXT[currentLang].jokerBtn} (${this.truffles}x)
+          </button>
+        </div>
+      `;
+    }
 
-    // 3. ANTWORTEN ZUFÄLLIG DURCHMISCHEN (Anti-Predict-Shuffle!)
+    content.innerHTML = `
+      <h2 style="font-size:18px; margin-bottom:10px;">${questionText}</h2>
+      ${jokerHTML}
+    `;
+
+    // Antworten mischen
     const rawAnswers = currentLang === 'de' ? qObj.a_de : qObj.a_en;
     const shuffledOrder = [0, 1, 2, 3];
     for (let i = shuffledOrder.length - 1; i > 0; i--) {
@@ -1442,40 +1600,37 @@ const Game = {
       answersDiv.appendChild(btn);
     });
     content.appendChild(answersDiv);
-
     actions.innerHTML = '';
-    if (this.truffles > 0) {
-      const jBtn = document.createElement('button');
-      jBtn.className = 'btn-joker';
-      jBtn.id = 'btn-use-joker';
-      jBtn.innerText = `${TXT[currentLang].jokerBtn} [${this.truffles}x]`;
-      jBtn.onclick = () => this.useTruffleJoker(qObj);
-      actions.appendChild(jBtn);
-    }
 
     modal.classList.add('active');
 
-    let left = 100;
+    // 15 Sekunden Timer
+    let secondsLeft = 15;
+    timerText.innerText = `⏳ ${secondsLeft}s`;
     bar.style.width = '100%';
     if (this.activeTimer) clearInterval(this.activeTimer);
+    
     this.activeTimer = setInterval(() => {
-      left -= 2;
-      bar.style.width = left + '%';
-      if (left <= 0) {
+      secondsLeft--;
+      timerText.innerText = `⏳ ${secondsLeft}s`;
+      bar.style.width = (secondsLeft / 15 * 100) + '%';
+      if (secondsLeft <= 0) {
         clearInterval(this.activeTimer);
         this.handleAnswer(false, qObj, continent);
       }
-    }, 200);
+    }, 1000);
   },
 
-  useTruffleJoker(qObj) {
+  useTruffleJoker(qId) {
     if (this.truffles <= 0) return;
     this.truffles--;
     Sound.play('buy');
     this.updateHUD();
 
-    document.getElementById('btn-use-joker').style.display = 'none';
+    const jBtn = document.getElementById('btn-use-joker');
+    if (jBtn) jBtn.style.display = 'none';
 
+    const qObj = QUESTIONS.find(q => q.id === qId);
     let disabledCount = 0;
     for (let pos = 0; pos < 4; pos++) {
       const btn = document.getElementById('ans-btn-' + pos);
@@ -1499,6 +1654,7 @@ const Game = {
       this.gold = Math.min(50, this.gold + 5);
       this.earnedMedals.add(continent);
       this.updateHUD();
+      this.renderSteckbrett();
       this.setCaptainMood('win', tipText);
       content.innerHTML = `<h2 style="color:green;">${currentLang === 'de' ? 'RICHTIG!' : 'CORRECT!'}</h2><p>${tipText}</p><p><strong>+5 Gold &amp; Medaillon!</strong></p>`;
     } else {
@@ -1516,6 +1672,7 @@ const Game = {
     const t = TXT[currentLang];
     document.getElementById('modal-title').innerText = t.battleTitle;
     document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-text').innerText = '';
     if (this.activeTimer) clearInterval(this.activeTimer);
 
     document.getElementById('modal-content').innerHTML = `
@@ -1578,7 +1735,6 @@ const Game = {
         
         let pRoll = Math.floor(Math.random() * 6) + 1;
         const eRoll = Math.floor(Math.random() * 6) + 1;
-        
         if (this.hasKnife) pRoll += 1;
         
         pBox.innerText = pRoll;
@@ -1599,6 +1755,7 @@ const Game = {
         }
         
         this.updateHUD();
+        this.renderSteckbrett();
         document.getElementById('modal-actions').innerHTML = `
           <button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].continueBtn}</button>
         `;
@@ -1611,8 +1768,11 @@ const Game = {
     this.spawnFlyingCoins(loot);
     this.gold = Math.min(50, this.gold + loot);
     this.updateHUD();
+    this.renderSteckbrett();
     this.setCaptainMood('win', currentLang === 'de' ? 'Eine Schatztruhe voll Gold am Strand!' : 'A chest of gold washed ashore!');
     document.getElementById('modal-title').innerText = currentLang === 'de' ? 'SCHATZ GEFUNDEN!' : 'TREASURE FOUND!';
+    document.getElementById('timer-text').innerText = '';
+    document.getElementById('timer-bar').style.width = '0%';
     document.getElementById('modal-content').innerHTML = `<h2>💰 +${loot} Gold-Pins!</h2>`;
     document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
     document.getElementById('event-modal').classList.add('active');
@@ -1621,10 +1781,13 @@ const Game = {
   openDanger() {
     const modal = document.getElementById('event-modal');
     document.getElementById('modal-title').innerText = 'STEFAN-ROGERS-FELD!';
+    document.getElementById('timer-text').innerText = '';
+    document.getElementById('timer-bar').style.width = '0%';
 
     if (this.rum > 0) {
       this.rum--;
       this.updateHUD();
+      this.renderSteckbrett();
       Sound.play('win');
       this.setCaptainMood('win', currentLang === 'de' ? 'Das Fass Rum hat die Kombüse gerettet!' : 'The rum cask saved our kitchen!');
       document.getElementById('modal-content').innerHTML = `
@@ -1636,6 +1799,7 @@ const Game = {
       const loss = Math.floor(Math.random() * 4) + 2;
       this.gold = Math.max(0, this.gold - loss);
       this.updateHUD();
+      this.renderSteckbrett();
       this.setCaptainMood('burn', currentLang === 'de' ? 'Kombüse stand lichterloh in Flammen!' : 'Galley was completely ablaze!');
       document.getElementById('modal-content').innerHTML = `
         <h2>🔥 HAVARIE &amp; FEUER!</h2>
@@ -1652,6 +1816,8 @@ const Game = {
     if (this.days >= this.maxDays) {
       alert(currentLang === 'de' ? 'Die 30 Tage sind abgelaufen! Expedition gescheitert.' : '30 days expired! Expedition failed.');
       location.reload();
+    } else {
+      this.prepareCourseSelection();
     }
   },
 
@@ -1660,6 +1826,8 @@ const Game = {
     this.spawnFlyingCoins(15);
     this.setCaptainMood('win', 'BÄM! Da ist das Ding! Alle 6 Kontinente vereint!');
     document.getElementById('modal-title').innerText = 'KAPITÄNS-TRIUMPH!';
+    document.getElementById('timer-text').innerText = '';
+    document.getElementById('timer-bar').style.width = '0%';
     document.getElementById('modal-content').innerHTML = `
       <h1 style="color:gold;">KULINARISCHER WELTMEISTER!</h1>
       <p>Alle 6 Medaillons und ${this.gold} Goldbarren!</p>
