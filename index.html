@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Freibeuter der Meere – Die kulinarische Kaperfahrt</title>
+<title>Freibeuter der Meere – Privateers of the Seas</title>
 <style>
   :root {
     --gold: #f4c430;
@@ -100,18 +100,32 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    font-size: 15px;
+    padding: 0 15px;
+    font-size: 14px;
     z-index: 20;
   }
+  .hud-stats { display: flex; align-items: center; gap: 10px; }
   .hud-badge {
     background: rgba(0,0,0,0.6);
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 20px;
     border: 1px solid var(--gold);
     color: var(--gold);
     font-weight: bold;
   }
+  .hud-controls { display: flex; align-items: center; gap: 8px; }
+  .btn-icon {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .btn-icon:hover { background: var(--gold); color: #000; }
 
   /* WORKSPACE */
   #play-area {
@@ -278,7 +292,7 @@
     overflow-y: auto;
   }
 
-  /* INVENTAR-LEISTE */
+  /* INVENTAR */
   #inventory-bar {
     display: flex;
     justify-content: space-between;
@@ -288,19 +302,10 @@
     padding: 6px 10px;
     font-size: 13px;
   }
-  .inv-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: default;
-  }
+  .inv-item { display: flex; align-items: center; gap: 4px; cursor: default; }
   .inv-item.active { color: var(--gold); font-weight: bold; }
 
-  #turn-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  #turn-controls { display: flex; flex-direction: column; gap: 6px; }
   .btn-turn {
     background: linear-gradient(180deg, #8b0000, #4a0000);
     border: 2px solid var(--gold);
@@ -431,6 +436,8 @@
     position: relative;
     text-align: center;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-height: 90vh;
+    overflow-y: auto;
   }
   @keyframes popIn {
     from { opacity: 0; transform: scale(0.85); }
@@ -556,6 +563,22 @@
     cursor: pointer;
     margin-top: 10px;
   }
+
+  /* REGELN / RULES TEXT */
+  .rules-content {
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rules-section {
+    background: #f5eedb;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 4px solid var(--dark-gold);
+  }
 </style>
 </head>
 <body>
@@ -565,15 +588,25 @@
 
   <!-- 1. SPLASH -->
   <div id="splash-screen" class="screen active">
-    <button class="btn-epic" onclick="Game.start()">Leinen Los &amp; Kaperfahrt!</button>
+    <button class="btn-epic" id="btn-start-game" onclick="Game.start()">Leinen Los &amp; Kaperfahrt!</button>
   </div>
 
   <!-- 2. MAIN SCREEN -->
   <div id="main-screen" class="screen">
     <div id="top-hud">
-      <div>📍 HAFEN: <span id="current-location" class="hud-badge">HAMBURG / LISSABON</span></div>
-      <div>⏳ REISETAG: <span id="travel-days" class="hud-badge">1 / 30</span></div>
-      <div>💰 GOLDPINS: <span id="gold-count" class="hud-badge">10 / 50</span></div>
+      <div class="hud-stats">
+        <div><span id="lbl-port">📍 HAFEN:</span> <span id="current-location" class="hud-badge">HAMBURG / LISSABON</span></div>
+        <div><span id="lbl-days">⏳ REISETAG:</span> <span id="travel-days" class="hud-badge">1 / 30</span></div>
+        <div><span id="lbl-gold">💰 GOLDPINS:</span> <span id="gold-count" class="hud-badge">10 / 50</span></div>
+      </div>
+
+      <!-- PROFI CONTROLS: MUTE, PAUSE, RULES, LANG -->
+      <div class="hud-controls">
+        <button id="btn-lang" class="btn-icon" onclick="Game.toggleLang()">🇩🇪 DE</button>
+        <button id="btn-mute" class="btn-icon" onclick="Sound.toggleMute()">🔊</button>
+        <button id="btn-pause" class="btn-icon" onclick="Game.togglePause()">⏸️</button>
+        <button id="btn-rules" class="btn-icon" onclick="Game.openRules()">📜 <span id="lbl-rules">Regeln</span></button>
+      </div>
     </div>
 
     <div id="play-area">
@@ -622,11 +655,10 @@
         </div>
       </div>
 
-      <!-- CAPTAIN SIDEBAR MIT INVENTAR & SHOP -->
+      <!-- CAPTAIN SIDEBAR -->
       <div id="captain-sidebar">
         <div id="captain-avatar"></div>
         
-        <!-- INVENTAR-LEISTE -->
         <div id="inventory-bar">
           <div id="inv-knife" class="inv-item" title="Damaszener-Messer: +1 im Kampf">🔪 <span>-</span></div>
           <div id="inv-truffle" class="inv-item" title="Trüffel-Joker (50:50 im Quiz)">🧂 <span id="cnt-truffle">0</span></div>
@@ -639,7 +671,7 @@
         <div id="turn-controls">
           <button id="btn-roll" class="btn-turn" onclick="Game.rollDice()">🎲 Kompass &amp; Würfel werfen</button>
           <button id="btn-reroll" class="btn-turn" style="display:none; background:#8a5a00;" onclick="Game.rerollDice()">🧭 Neu würfeln (Kompass)</button>
-          <button class="btn-shop" onclick="Game.openShop()">🏴‍☠️ Kombüsen-Schwarzmarkt</button>
+          <button id="btn-shop" class="btn-shop" onclick="Game.openShop()">🏴‍☠️ Kombüsen-Schwarzmarkt</button>
         </div>
       </div>
     </div>
@@ -682,12 +714,109 @@ const ASSETS = {
   pirateEnemy: 'pirate_enemy.png'
 };
 
+/* ====================================================================
+   I18N / MEHRSPRACHIGKEIT (GER / ENG)
+==================================================================== */
+let currentLang = 'de';
+
+const TXT = {
+  de: {
+    startBtn: "Leinen Los & Kaperfahrt!",
+    port: "📍 HAFEN:",
+    days: "⏳ REISETAG:",
+    gold: "💰 GOLDPINS:",
+    rules: "Regeln",
+    rollBtn: "🎲 Kompass & Würfel werfen",
+    rerollBtn: "🧭 Neu würfeln (Kompass)",
+    shopBtn: "🏴‍☠️ Kombüsen-Schwarzmarkt",
+    paused: "SPIEL PAUSIERT",
+    pausedDesc: "Das Spiel ruht im sicheren Hafen.",
+    resumeBtn: "Weitersegeln",
+    closeBtn: "Schließen",
+    continueBtn: "Weiter",
+    sailOnBtn: "Weitersegeln",
+    startDialogue: "Ahoi Marco! Bring mir die 6 Kontinente nach Hamburg zurück. Rüste dich im Schwarzmarkt aus!",
+    battleTitle: "⚔️ KAPER-DUELL IM NEBEL!",
+    battleDesc: "Ein Piratenschiff blockiert deinen Kurs! Käpt'n Knorrenbart fordert dich zum Duell!",
+    battleRollBtn: "⚔️ Knochen werfen!",
+    shopTitle: "🏴‍☠️ STEFANS KOMBÜSEN-SCHWARZMARKT",
+    shopDesc: "Rüste dein Schiff auf! Gold ist zum Ausgeben da, mein Freund!",
+    knifeName: "🔪 Damaszener-Messer",
+    knifeDesc: "Dauerhafter Bonus: +1 auf jeden Würfelwurf in Seeschlachten!",
+    truffleName: "🧂 Trüffel-Joker",
+    truffleDesc: "Löscht im Quiz zwei falsche Antworten weg (50:50)!",
+    rumName: "🥃 Fass Hochsee-Rum",
+    rumDesc: "Löscht Brände: Schützt dich automatisch vor Goldverlust bei Havarie!",
+    compassName: "🧭 Gewürz-Kompass",
+    compassDesc: "Erlaubt dir auf hoher See einen zweiten Würfelwurf!",
+    buyBtn: "Kaufen",
+    ownedBtn: "Bereits erworben",
+    jokerBtn: "🧂 Trüffel-Joker einsetzen (50:50)",
+    rulesTitle: "📜 DIE FREIBEUTER-REGELN",
+    rules1Title: "1. Das große Ziel",
+    rules1Desc: "Bereise die Weltkarte, sammle alle 6 Kontinent-Medaillons durch Quizfragen ein und kehre mit mindestens 25 Gold-Pins vor Ablauf von 30 Tagen in den Heimathafen zurück!",
+    rules2Title: "2. Die Felder",
+    rules2Desc: "❓ <b>Quiz:</b> Beantworte die Kontinent-Frage für Medaillon & Gold!<br>⚔️ <b>Battle:</b> Würfelduell gegen Piraten um Goldpins!<br>💰 <b>Schatz:</b> Fette Goldbeute am Strand!<br>💀 <b>Havarie:</b> Sturm zerstört Vorräte (außer du hast Rum!).",
+    rules3Title: "3. Der Schwarzmarkt",
+    rules3Desc: "Kombüsen-Messer geben +1 im Kampf, Trüffel halbieren falsche Antworten im Quiz und Rum rettet dein Gold bei Sturm!"
+  },
+  en: {
+    startBtn: "Set Sail & Start Voyage!",
+    port: "📍 PORT:",
+    days: "⏳ DAY:",
+    gold: "💰 GOLD PINS:",
+    rules: "Rules",
+    rollBtn: "🎲 Spin Compass & Roll Dice",
+    rerollBtn: "🧭 Reroll Dice (Compass)",
+    shopBtn: "🏴‍☠️ Galley Black Market",
+    paused: "GAME PAUSED",
+    pausedDesc: "The ship is resting safely in port.",
+    resumeBtn: "Resume Voyage",
+    closeBtn: "Close",
+    continueBtn: "Continue",
+    sailOnBtn: "Sail On",
+    startDialogue: "Ahoy Marco! Bring all 6 continent relics back to Hamburg. Equip yourself in the black market!",
+    battleTitle: "⚔️ BOARDING DUEL IN THE MIST!",
+    battleDesc: "A pirate vessel blocks your path! Captain Knorrenbart challenges you to a dice duel!",
+    battleRollBtn: "⚔️ Roll the Bones!",
+    shopTitle: "🏴‍☠️ STEFAN'S GALLEY BLACK MARKET",
+    shopDesc: "Upgrade your vessel! Gold is meant to be spent, mate!",
+    knifeName: "🔪 Damascus Chef Knife",
+    knifeDesc: "Permanent perk: +1 to your dice roll in all sea battles!",
+    truffleName: "🧂 Truffle Joker",
+    truffleDesc: "Eliminates two incorrect options in the trivia quiz (50:50)!",
+    rumName: "🥃 Cask of Navy Rum",
+    rumDesc: "Extinguishes fires: Automatically shields you from gold loss on hazard nodes!",
+    compassName: "🧭 Spice Compass",
+    compassDesc: "Allows a second dice roll attempt on the open seas!",
+    buyBtn: "Buy",
+    ownedBtn: "Owned",
+    jokerBtn: "🧂 Use Truffle Joker (50:50)",
+    rulesTitle: "📜 PIRATE EXPEDITION RULES",
+    rules1Title: "1. The Grand Objective",
+    rules1Desc: "Circumnavigate the globe, earn all 6 continent medallions through culinary trivia, and return to home port with at least 25 gold pins within 30 days!",
+    rules2Title: "2. Waypoints",
+    rules2Desc: "❓ <b>Quiz:</b> Answer correctly to claim continent medals & gold!<br>⚔️ <b>Battle:</b> Face rival pirates in dice duels for loot!<br>💰 <b>Treasure:</b> Free gold pins on beaches!<br>💀 <b>Hazard:</b> Storms destroy supplies (unless protected by Rum!).",
+    rules3Title: "3. The Black Market",
+    rules3Desc: "Damascus knives grant +1 in battles, truffles provide 50:50 quiz lifelines, and rum casks protect your gold during disasters!"
+  }
+};
+
+/* ====================================================================
+   SOUND ENGINE (MUTE-UNTERSTÜTZUNG)
+==================================================================== */
 const Sound = {
   ctx: null,
+  muted: false,
   init() {
     if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
   },
+  toggleMute() {
+    this.muted = !this.muted;
+    document.getElementById('btn-mute').innerText = this.muted ? '🔇' : '🔊';
+  },
   play(type) {
+    if (this.muted) return;
     this.init();
     const t = this.ctx.currentTime;
 
@@ -781,6 +910,9 @@ const Sound = {
   }
 };
 
+/* ====================================================================
+   WELTKARTEN-WEGPUNKTE (NODES)
+==================================================================== */
 const NODES = [
   { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', x: 48, y: 28, type: 'port', neighbors: ['nordatlantik', 'westafrika'] },
   { id: 'nordatlantik', name: 'Nordatlantik', continent: 'europa', x: 34, y: 26, type: 'battle', neighbors: ['eu_start', 'nordamerika', 'karibik'] },
@@ -798,23 +930,24 @@ const NODES = [
   { id: 'australien', name: 'Sydney / Korallenmeer', continent: 'australien', x: 86, y: 72, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost', 'kap_hoorn'] }
 ];
 
+/* ZWEISPRACHIGE FRAGEN (GER / ENG) */
 const QUESTIONS = [
-  { c: 'europa', q: 'Wie nennt man das feine Schneiden von Gemüse in 1 mm dünne Streifen?', a: ['Julienne', 'Brunoise', 'Chiffonade', 'Batonnet'], correct: 0, tip: 'Julienne! Wenn die zu dick sind, fliegen sie bei mir über Bord!' },
-  { c: 'europa', q: 'Welche Zutat gehört auf keinen Fall in eine traditionelle Sauce Hollandaise?', a: ['Mehl', 'Eigelb', 'Geklärte Butter', 'Zitronensaft'], correct: 0, tip: 'Hollandaise ist eine reine Emulsion – Mehl hat da absolut nix verloren!' },
-  { c: 'suedamerika', q: 'In welchem Land gilt gegrilltes Meerschweinchen („Cuy“) als Delikatesse?', a: ['Peru', 'Brasilien', 'Kolumbien', 'Argentinien'], correct: 0, tip: 'Das Original aus den Anden – schmeckt überraschend wie Wachtel!' },
-  { c: 'suedamerika', q: 'Welches Nationalgericht wird roh in kaltem Limettensaft mariniert gegart?', a: ['Ceviche', 'Feijoada', 'Empanada', 'Asado'], correct: 0, tip: 'Ceviche! Die Säure der Limette denaturiert das Eiweiß!' },
-  { c: 'asien', q: 'Welches ist das teuerste Gewürz der Welt, handgepflückt aus Krokusblüten?', a: ['Safran', 'Vanille', 'Kardamom', 'Sternanis'], correct: 0, tip: 'Safran macht den Kuchen krumm und die Kasse voll!' },
-  { c: 'asien', q: 'Wie nennt man den berühmten Hitzeschlag im Wok, der rauchiges Aroma erzeugt?', a: ['Wok Hei', 'Umami', 'Sous Vide', 'Tempura'], correct: 0, tip: 'Wok Hei – der Atem des Drachen in deiner Pfanne!' },
-  { c: 'afrika', q: 'Aus welcher Pflanze wird der berühmte koffeinfreie rote Tee gewonnen?', a: ['Rooibos', 'Moringa', 'Baobab', 'Hibiskus'], correct: 0, tip: 'Rooibos, die rote Sonne Südafrikas!' },
-  { c: 'afrika', q: 'Wie heißt die traditionelle nordafrikanische feurige Chilipaste?', a: ['Harissa', 'Tahini', 'Hummus', 'Chermoula'], correct: 0, tip: 'Harissa brennt zweimal, wenn du nicht aufpasst!' },
-  { c: 'nordamerika', q: 'Welcher Bundesstaat ist weltberühmt für „Low & Slow“ Barbecue Beef-Brisket?', a: ['Texas', 'Kalifornien', 'New York', 'Florida'], correct: 0, tip: '16 Stunden im Rauch, saftiger geht Fleisch nicht!' },
-  { c: 'australien', q: 'Welche australische Nuss gilt als edelste und härteste Nuss der Welt?', a: ['Macadamia', 'Pekannuss', 'Paranuss', 'Walnuss'], correct: 0, tip: 'Da brauchst du fast einen Vorschlaghammer!' },
-  { c: 'stefan', q: 'Wie wird Starkoch Stefan Marquard in Fachkreisen genannt?', a: ['Freibeuter der Küche', 'Freiherr der Kombüse', 'Frechdachs des Südens', 'König der Woks'], correct: 0, tip: 'Freibeuter natürlich! Immer gegen den Strom!' },
-  { c: 'stefan', q: 'Mit welchem Show-Gerät rührte Stefan auf der Essener Messe Riesen-Portionen an?', a: ['Betonmischmaschine', 'Dampfwalze', 'Schweißbrenner', 'Kettensäge'], correct: 0, tip: 'Die Betonmisch-Pfanne! Da wurde gerührt wie auf der Großbaustelle!' }
+  { c: 'europa', q_de: 'Wie nennt man das feine Schneiden von Gemüse in 1 mm dünne Streifen?', q_en: 'What culinary term describes cutting vegetables into thin matchstick strips?', a_de: ['Julienne', 'Brunoise', 'Chiffonade', 'Batonnet'], a_en: ['Julienne', 'Brunoise', 'Chiffonade', 'Batonnet'], correct: 0, tip_de: 'Julienne! Wenn die zu dick sind, fliegen sie bei mir über Bord!', tip_en: 'Julienne! Anything thicker gets tossed overboard!' },
+  { c: 'europa', q_de: 'Welche Zutat gehört auf keinen Fall in eine echte Sauce Hollandaise?', q_en: 'Which ingredient strictly does not belong in a genuine Hollandaise sauce?', a_de: ['Mehl', 'Eigelb', 'Geklärte Butter', 'Zitronensaft'], a_en: ['Flour', 'Egg Yolk', 'Clarified Butter', 'Lemon Juice'], correct: 0, tip_de: 'Hollandaise ist eine reine Emulsion – Mehl hat da nix verloren!', tip_en: 'Hollandaise is an emulsion – flour is strictly forbidden!' },
+  { c: 'suedamerika', q_de: 'In welchem Land gilt gegrilltes Meerschweinchen („Cuy“) als Delikatesse?', q_en: 'In which South American nation is roasted guinea pig ("Cuy") a festive delicacy?', a_de: ['Peru', 'Brasilien', 'Kolumbien', 'Argentinien'], a_en: ['Peru', 'Brazil', 'Colombia', 'Argentina'], correct: 0, tip_de: 'Das Original aus den Anden – schmeckt überraschend wie Wachtel!', tip_en: 'Traditional Andean specialty – tastes surprisingly like quail!' },
+  { c: 'suedamerika', q_de: 'Welches Nationalgericht wird roh in kaltem Limettensaft mariniert gegart?', q_en: 'Which iconic seafood dish is "cooked" solely in chilled citrus lime juice?', a_de: ['Ceviche', 'Feijoada', 'Empanada', 'Asado'], a_en: ['Ceviche', 'Feijoada', 'Empanada', 'Asado'], correct: 0, tip_de: 'Ceviche! Die Säure der Limette denaturiert das Eiweiß!', tip_en: 'Ceviche! The natural acid denatures the fish protein!' },
+  { c: 'asien', q_de: 'Welches ist das teuerste Gewürz der Welt, handgepflückt aus Krokusblüten?', q_en: 'Which is the most precious spice on earth, handpicked from crocus blossoms?', a_de: ['Safran', 'Vanille', 'Kardamom', 'Sternanis'], a_en: ['Saffron', 'Vanilla', 'Cardamom', 'Star Anise'], correct: 0, tip_de: 'Safran macht den Kuchen krumm und die Kasse voll!', tip_en: 'Saffron makes the food golden and the chest light!' },
+  { c: 'asien', q_de: 'Wie nennt man den berühmten Hitzeschlag im Wok, der rauchiges Aroma erzeugt?', q_en: 'What Chinese term refers to the intense smoky breath imparted by a hot wok?', a_de: ['Wok Hei', 'Umami', 'Sous Vide', 'Tempura'], a_en: ['Wok Hei', 'Umami', 'Sous Vide', 'Tempura'], correct: 0, tip_de: 'Wok Hei – der Atem des Drachen in deiner Pfanne!', tip_en: 'Wok Hei – the breath of the dragon in your skillet!' },
+  { c: 'afrika', q_de: 'Aus welcher Pflanze wird der berühmte koffeinfreie rote Tee gewonnen?', q_en: 'From which South African shrub is famous naturally caffeine-free red tea harvested?', a_de: ['Rooibos', 'Moringa', 'Baobab', 'Hibiskus'], a_en: ['Rooibos', 'Moringa', 'Baobab', 'Hibiscus'], correct: 0, tip_de: 'Rooibos, die rote Sonne Südafrikas!', tip_en: 'Rooibos, the crimson sun of South Africa!' },
+  { c: 'afrika', q_de: 'Wie heißt die traditionelle nordafrikanische feurige Chilipaste?', q_en: 'What is the fiery North African chili pepper paste called?', a_de: ['Harissa', 'Tahini', 'Hummus', 'Chermoula'], a_en: ['Harissa', 'Tahini', 'Hummus', 'Chermoula'], correct: 0, tip_de: 'Harissa brennt zweimal, wenn du nicht aufpasst!', tip_en: 'Harissa burns twice if you are not careful!' },
+  { c: 'nordamerika', q_de: 'Welcher Bundesstaat ist weltberühmt für „Low & Slow“ Barbecue Beef-Brisket?', q_en: 'Which US state is internationally renowned for authentic low-and-slow smoked beef brisket?', a_de: ['Texas', 'Kalifornien', 'New York', 'Florida'], a_en: ['Texas', 'California', 'New York', 'Florida'], correct: 0, tip_de: '16 Stunden im Rauch, saftiger geht Fleisch nicht!', tip_en: '16 hours over hardwood smoke – pure melt-in-your-mouth perfection!' },
+  { c: 'australien', q_de: 'Welche australische Nuss gilt als edelste und härteste Nuss der Welt?', q_en: 'Which native Australian nut is celebrated as the hardest and richest in the world?', a_de: ['Macadamia', 'Pekannuss', 'Paranuss', 'Walnuss'], a_en: ['Macadamia', 'Pecan', 'Brazil Nut', 'Walnut'], correct: 0, tip_de: 'Da brauchst du fast einen Vorschlaghammer!', tip_en: 'You almost need a sledgehammer to crack its shell!' },
+  { c: 'stefan', q_de: 'Wie wird Starkoch Stefan Marquard in Fachkreisen genannt?', q_en: 'By what legendary title is celebrity chef Stefan Marquard known across Germany?', a_de: ['Freibeuter der Küche', 'Freiherr der Kombüse', 'Frechdachs des Südens', 'König der Woks'], a_en: ['Pirate of the Kitchen', 'Galley Baron', 'Southern Rascal', 'Wok King'], correct: 0, tip_de: 'Freibeuter natürlich! Immer gegen den Strom!', tip_en: 'Pirate of the Kitchen! Always rebellious!' },
+  { c: 'stefan', q_de: 'Mit welchem Show-Gerät rührte Stefan auf der Essener Messe Riesen-Portionen an?', q_en: 'What bizarre heavy-duty machine did Stefan repurpose into a giant frying pan at Essen?', a_de: ['Betonmischmaschine', 'Dampfwalze', 'Schweißbrenner', 'Kettensäge'], a_en: ['Cement Mixer', 'Steam Roller', 'Blowtorch', 'Chainsaw'], correct: 0, tip_de: 'Die Betonmisch-Pfanne! Da wurde gerührt wie auf der Großbaustelle!', tip_en: 'The cement mixer skillet! Stirred like on an industrial construction site!' }
 ];
 
 /* ====================================================================
-   GAME ENGINE & INVENTAR SYSTEM (PAKET B)
+   SPIEL ENGINE & LIFECYCLE
 ==================================================================== */
 const Game = {
   days: 1,
@@ -824,8 +957,8 @@ const Game = {
   diceResult: 0,
   earnedMedals: new Set(),
   activeTimer: null,
+  isPaused: false,
 
-  /* INVENTAR */
   hasKnife: false,
   truffles: 1,
   rum: 0,
@@ -837,8 +970,66 @@ const Game = {
     document.getElementById('main-screen').classList.add('active');
     this.renderSteckbrett();
     this.renderMap();
+    this.applyLanguage();
     this.updateHUD();
-    this.setCaptainMood('normal', 'Ahoi Marco! Bring mir die 6 Kontinente nach Hamburg zurück. Besorg dir Ausrüstung im Schwarzmarkt!');
+    this.setCaptainMood('normal', TXT[currentLang].startDialogue);
+  },
+
+  toggleLang() {
+    currentLang = currentLang === 'de' ? 'en' : 'de';
+    document.getElementById('btn-lang').innerText = currentLang === 'de' ? '🇩🇪 DE' : '🇬🇧 EN';
+    this.applyLanguage();
+    this.updateHUD();
+  },
+
+  applyLanguage() {
+    const t = TXT[currentLang];
+    document.getElementById('btn-start-game').innerText = t.startBtn;
+    document.getElementById('lbl-port').innerText = t.port;
+    document.getElementById('lbl-days').innerText = t.days;
+    document.getElementById('lbl-gold').innerText = t.gold;
+    document.getElementById('lbl-rules').innerText = t.rules;
+    document.getElementById('btn-roll').innerText = t.rollBtn;
+    document.getElementById('btn-reroll').innerText = t.rerollBtn;
+    document.getElementById('btn-shop').innerText = t.shopBtn;
+  },
+
+  togglePause() {
+    this.isPaused = !this.isPaused;
+    const modal = document.getElementById('event-modal');
+    if (this.isPaused) {
+      document.getElementById('modal-title').innerText = TXT[currentLang].paused;
+      document.getElementById('timer-bar').style.width = '0%';
+      document.getElementById('modal-content').innerHTML = `<p style="font-size:16px; margin:20px 0;">${TXT[currentLang].pausedDesc}</p>`;
+      document.getElementById('modal-actions').innerHTML = `<button class="btn-epic" style="font-size:16px; padding:10px 30px;" onclick="Game.togglePause()">${TXT[currentLang].resumeBtn}</button>`;
+      modal.classList.add('active');
+    } else {
+      modal.classList.remove('active');
+    }
+  },
+
+  openRules() {
+    const modal = document.getElementById('event-modal');
+    const t = TXT[currentLang];
+    document.getElementById('modal-title').innerText = t.rulesTitle;
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('modal-content').innerHTML = `
+      <div class="rules-content">
+        <div class="rules-section">
+          <strong>${t.rules1Title}</strong><br>${t.rules1Desc}
+        </div>
+        <div class="rules-section">
+          <strong>${t.rules2Title}</strong><br>${t.rules2Desc}
+        </div>
+        <div class="rules-section">
+          <strong>${t.rules3Title}</strong><br>${t.rules3Desc}
+        </div>
+      </div>
+    `;
+    document.getElementById('modal-actions').innerHTML = `
+      <button class="btn-close-modal" onclick="Game.closeModal()">${t.closeBtn}</button>
+    `;
+    modal.classList.add('active');
   },
 
   renderSteckbrett() {
@@ -858,19 +1049,16 @@ const Game = {
     const curr = NODES.find(n => n.id === this.currentNode);
     document.getElementById('current-location').innerText = `${curr.name.toUpperCase()}`;
 
-    // Pins
     for (let i = 0; i < 50; i++) {
       const pin = document.getElementById('pin-' + i);
       if (pin) pin.className = 'pin-hole' + (i < this.gold ? ' filled' : '');
     }
 
-    // Medaillen
     ['europa', 'asien', 'afrika', 'nordamerika', 'suedamerika', 'australien'].forEach(c => {
       const el = document.getElementById('medal-' + c);
       if (this.earnedMedals.has(c)) el.classList.add('earned');
     });
 
-    // Inventar-Anzeige aktualisieren
     const kEl = document.getElementById('inv-knife');
     if (this.hasKnife) {
       kEl.classList.add('active');
@@ -883,7 +1071,6 @@ const Game = {
     document.getElementById('cnt-rum').innerText = this.rum;
     document.getElementById('cnt-compass').innerText = this.compasses;
 
-    // Kompass Reroll-Button anzeigen, falls vorhanden und gewürfelt wurde
     const btnReroll = document.getElementById('btn-reroll');
     if (this.compasses > 0 && this.diceResult > 0 && document.getElementById('btn-roll').disabled) {
       btnReroll.style.display = 'block';
@@ -1030,7 +1217,8 @@ const Game = {
       });
 
       this.updateHUD();
-      this.setCaptainMood('normal', `Eine ${result} gewürfelt! Wähle deinen nächsten Kurs!`);
+      const msg = currentLang === 'de' ? `Eine ${result} gewürfelt! Wähle deinen Kurs!` : `Rolled a ${result}! Choose your course!`;
+      this.setCaptainMood('normal', msg);
     }, 1300);
   },
 
@@ -1073,74 +1261,65 @@ const Game = {
     } else if (node.type === 'danger') {
       this.openDanger();
     } else if (node.type === 'port') {
-      this.setCaptainMood('win', 'Heimathafen erreicht! Zeit, deine Kombüse aufzurüsten!');
       this.openShop();
-    } else {
-      this.setCaptainMood('normal', 'Ruhige See. Weiter gehts!');
     }
   },
 
-  /* ====================================================================
-     SCHWARZMARKT (SHOP)
-  ==================================================================== */
   openShop() {
     const modal = document.getElementById('event-modal');
-    document.getElementById('modal-title').innerText = '🏴‍☠️ STEFANS KOMBÜSEN-SCHWARZMARKT';
+    const t = TXT[currentLang];
+    document.getElementById('modal-title').innerText = t.shopTitle;
     document.getElementById('timer-bar').style.width = '0%';
     if (this.activeTimer) clearInterval(this.activeTimer);
 
     document.getElementById('modal-content').innerHTML = `
-      <p style="font-size:14px; margin-bottom:12px;">Rüste dein Schiff auf! Gold ist zum Ausgeben da, mein Freund!</p>
+      <p style="font-size:14px; margin-bottom:12px;">${t.shopDesc}</p>
       
       <div class="shop-grid">
-        <!-- MESSER -->
         <div class="shop-item">
           <div>
-            <div class="shop-item-header"><span>🔪 Damaszener-Messer</span><span>10 Gold</span></div>
-            <div class="shop-item-desc">Dauerhafter Bonus: <strong>+1 auf jeden Würfelwurf</strong> in Seeschlachten!</div>
+            <div class="shop-item-header"><span>${t.knifeName}</span><span>10 Gold</span></div>
+            <div class="shop-item-desc">${t.knifeDesc}</div>
           </div>
           <button class="btn-buy" onclick="Game.buyItem('knife')" ${this.hasKnife || this.gold < 10 ? 'disabled' : ''}>
-            ${this.hasKnife ? 'Bereits erworben' : 'Kaufen (10 Gold)'}
+            ${this.hasKnife ? t.ownedBtn : t.buyBtn + ' (10)'}
           </button>
         </div>
 
-        <!-- TRÜFFEL -->
         <div class="shop-item">
           <div>
-            <div class="shop-item-header"><span>🧂 Trüffel-Joker</span><span>5 Gold</span></div>
-            <div class="shop-item-desc">Schärft den Geist: Löscht im Quiz <strong>zwei falsche Antworten</strong> weg (50:50)!</div>
+            <div class="shop-item-header"><span>${t.truffleName}</span><span>5 Gold</span></div>
+            <div class="shop-item-desc">${t.truffleDesc}</div>
           </div>
           <button class="btn-buy" onclick="Game.buyItem('truffle')" ${this.gold < 5 ? 'disabled' : ''}>
-            Kaufen (5 Gold)
+            ${t.buyBtn} (5)
           </button>
         </div>
 
-        <!-- RUM -->
         <div class="shop-item">
           <div>
-            <div class="shop-item-header"><span>🥃 Fass Hochsee-Rum</span><span>8 Gold</span></div>
-            <div class="shop-item-desc">Löscht Brände: Schützt dich automatisch vor <strong>Goldverlust bei Havarie</strong>!</div>
+            <div class="shop-item-header"><span>${t.rumName}</span><span>8 Gold</span></div>
+            <div class="shop-item-desc">${t.rumDesc}</div>
           </div>
           <button class="btn-buy" onclick="Game.buyItem('rum')" ${this.gold < 8 ? 'disabled' : ''}>
-            Kaufen (8 Gold)
+            ${t.buyBtn} (8)
           </button>
         </div>
 
-        <!-- KOMPASS -->
         <div class="shop-item">
           <div>
-            <div class="shop-item-header"><span>🧭 Gewürz-Kompass</span><span>6 Gold</span></div>
-            <div class="shop-item-desc">Erlaubt dir auf hoher See einen <strong>zweiten Würfelwurf</strong>!</div>
+            <div class="shop-item-header"><span>${t.compassName}</span><span>6 Gold</span></div>
+            <div class="shop-item-desc">${t.compassDesc}</div>
           </div>
           <button class="btn-buy" onclick="Game.buyItem('compass')" ${this.gold < 6 ? 'disabled' : ''}>
-            Kaufen (6 Gold)
+            ${t.buyBtn} (6)
           </button>
         </div>
       </div>
     `;
 
     document.getElementById('modal-actions').innerHTML = `
-      <button class="btn-close-modal" onclick="Game.closeModal()">Zurück aufs Deck</button>
+      <button class="btn-close-modal" onclick="Game.closeModal()">${t.closeBtn}</button>
     `;
 
     modal.classList.add('active');
@@ -1168,9 +1347,6 @@ const Game = {
     this.openShop();
   },
 
-  /* ====================================================================
-     QUIZ MIT 50:50 JOKER
-  ==================================================================== */
   openQuiz(continent) {
     const pool = QUESTIONS.filter(q => q.c === continent || q.c === 'stefan');
     const qObj = pool[Math.floor(Math.random() * pool.length)];
@@ -1182,12 +1358,13 @@ const Game = {
     const bar = document.getElementById('timer-bar');
 
     title.innerText = `KOMBÜSEN-QUIZ: ${continent.toUpperCase()}`;
-    content.innerHTML = `<h2 style="font-size:18px; margin-bottom:12px;">${qObj.q}</h2>`;
+    const questionText = currentLang === 'de' ? qObj.q_de : qObj.q_en;
+    content.innerHTML = `<h2 style="font-size:18px; margin-bottom:12px;">${questionText}</h2>`;
 
     const answersDiv = document.createElement('div');
     answersDiv.className = 'quiz-answers';
-    answersDiv.id = 'quiz-answers-box';
-    qObj.a.forEach((ans, idx) => {
+    const answersList = currentLang === 'de' ? qObj.a_de : qObj.a_en;
+    answersList.forEach((ans, idx) => {
       const btn = document.createElement('button');
       btn.className = 'btn-answer';
       btn.id = 'ans-btn-' + idx;
@@ -1197,13 +1374,12 @@ const Game = {
     });
     content.appendChild(answersDiv);
 
-    // 50:50 Joker-Button einbauen falls vorhanden
     actions.innerHTML = '';
     if (this.truffles > 0) {
       const jBtn = document.createElement('button');
       jBtn.className = 'btn-joker';
       jBtn.id = 'btn-use-joker';
-      jBtn.innerText = `🧂 Trüffel-Joker einsetzen (50:50) [Noch ${this.truffles}x]`;
+      jBtn.innerText = `${TXT[currentLang].jokerBtn} [${this.truffles}x]`;
       jBtn.onclick = () => this.useTruffleJoker(qObj);
       actions.appendChild(jBtn);
     }
@@ -1231,7 +1407,6 @@ const Game = {
 
     document.getElementById('btn-use-joker').style.display = 'none';
 
-    // 2 falsche Antworten streichen
     let disabledCount = 0;
     for (let i = 0; i < 4; i++) {
       if (i !== qObj.correct && disabledCount < 2) {
@@ -1248,6 +1423,8 @@ const Game = {
     clearInterval(this.activeTimer);
     const content = document.getElementById('modal-content');
     const actions = document.getElementById('modal-actions');
+    const tipText = currentLang === 'de' ? qObj.tip_de : qObj.tip_en;
+    const ansList = currentLang === 'de' ? qObj.a_de : qObj.a_en;
 
     if (correct) {
       Sound.play('correct');
@@ -1255,36 +1432,34 @@ const Game = {
       this.gold = Math.min(50, this.gold + 5);
       this.earnedMedals.add(continent);
       this.updateHUD();
-      this.setCaptainMood('win', qObj.tip);
-      content.innerHTML = `<h2 style="color:green;">RICHTIG!</h2><p>${qObj.tip}</p><p><strong>+5 Gold &amp; Medaillon eingesackt!</strong></p>`;
+      this.setCaptainMood('win', tipText);
+      content.innerHTML = `<h2 style="color:green;">${currentLang === 'de' ? 'RICHTIG!' : 'CORRECT!'}</h2><p>${tipText}</p><p><strong>+5 Gold &amp; Medaillon!</strong></p>`;
     } else {
       Sound.play('wrong');
       this.triggerDamageEffect();
-      this.setCaptainMood('burn', 'Mensch Keule, das war wohl kalt wie Hundeschnauze!');
-      content.innerHTML = `<h2 style="color:red;">DANEBEN!</h2><p>Die richtige Antwort war: <strong>${qObj.a[qObj.correct]}</strong></p>`;
+      this.setCaptainMood('burn', currentLang === 'de' ? 'Mensch Keule, das war kalt wie Hundeschnauze!' : 'Blimey, that was cold as ice!');
+      content.innerHTML = `<h2 style="color:red;">${currentLang === 'de' ? 'DANEBEN!' : 'INCORRECT!'}</h2><p>${currentLang === 'de' ? 'Richtig war:' : 'Correct was:'} <strong>${ansList[qObj.correct]}</strong></p>`;
     }
 
-    actions.innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Weitersegeln</button>`;
+    actions.innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].sailOnBtn}</button>`;
   },
 
-  /* ====================================================================
-     SEESCHLACHT MIT MESSER-BONUS
-  ==================================================================== */
   openBattle() {
     const modal = document.getElementById('event-modal');
-    document.getElementById('modal-title').innerText = '⚔️ KAPER-DUELL IM NEBEL!';
+    const t = TXT[currentLang];
+    document.getElementById('modal-title').innerText = t.battleTitle;
     document.getElementById('timer-bar').style.width = '0%';
     if (this.activeTimer) clearInterval(this.activeTimer);
 
     document.getElementById('modal-content').innerHTML = `
-      <p style="font-size:15px; margin-bottom:10px;">Ein berüchtigtes Piratenschiff blockiert deinen Kurs! Käpt'n Knorrenbart fordert dich zum Duell!</p>
+      <p style="font-size:15px; margin-bottom:10px;">${t.battleDesc}</p>
       
       <div class="battle-stage">
         <div class="fighter-card">
           <div class="fighter-portrait" style="background-image:url('${ASSETS.stefanNormal}');"></div>
           <strong>DU (STEFAN)</strong>
           <div id="player-dice-box" class="static-dice">?</div>
-          <span style="font-size:11px; color:gold;">${this.hasKnife ? '🔪 +1 Messer-Bonus!' : ''}</span>
+          <span style="font-size:11px; color:gold;">${this.hasKnife ? '🔪 +1 Messer!' : ''}</span>
         </div>
 
         <div class="battle-vs">VS</div>
@@ -1300,7 +1475,7 @@ const Game = {
     `;
 
     document.getElementById('modal-actions').innerHTML = `
-      <button id="btn-fight" class="btn-epic" style="font-size:18px; padding:10px 30px;" onclick="Game.resolveBattle()">⚔️ Knochen werfen!</button>
+      <button id="btn-fight" class="btn-epic" style="font-size:18px; padding:10px 30px;" onclick="Game.resolveBattle()">${t.battleRollBtn}</button>
     `;
 
     const imgTest = new Image();
@@ -1337,7 +1512,6 @@ const Game = {
         let pRoll = Math.floor(Math.random() * 6) + 1;
         const eRoll = Math.floor(Math.random() * 6) + 1;
         
-        // Damaszener Messer Bonus
         if (this.hasKnife) pRoll += 1;
         
         pBox.innerText = pRoll;
@@ -1348,18 +1522,18 @@ const Game = {
           Sound.play('win');
           this.spawnFlyingCoins(diff);
           this.gold = Math.min(50, this.gold + diff);
-          this.setCaptainMood('win', 'Ha! Voll auf die Zwölf! Seine Schatzkiste gehört uns!');
-          resText.innerHTML = `<span style="color:green;">SIEG! Knorrenbart geschlagen! +${diff} Goldpins erbeutet!</span>`;
+          this.setCaptainMood('win', currentLang === 'de' ? 'Ha! Seine Schatzkiste gehört uns!' : 'Aha! His loot belongs to us!');
+          resText.innerHTML = `<span style="color:green;">${currentLang === 'de' ? 'SIEG! +' : 'VICTORY! +'}${diff} Gold!</span>`;
         } else {
           this.triggerDamageEffect();
           this.gold = Math.max(0, this.gold - diff);
-          this.setCaptainMood('burn', 'Verdammter Knorrenbart! Der hat uns ganz schön abkassiert!');
-          resText.innerHTML = `<span style="color:red;">NIEDERLAGE! Du verlierst -${diff} Goldpins!</span>`;
+          this.setCaptainMood('burn', currentLang === 'de' ? 'Verdammter Knorrenbart!' : 'Blasted scoundrel!');
+          resText.innerHTML = `<span style="color:red;">${currentLang === 'de' ? 'NIEDERLAGE! -' : 'DEFEAT! -'}${diff} Gold!</span>`;
         }
         
         this.updateHUD();
         document.getElementById('modal-actions').innerHTML = `
-          <button class="btn-close-modal" onclick="Game.closeModal()">Kurs fortsetzen</button>
+          <button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].continueBtn}</button>
         `;
       }
     }, 80);
@@ -1370,16 +1544,13 @@ const Game = {
     this.spawnFlyingCoins(loot);
     this.gold = Math.min(50, this.gold + loot);
     this.updateHUD();
-    this.setCaptainMood('win', 'Eine Schatztruhe voll Gold am Strand! So lob ich mir das!');
-    document.getElementById('modal-title').innerText = 'SCHATZ GEFUNDEN!';
-    document.getElementById('modal-content').innerHTML = `<h2>💰 FETTE BEUTE!</h2><p>Du findest <strong>+${loot} Gold-Pins</strong> in einer alten Kiste!</p>`;
-    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">In die Kombüse packen</button>`;
+    this.setCaptainMood('win', currentLang === 'de' ? 'Eine Schatztruhe voll Gold am Strand!' : 'A chest of gold washed ashore!');
+    document.getElementById('modal-title').innerText = currentLang === 'de' ? 'SCHATZ GEFUNDEN!' : 'TREASURE FOUND!';
+    document.getElementById('modal-content').innerHTML = `<h2>💰 +${loot} Gold-Pins!</h2>`;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
     document.getElementById('event-modal').classList.add('active');
   },
 
-  /* ====================================================================
-     HAVARIE MIT RUM-SCHUTZSCHILD
-  ==================================================================== */
   openDanger() {
     const modal = document.getElementById('event-modal');
     document.getElementById('modal-title').innerText = 'STEFAN-ROGERS-FELD!';
@@ -1388,32 +1559,31 @@ const Game = {
       this.rum--;
       this.updateHUD();
       Sound.play('win');
-      this.setCaptainMood('win', 'Gott sei Dank hatten wir das Fass Rum an Bord! Brand gelöscht, Mannschaft gerettet!');
+      this.setCaptainMood('win', currentLang === 'de' ? 'Das Fass Rum hat die Kombüse gerettet!' : 'The rum cask saved our kitchen!');
       document.getElementById('modal-content').innerHTML = `
         <h2 style="color:green;">🥃 RUM-RETTUNG!</h2>
-        <p>Der Sturm wütete, aber dein <strong>Fass Hochsee-Rum</strong> hat die Kombüse gerettet!</p>
-        <p><strong>Kein Gold verloren!</strong> (1x Rum verbraucht)</p>
+        <p>${currentLang === 'de' ? 'Brand mit Rum gelöscht! Kein Gold verloren!' : 'Fire put out with rum! No gold lost!'}</p>
       `;
     } else {
       this.triggerDamageEffect();
       const loss = Math.floor(Math.random() * 4) + 2;
       this.gold = Math.max(0, this.gold - loss);
       this.updateHUD();
-      this.setCaptainMood('burn', 'Verdammte Klabautermänner! Die Kombüse stand lichterloh in Flammen!');
+      this.setCaptainMood('burn', currentLang === 'de' ? 'Kombüse stand lichterloh in Flammen!' : 'Galley was completely ablaze!');
       document.getElementById('modal-content').innerHTML = `
         <h2>🔥 HAVARIE &amp; FEUER!</h2>
-        <p>Schwerer Sturm hat Vorräte zerstört! Du verlierst <strong>-${loss} Gold-Pins</strong>!</p>
+        <p>${currentLang === 'de' ? 'Vorräte verloren:' : 'Lost supplies:'} <strong>-${loss} Gold-Pins</strong>!</p>
       `;
     }
 
-    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Schäden reparieren</button>`;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">${TXT[currentLang].closeBtn}</button>`;
     modal.classList.add('active');
   },
 
   closeModal() {
     document.getElementById('event-modal').classList.remove('active');
     if (this.days >= this.maxDays) {
-      alert('Die 30 Tage sind abgelaufen! Expedition gescheitert. Nochmal versuchen!');
+      alert(currentLang === 'de' ? 'Die 30 Tage sind abgelaufen! Expedition gescheitert.' : '30 days expired! Expedition failed.');
       location.reload();
     }
   },
@@ -1421,11 +1591,11 @@ const Game = {
   triggerVictory() {
     Sound.play('win');
     this.spawnFlyingCoins(15);
-    this.setCaptainMood('win', 'BÄM! Da ist das Ding! Alle 6 Kontinente vereint und die Taschen voll Gold!');
+    this.setCaptainMood('win', 'BÄM! Da ist das Ding! Alle 6 Kontinente vereint!');
     document.getElementById('modal-title').innerText = 'KAPITÄNS-TRIUMPH!';
     document.getElementById('modal-content').innerHTML = `
       <h1 style="color:gold;">KULINARISCHER WELTMEISTER!</h1>
-      <p>Du bist im Heimathafen eingelaufen mit allen 6 Medaillons und ${this.gold} Goldbarren!</p>
+      <p>Alle 6 Medaillons und ${this.gold} Goldbarren!</p>
       <p>Stefan wirft die Betonmisch-Pfanne an – heute Nacht wird gefeiert!</p>
     `;
     document.getElementById('modal-actions').innerHTML = `<button class="btn-epic" onclick="location.reload()">Nochmal kapern!</button>`;
