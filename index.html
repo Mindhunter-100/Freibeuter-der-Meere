@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Freibeuter der Meere – Die kulinarische Kaperfahrt</title>
+<style>
+  :root {
+    --gold: #f4c430;
+    --dark-gold: #b8860b;
+    --parchment: #f4e4bc;
+    --dark-wood: #2c1a0e;
+    --sea-blue: #1c3b57;
+    --crimson: #8b0000;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Georgia', serif;
+    background: #090e13;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #game-container {
+    width: 100vw;
+    max-width: 1334px;
+    height: 100vh;
+    max-height: 750px;
+    position: relative;
+    background: #000;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+    overflow: hidden;
+    perspective: 1000px;
+  }
+
+  /* SCREEN SHAKE */
+  .shake {
+    animation: screenShake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  @keyframes screenShake {
+    10%, 90% { transform: translate3d(-4px, 2px, 0); }
+    20%, 80% { transform: translate3d(6px, -4px, 0); }
+    30%, 50%, 70% { transform: translate3d(-8px, 6px, 0); }
+    40%, 60% { transform: translate3d(8px, -6px, 0); }
+  }
+
+  #damage-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, transparent 40%, rgba(200,0,0,0.8) 100%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 90;
+    transition: opacity 0.1s ease;
+  }
+
+  /* SCREENS */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    z-index: 10;
+  }
+  .screen.active { display: flex; }
+
+  /* SPLASH */
+  #splash-screen {
+    background: url('Pics/title.png') center/cover no-repeat;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 50px;
+  }
+  .btn-epic {
+    background: linear-gradient(180deg, #ffd700, #b8860b);
+    border: 3px solid #fff;
+    color: #1a0f00;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 16px 44px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(255,215,0,0.8), inset 0 2px 5px #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+  }
+  .btn-epic:hover { transform: scale(1.05); box-shadow: 0 0 45px rgba(255,215,0,1); }
+
+  /* TOP HUD */
+  #top-hud {
+    height: 55px;
+    background: linear-gradient(180deg, #180f08, #26160b);
+    border-bottom: 3px solid var(--dark-gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 15px;
+    z-index: 20;
+  }
+  .hud-badge {
+    background: rgba(0,0,0,0.6);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-weight: bold;
+  }
+
+  /* WORKSPACE */
+  #play-area {
+    flex: 1;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* MAP VIEW */
+  #map-view {
+    flex: 1;
+    position: relative;
+    background: url('Pics/map.png') center/contain no-repeat #d3be96;
+    overflow: hidden;
+  }
+  #map-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .route-line {
+    stroke: rgba(184, 134, 11, 0.7);
+    stroke-width: 3;
+    stroke-dasharray: 6 6;
+  }
+
+  .node-point {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #2a1a08;
+    border: 2px solid var(--gold);
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0,0,0,0.9);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    z-index: 12;
+  }
+  .node-point.reachable {
+    animation: pulseGlow 0.9s infinite alternate;
+    border-color: #00ffcc;
+    background: #004d40;
+  }
+  @keyframes pulseGlow {
+    from { transform: translate(-50%, -50%) scale(1.0); box-shadow: 0 0 10px #00ffcc; }
+    to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffcc; }
+  }
+
+  /* SHIP WITH SAILING & BOBBING PHYSICS */
+  #ship-wrapper {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    transform: translate(-50%, -50%);
+    transition: left 1s cubic-bezier(0.25, 1, 0.5, 1), top 1s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+    z-index: 25;
+  }
+  #player-ship {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 8px rgba(0,0,0,0.85));
+    animation: shipBob 2.2s infinite ease-in-out;
+    transition: transform 0.4s ease;
+  }
+  @keyframes shipBob {
+    0%, 100% { transform: translateY(0px) rotate(-2deg); }
+    50% { transform: translateY(-5px) rotate(3deg); }
+  }
+
+  /* 3D DICE SYSTEM */
+  #dice-arena {
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    perspective: 600px;
+    pointer-events: none;
+    display: none;
+    z-index: 60;
+  }
+  #dice-cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  .dice-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #fff9ea, #d8bc88);
+    border: 3px solid #5a3d1b;
+    border-radius: 12px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #3b220c;
+  }
+  .face-1 { transform: rotateY(0deg) translateZ(40px); }
+  .face-6 { transform: rotateY(180deg) translateZ(40px); }
+  .face-2 { transform: rotateY(-90deg) translateZ(40px); }
+  .face-5 { transform: rotateY(90deg) translateZ(40px); }
+  .face-3 { transform: rotateX(90deg) translateZ(40px); }
+  .face-4 { transform: rotateX(-90deg) translateZ(40px); }
+
+  /* CAPTAIN SIDEBAR */
+  #captain-sidebar {
+    width: 310px;
+    background: linear-gradient(180deg, #180f08, #2a1b10);
+    border-left: 3px solid var(--dark-gold);
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 10px;
+    z-index: 15;
+  }
+  #captain-avatar {
+    width: 100%;
+    height: 175px;
+    border-radius: 8px;
+    border: 2px solid var(--gold);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+    transition: transform 0.2s;
+  }
+  #captain-dialogue {
+    flex: 1;
+    background: #fff8e7;
+    color: #2b180a;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    border: 2px solid var(--dark-gold);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    overflow-y: auto;
+  }
+  .btn-turn {
+    background: linear-gradient(180deg, #8b0000, #4a0000);
+    border: 2px solid var(--gold);
+    color: #fff;
+    padding: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: all 0.2s;
+  }
+  .btn-turn:hover:not(:disabled) { transform: translateY(-2px); background: linear-gradient(180deg, #b22222, #600000); }
+  .btn-turn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* BOTTOM STECKBRETT (HUD) */
+  #bottom-hud {
+    height: 135px;
+    background: url('Pics/board.png') center/cover no-repeat #1b120c;
+    border-top: 3px solid var(--dark-gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+    position: relative;
+    z-index: 20;
+  }
+  #medals-rack { display: flex; gap: 14px; }
+  .medal-slot {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-image: url('Pics/medals.png');
+    background-size: 300% 200%;
+    filter: grayscale(100%) opacity(0.3);
+    border: 2px dashed #666;
+    transition: all 0.4s;
+  }
+  .medal-slot.earned {
+    filter: none;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 18px var(--gold);
+    transform: scale(1.08);
+  }
+  .medal-europa { background-position: 0% 0%; }
+  .medal-asien { background-position: 50% 0%; }
+  .medal-afrika { background-position: 100% 0%; }
+  .medal-nordamerika { background-position: 0% 100%; }
+  .medal-suedamerika { background-position: 50% 100%; }
+  .medal-australien { background-position: 100% 100%; }
+
+  #pins-rack {
+    display: flex;
+    flex-wrap: wrap;
+    width: 290px;
+    gap: 4px;
+    background: rgba(0,0,0,0.65);
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--dark-gold);
+  }
+  .pin-hole {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #0e0703;
+    border: 1px solid #4a3525;
+    transition: all 0.3s;
+  }
+  .pin-hole.filled {
+    background: radial-gradient(circle, #fff7a1, #ffd700, #b8860b);
+    border-color: #fff;
+    box-shadow: 0 0 8px #ffd700;
+    transform: scale(1.1);
+  }
+
+  /* FLYING COIN PARTICLES */
+  .flying-coin {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff9a6, #ffd700, #b8860b);
+    border: 2px solid #fff;
+    box-shadow: 0 0 14px rgba(255,215,0,0.9);
+    pointer-events: none;
+    z-index: 200;
+    transition: all 0.75s cubic-bezier(0.1, 0.8, 0.3, 1);
+  }
+
+  /* MODALS */
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: #fff8e7;
+    color: #2b180a;
+    width: 90%;
+    max-width: 620px;
+    border: 4px solid var(--dark-gold);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.9);
+    position: relative;
+    text-align: center;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .modal-title { font-size: 22px; color: var(--crimson); margin-bottom: 12px; text-transform: uppercase; }
+  .modal-timer { height: 8px; background: #ddd; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
+  .timer-fill { height: 100%; background: var(--crimson); width: 100%; }
+  .quiz-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+  .btn-answer {
+    background: #fdf5e6;
+    border: 2px solid #8b6508;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .btn-answer:hover { background: #ffe4b5; transform: scale(1.02); }
+  .btn-close-modal {
+    margin-top: 20px;
+    background: var(--dark-wood);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 10px 25px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+  <div id="damage-flash"></div>
+
+  <!-- 1. SPLASH SCREEN -->
+  <div id="splash-screen" class="screen active">
+    <button class="btn-epic" onclick="Game.start()">Leinen Los &amp; Kaperfahrt!</button>
+  </div>
+
+  <!-- 2. MAIN PLAY SCREEN -->
+  <div id="main-screen" class="screen">
+    
+    <!-- TOP HUD -->
+    <div id="top-hud">
+      <div>📍 HAFEN: <span id="current-location" class="hud-badge">HAMBURG (EUROPA)</span></div>
+      <div>⏳ REISETAG: <span id="travel-days" class="hud-badge">1 / 30</span></div>
+      <div>💰 GOLDPINS: <span id="gold-count" class="hud-badge">10 / 50</span></div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div id="play-area">
+      <!-- MAP -->
+      <div id="map-view">
+        <svg id="map-svg"></svg>
+        <div id="nodes-container"></div>
+        
+        <!-- 3D DICE -->
+        <div id="dice-arena">
+          <div id="dice-cube">
+            <div class="dice-face face-1">⚀</div>
+            <div class="dice-face face-2">⚁</div>
+            <div class="dice-face face-3">⚂</div>
+            <div class="dice-face face-4">⚃</div>
+            <div class="dice-face face-5">⚄</div>
+            <div class="dice-face face-6">⚅</div>
+          </div>
+        </div>
+
+        <!-- SHIP -->
+        <div id="ship-wrapper">
+          <img id="player-ship" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 65 Q50 90 90 65 L80 80 Q50 95 20 80 Z' fill='%23654321'/><path d='M50 15 L50 65 M48 20 L80 40 L50 45 Z' fill='%23ffffff' stroke='%23000'/></svg>" alt="Schiff">
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div id="captain-sidebar">
+        <div id="captain-avatar"></div>
+        <div id="captain-dialogue"></div>
+        <div id="turn-controls">
+          <button id="btn-roll" class="btn-turn" onclick="Game.rollDice()">🎲 Kompass &amp; Würfel werfen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM HUD (STECKBRETT) -->
+    <div id="bottom-hud">
+      <div id="medals-rack">
+        <div id="medal-europa" class="medal-slot medal-europa" title="Europa"></div>
+        <div id="medal-asien" class="medal-slot medal-asien" title="Asien"></div>
+        <div id="medal-afrika" class="medal-slot medal-afrika" title="Afrika"></div>
+        <div id="medal-nordamerika" class="medal-slot medal-nordamerika" title="Nordamerika"></div>
+        <div id="medal-suedamerika" class="medal-slot medal-suedamerika" title="Südamerika"></div>
+        <div id="medal-australien" class="medal-slot medal-australien" title="Australien"></div>
+      </div>
+      <div id="pins-rack"></div>
+    </div>
+
+  </div>
+
+  <!-- MODAL -->
+  <div id="event-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 id="modal-title" class="modal-title">Ereignis</h3>
+      <div class="modal-timer"><div id="timer-bar" class="timer-fill"></div></div>
+      <div id="modal-content"></div>
+      <div id="modal-actions"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ====================================================================
+   ASSET-PFADE
+==================================================================== */
+const ASSETS = {
+  title: 'Pics/title.png',
+  map: 'Pics/map.png',
+  stefanNormal: 'Pics/stefan_normal.png',
+  stefanBurn: 'Pics/stefan_burn.png',
+  stefanWin: 'Pics/stefan_win.png',
+  board: 'Pics/board.png',
+  medals: 'Pics/medals.png',
+  actions: 'Pics/actions.png'
+};
+
+/* ====================================================================
+   SYNTHETISCHER SOUND-GENERATOR (Web Audio API)
+==================================================================== */
+const Sound = {
+  ctx: null,
+  init() {
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  },
+  play(type) {
+    this.init();
+    const t = this.ctx.currentTime;
+
+    if (type === 'roll') {
+      for (let i = 0; i < 4; i++) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140 + Math.random() * 80, t + i * 0.08);
+        gain.gain.setValueAtTime(0.2, t + i * 0.08);
+        gain.gain.linearRampToValueAtTime(0.01, t + i * 0.08 + 0.06);
+        osc.start(t + i * 0.08);
+        osc.stop(t + i * 0.08 + 0.06);
+      }
+    } else if (type === 'coin') {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(987, t);
+      osc.frequency.setValueAtTime(1318, t + 0.07);
+      gain.gain.setValueAtTime(0.25, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+      osc.start(t);
+      osc.stop(t + 0.35);
+    } else if (type === 'correct') {
+      [523, 659, 783].forEach((f, i) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, t + i * 0.09);
+        gain.gain.setValueAtTime(0.25, t + i * 0.09);
+        gain.gain.linearRampToValueAtTime(0.01, t + i * 0.09 + 0.3);
+        osc.start(t + i * 0.09);
+        osc.stop(t + i * 0.09 + 0.3);
+      });
+    } else if (type === 'wrong' || type === 'danger') {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(130, t);
+      osc.frequency.exponentialRampToValueAtTime(45, t + 0.4);
+      gain.gain.setValueAtTime(0.35, t);
+      gain.gain.linearRampToValueAtTime(0.01, t + 0.4);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    } else if (type === 'win') {
+      [523, 659, 783, 1046].forEach((f, i) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.setValueAtTime(f, t + i * 0.12);
+        gain.gain.setValueAtTime(0.25, t + i * 0.12);
+        gain.gain.linearRampToValueAtTime(0.01, t + i * 0.12 + 0.4);
+        osc.start(t + i * 0.12);
+        osc.stop(t + i * 0.12 + 0.4);
+      });
+    }
+  }
+};
+
+/* ====================================================================
+   WELTKARTEN-WEGPUNKTE (NODES)
+==================================================================== */
+const NODES = [
+  { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', x: 48, y: 28, type: 'port', neighbors: ['nordatlantik', 'westafrika'] },
+  { id: 'nordatlantik', name: 'Nordatlantik', continent: 'europa', x: 34, y: 26, type: 'battle', neighbors: ['eu_start', 'nordamerika', 'karibik'] },
+  { id: 'nordamerika', name: 'New York / Boston', continent: 'nordamerika', x: 23, y: 32, type: 'quiz', neighbors: ['nordatlantik', 'karibik', 'pazifik_nord'] },
+  { id: 'karibik', name: 'Karibik (Tortuga)', continent: 'nordamerika', x: 26, y: 46, type: 'treasure', neighbors: ['nordatlantik', 'nordamerika', 'suedamerika'] },
+  { id: 'pazifik_nord', name: 'Nordpazifik', continent: 'nordamerika', x: 12, y: 35, type: 'gamble', neighbors: ['nordamerika', 'asien_ost'] },
+  { id: 'suedamerika', name: 'Peru / Amazonien', continent: 'suedamerika', x: 30, y: 64, type: 'quiz', neighbors: ['karibik', 'kap_hoorn', 'suedatlantik'] },
+  { id: 'kap_hoorn', name: 'Kap Hoorn', continent: 'suedamerika', x: 26, y: 84, type: 'danger', neighbors: ['suedamerika', 'suedatlantik', 'australien'] },
+  { id: 'westafrika', name: 'Elfenbeinküste', continent: 'afrika', x: 47, y: 48, type: 'quiz', neighbors: ['eu_start', 'suedatlantik', 'kap_stadt'] },
+  { id: 'suedatlantik', name: 'Südatlantik', continent: 'afrika', x: 40, y: 72, type: 'treasure', neighbors: ['suedamerika', 'kap_hoorn', 'westafrika', 'kap_stadt'] },
+  { id: 'kap_stadt', name: 'Kap der Guten Hoffnung', continent: 'afrika', x: 54, y: 76, type: 'battle', neighbors: ['westafrika', 'suedatlantik', 'indischer_ozean'] },
+  { id: 'indischer_ozean', name: 'Indischer Ozean', continent: 'asien', x: 67, y: 60, type: 'gamble', neighbors: ['kap_stadt', 'asien_sued', 'australien'] },
+  { id: 'asien_sued', name: 'Indien / Gewürzstraße', continent: 'asien', x: 71, y: 46, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost'] },
+  { id: 'asien_ost', name: 'Kanton / Tokio', continent: 'asien', x: 82, y: 36, type: 'treasure', neighbors: ['asien_sued', 'pazifik_nord', 'australien'] },
+  { id: 'australien', name: 'Sydney / Korallenmeer', continent: 'australien', x: 86, y: 72, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost', 'kap_hoorn'] }
+];
+
+/* FRAGENKATALOG */
+const QUESTIONS = [
+  { c: 'europa', q: 'Wie nennt man das feine Schneiden von Gemüse in 1 mm dünne Streifen?', a: ['Julienne', 'Brunoise', 'Chiffonade', 'Batonnet'], correct: 0, tip: 'Julienne! Wenn die zu dick sind, fliegen sie bei mir über Bord!' },
+  { c: 'europa', q: 'Welche Zutat gehört auf keinen Fall in eine traditionelle Sauce Hollandaise?', a: ['Mehl', 'Eigelb', 'Geklärte Butter', 'Zitronensaft'], correct: 0, tip: 'Hollandaise ist eine reine Emulsion – Mehl hat da absolut nix verloren!' },
+  { c: 'suedamerika', q: 'In welchem Land gilt gegrilltes Meerschweinchen („Cuy“) als Delikatesse?', a: ['Peru', 'Brasilien', 'Kolumbien', 'Argentinien'], correct: 0, tip: 'Das Original aus den Anden – schmeckt überraschend wie Wachtel!' },
+  { c: 'suedamerika', q: 'Welches Nationalgericht wird roh in kaltem Limettensaft mariniert gegart?', a: ['Ceviche', 'Feijoada', 'Empanada', 'Asado'], correct: 0, tip: 'Ceviche! Die Säure der Limette denaturiert das Eiweiß!' },
+  { c: 'asien', q: 'Welches ist das teuerste Gewürz der Welt, handgepflückt aus Krokusblüten?', a: ['Safran', 'Vanille', 'Kardamom', 'Sternanis'], correct: 0, tip: 'Safran macht den Kuchen krumm und die Kasse voll!' },
+  { c: 'asien', q: 'Wie nennt man den berühmten Hitzeschlag im Wok, der rauchiges Aroma erzeugt?', a: ['Wok Hei', 'Umami', 'Sous Vide', 'Tempura'], correct: 0, tip: 'Wok Hei – der Atem des Drachen in deiner Pfanne!' },
+  { c: 'afrika', q: 'Aus welcher Pflanze wird der berühmte koffeinfreie rote Tee gewonnen?', a: ['Rooibos', 'Moringa', 'Baobab', 'Hibiskus'], correct: 0, tip: 'Rooibos, die rote Sonne Südafrikas!' },
+  { c: 'afrika', q: 'Wie heißt die traditionelle nordafrikanische feurige Chilipaste?', a: ['Harissa', 'Tahini', 'Hummus', 'Chermoula'], correct: 0, tip: 'Harissa brennt zweimal, wenn du nicht aufpasst!' },
+  { c: 'nordamerika', q: 'Welcher Bundesstaat ist weltberühmt für „Low & Slow“ Barbecue Beef-Brisket?', a: ['Texas', 'Kalifornien', 'New York', 'Florida'], correct: 0, tip: '16 Stunden im Rauch, saftiger geht Fleisch nicht!' },
+  { c: 'australien', q: 'Welche australische Nuss gilt als edelste und härteste Nuss der Welt?', a: ['Macadamia', 'Pekannuss', 'Paranuss', 'Walnuss'], correct: 0, tip: 'Da brauchst du fast einen Vorschlaghammer!' },
+  { c: 'stefan', q: 'Wie wird Starkoch Stefan Marquard in Fachkreisen genannt?', a: ['Freibeuter der Küche', 'Freiherr der Kombüse', 'Frechdachs des Südens', 'König der Woks'], correct: 0, tip: 'Freibeuter natürlich! Immer gegen den Strom!' },
+  { c: 'stefan', q: 'Mit welchem Show-Gerät rührte Stefan auf der Essener Messe Riesen-Portionen an?', a: ['Betonmischmaschine', 'Dampfwalze', 'Schweißbrenner', 'Kettensäge'], correct: 0, tip: 'Die Betonmisch-Pfanne! Da wurde gerührt wie auf der Großbaustelle!' }
+];
+
+/* ====================================================================
+   SPIEL-LOGIK & GAME JUICE ENGINE
+==================================================================== */
+const Game = {
+  days: 1,
+  maxDays: 30,
+  gold: 10,
+  currentNode: 'eu_start',
+  diceResult: 0,
+  earnedMedals: new Set(),
+  activeTimer: null,
+
+  start() {
+    Sound.play('coin');
+    document.getElementById('splash-screen').classList.remove('active');
+    document.getElementById('main-screen').classList.add('active');
+    this.renderSteckbrett();
+    this.renderMap();
+    this.updateHUD();
+    this.setCaptainMood('normal', 'Ahoi Marco! Bring mir die 6 Kontinente und reichlich Gold nach Hamburg zurück!');
+  },
+
+  renderSteckbrett() {
+    const rack = document.getElementById('pins-rack');
+    rack.innerHTML = '';
+    for (let i = 0; i < 50; i++) {
+      const pin = document.createElement('div');
+      pin.className = 'pin-hole' + (i < this.gold ? ' filled' : '');
+      pin.id = 'pin-' + i;
+      rack.appendChild(pin);
+    }
+  },
+
+  updateHUD() {
+    document.getElementById('travel-days').innerText = `${this.days} / ${this.maxDays}`;
+    document.getElementById('gold-count').innerText = `${this.gold} / 50`;
+    const curr = NODES.find(n => n.id === this.currentNode);
+    document.getElementById('current-location').innerText = `${curr.name.toUpperCase()}`;
+
+    for (let i = 0; i < 50; i++) {
+      const pin = document.getElementById('pin-' + i);
+      if (pin) pin.className = 'pin-hole' + (i < this.gold ? ' filled' : '');
+    }
+
+    ['europa', 'asien', 'afrika', 'nordamerika', 'suedamerika', 'australien'].forEach(c => {
+      const el = document.getElementById('medal-' + c);
+      if (this.earnedMedals.has(c)) el.classList.add('earned');
+    });
+  },
+
+  setCaptainMood(mood, text) {
+    const avatar = document.getElementById('captain-avatar');
+    if (mood === 'normal') avatar.style.backgroundImage = `url('${ASSETS.stefanNormal}')`;
+    if (mood === 'burn') avatar.style.backgroundImage = `url('${ASSETS.stefanBurn}')`;
+    if (mood === 'win') avatar.style.backgroundImage = `url('${ASSETS.stefanWin}')`;
+    document.getElementById('captain-dialogue').innerHTML = `<strong>Stefan:</strong><br>„${text}“`;
+  },
+
+  /* SCREEN SHAKE & FLASH */
+  triggerDamageEffect() {
+    Sound.play('danger');
+    const container = document.getElementById('game-container');
+    const flash = document.getElementById('damage-flash');
+    container.classList.add('shake');
+    flash.style.opacity = '1';
+    setTimeout(() => {
+      container.classList.remove('shake');
+      flash.style.opacity = '0';
+    }, 450);
+  },
+
+  /* FLIEGENDE GOLDMÜNZEN ANIMATION */
+  spawnFlyingCoins(amount) {
+    const startX = window.innerWidth / 2;
+    const startY = window.innerHeight / 2;
+    const targetEl = document.getElementById('pins-rack');
+    const rect = targetEl.getBoundingClientRect();
+    const targetX = rect.left + rect.width / 2;
+    const targetY = rect.top + rect.height / 2;
+
+    for (let i = 0; i < Math.min(amount, 8); i++) {
+      setTimeout(() => {
+        const coin = document.createElement('div');
+        coin.className = 'flying-coin';
+        coin.style.left = startX + (Math.random() * 60 - 30) + 'px';
+        coin.style.top = startY + (Math.random() * 60 - 30) + 'px';
+        document.body.appendChild(coin);
+
+        setTimeout(() => {
+          coin.style.left = targetX + (Math.random() * 30 - 15) + 'px';
+          coin.style.top = targetY + 'px';
+          coin.style.transform = 'scale(0.5)';
+          coin.style.opacity = '0.5';
+        }, 50);
+
+        setTimeout(() => {
+          Sound.play('coin');
+          coin.remove();
+        }, 800);
+      }, i * 90);
+    }
+  },
+
+  renderMap() {
+    const svg = document.getElementById('map-svg');
+    const container = document.getElementById('nodes-container');
+    svg.innerHTML = '';
+    container.innerHTML = '';
+
+    NODES.forEach(n => {
+      n.neighbors.forEach(nid => {
+        const target = NODES.find(t => t.id === nid);
+        if (target) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', `${n.x}%`);
+          line.setAttribute('y1', `${n.y}%`);
+          line.setAttribute('x2', `${target.x}%`);
+          line.setAttribute('y2', `${target.y}%`);
+          line.setAttribute('class', 'route-line');
+          svg.appendChild(line);
+        }
+      });
+    });
+
+    NODES.forEach(n => {
+      const div = document.createElement('div');
+      div.className = 'node-point';
+      div.id = 'node-' + n.id;
+      div.style.left = `${n.x}%`;
+      div.style.top = `${n.y}%`;
+      div.title = n.name;
+      div.innerHTML = n.type === 'quiz' ? '❓' : n.type === 'battle' ? '⚔️' : n.type === 'treasure' ? '💰' : n.type === 'danger' ? '💀' : '🧭';
+      div.onclick = () => this.selectNode(n.id);
+      container.appendChild(div);
+    });
+
+    this.positionShip(this.currentNode, false);
+  },
+
+  positionShip(nodeId, animateRotation = true) {
+    const node = NODES.find(n => n.id === nodeId);
+    const wrapper = document.getElementById('ship-wrapper');
+    const shipImg = document.getElementById('player-ship');
+
+    if (animateRotation) {
+      const curr = NODES.find(n => n.id === this.currentNode);
+      const angle = Math.atan2(node.y - curr.y, node.x - curr.x) * (180 / Math.PI);
+      shipImg.style.transform = `rotate(${angle > 90 || angle < -90 ? 180 : 0}deg)`;
+    }
+
+    wrapper.style.left = `${node.x}%`;
+    wrapper.style.top = `${node.y}%`;
+  },
+
+  /* 3D WÜRFEL WURF */
+  rollDice() {
+    Sound.play('roll');
+    const btn = document.getElementById('btn-roll');
+    btn.disabled = true;
+
+    const arena = document.getElementById('dice-arena');
+    const cube = document.getElementById('dice-cube');
+    arena.style.display = 'block';
+
+    const result = Math.floor(Math.random() * 6) + 1;
+    this.diceResult = result;
+
+    const rotations = {
+      1: { x: 0, y: 0 },
+      2: { x: 0, y: 90 },
+      3: { x: -90, y: 0 },
+      4: { x: 90, y: 0 },
+      5: { x: 0, y: -90 },
+      6: { x: 0, y: 180 }
+    };
+
+    const extraTurns = 720;
+    const target = rotations[result];
+    cube.style.transform = `rotateX(${target.x + extraTurns}deg) rotateY(${target.y + extraTurns}deg)`;
+
+    setTimeout(() => {
+      arena.style.display = 'none';
+      cube.style.transform = 'none';
+
+      const curr = NODES.find(n => n.id === this.currentNode);
+      curr.neighbors.forEach(nid => {
+        const el = document.getElementById('node-' + nid);
+        if (el) el.classList.add('reachable');
+      });
+
+      this.setCaptainMood('normal', `Eine ${result} gewürfelt! Wähle deinen nächsten Kurs!`);
+    }, 1300);
+  },
+
+  selectNode(targetId) {
+    const curr = NODES.find(n => n.id === this.currentNode);
+    if (!curr.neighbors.includes(targetId)) return;
+
+    document.querySelectorAll('.node-point').forEach(el => el.classList.remove('reachable'));
+    this.positionShip(targetId, true);
+    this.currentNode = targetId;
+    this.days++;
+    this.updateHUD();
+
+    setTimeout(() => {
+      this.triggerNodeEvent(NODES.find(n => n.id === targetId));
+      document.getElementById('btn-roll').disabled = false;
+    }, 1000);
+  },
+
+  triggerNodeEvent(node) {
+    if (node.id === 'eu_start' && this.earnedMedals.size >= 6 && this.gold >= 25) {
+      this.triggerVictory();
+      return;
+    }
+
+    if (node.type === 'quiz') {
+      this.openQuiz(node.continent);
+    } else if (node.type === 'battle') {
+      this.openBattle();
+    } else if (node.type === 'treasure') {
+      this.openTreasure();
+    } else if (node.type === 'danger') {
+      this.openDanger();
+    } else {
+      this.setCaptainMood('normal', 'Ein ruhiger Hafen zum Nachbunkern. Weiter gehts!');
+    }
+  },
+
+  openQuiz(continent) {
+    const pool = QUESTIONS.filter(q => q.c === continent || q.c === 'stefan');
+    const qObj = pool[Math.floor(Math.random() * pool.length)];
+
+    const modal = document.getElementById('event-modal');
+    const title = document.getElementById('modal-title');
+    const content = document.getElementById('modal-content');
+    const actions = document.getElementById('modal-actions');
+    const bar = document.getElementById('timer-bar');
+
+    title.innerText = `KOMBÜSEN-QUIZ: ${continent.toUpperCase()}`;
+    content.innerHTML = `<h2 style="font-size:18px; margin-bottom:15px;">${qObj.q}</h2>`;
+
+    const answersDiv = document.createElement('div');
+    answersDiv.className = 'quiz-answers';
+    qObj.a.forEach((ans, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-answer';
+      btn.innerText = ans;
+      btn.onclick = () => this.handleAnswer(idx === qObj.correct, qObj, continent);
+      answersDiv.appendChild(btn);
+    });
+    content.appendChild(answersDiv);
+    actions.innerHTML = '';
+
+    modal.classList.add('active');
+
+    let left = 100;
+    bar.style.width = '100%';
+    if (this.activeTimer) clearInterval(this.activeTimer);
+    this.activeTimer = setInterval(() => {
+      left -= 2;
+      bar.style.width = left + '%';
+      if (left <= 0) {
+        clearInterval(this.activeTimer);
+        this.handleAnswer(false, qObj, continent);
+      }
+    }, 200);
+  },
+
+  handleAnswer(correct, qObj, continent) {
+    clearInterval(this.activeTimer);
+    const content = document.getElementById('modal-content');
+    const actions = document.getElementById('modal-actions');
+
+    if (correct) {
+      Sound.play('correct');
+      this.spawnFlyingCoins(5);
+      this.gold = Math.min(50, this.gold + 5);
+      this.earnedMedals.add(continent);
+      this.updateHUD();
+      this.setCaptainMood('win', qObj.tip);
+      content.innerHTML = `<h2 style="color:green;">RICHTIG!</h2><p>${qObj.tip}</p><p><strong>+5 Gold &amp; Medaillon eingesackt!</strong></p>`;
+    } else {
+      Sound.play('wrong');
+      this.triggerDamageEffect();
+      this.setCaptainMood('burn', 'Mensch Keule, das war wohl kalt wie Hundeschnauze!');
+      content.innerHTML = `<h2 style="color:red;">DANEBEN!</h2><p>Die richtige Antwort war: <strong>${qObj.a[qObj.correct]}</strong></p>`;
+    }
+
+    actions.innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Weitersegeln</button>`;
+  },
+
+  openBattle() {
+    Sound.play('roll');
+    const modal = document.getElementById('event-modal');
+    const pRoll = Math.floor(Math.random() * 6) + 1;
+    const eRoll = Math.floor(Math.random() * 6) + 1;
+    const diff = Math.abs(pRoll - eRoll);
+
+    let html = `<h2>⚔️ ENTER-GEFECHT!</h2><p>Du würfelst eine <strong>${pRoll}</strong>. Der Gegner würfelt eine <strong>${eRoll}</strong>.</p>`;
+    if (pRoll >= eRoll) {
+      this.spawnFlyingCoins(diff);
+      this.gold = Math.min(50, this.gold + diff);
+      this.setCaptainMood('win', 'Sauber geentert! Beute gemacht!');
+      html += `<p style="color:green;">SIEG! Du erbeutest <strong>+${diff} Goldpins!</strong></p>`;
+    } else {
+      this.triggerDamageEffect();
+      this.gold = Math.max(0, this.gold - diff);
+      this.setCaptainMood('burn', 'Verdammte Seeräuber, die haben uns gerupft!');
+      html += `<p style="color:red;">NIEDERLAGE! Du verlierst <strong>-${diff} Goldpins!</strong></p>`;
+    }
+    this.updateHUD();
+    document.getElementById('modal-title').innerText = 'SEESCHLACHT';
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Weiter</button>`;
+    modal.classList.add('active');
+  },
+
+  openTreasure() {
+    const loot = Math.floor(Math.random() * 5) + 3;
+    this.spawnFlyingCoins(loot);
+    this.gold = Math.min(50, this.gold + loot);
+    this.updateHUD();
+    this.setCaptainMood('win', 'Eine Schatztruhe voll Gold am Strand! So lob ich mir das!');
+    document.getElementById('modal-title').innerText = 'SCHATZ GEFUNDEN!';
+    document.getElementById('modal-content').innerHTML = `<h2>💰 FETTE BEUTE!</h2><p>Du findest <strong>+${loot} Gold-Pins</strong> in einer alten Kiste!</p>`;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">In die Kombüse packen</button>`;
+    document.getElementById('event-modal').classList.add('active');
+  },
+
+  openDanger() {
+    this.triggerDamageEffect();
+    const loss = Math.floor(Math.random() * 4) + 2;
+    this.gold = Math.max(0, this.gold - loss);
+    this.updateHUD();
+    this.setCaptainMood('burn', 'Verdammte Klabautermänner! Die Kombüse stand lichterloh in Flammen!');
+    document.getElementById('modal-title').innerText = 'STEFAN-ROGERS-FELD!';
+    document.getElementById('modal-content').innerHTML = `<h2>🔥 HAVARIE &amp; FEUER!</h2><p>Schwerer Sturm hat Vorräte zerstört! Du verlierst <strong>-${loss} Gold-Pins</strong>!</p>`;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Schäden reparieren</button>`;
+    document.getElementById('event-modal').classList.add('active');
+  },
+
+  closeModal() {
+    document.getElementById('event-modal').classList.remove('active');
+    if (this.days >= this.maxDays) {
+      alert('Die 30 Tage sind abgelaufen! Expedition gescheitert. Nochmal versuchen!');
+      location.reload();
+    }
+  },
+
+  triggerVictory() {
+    Sound.play('win');
+    this.spawnFlyingCoins(15);
+    this.setCaptainMood('win', 'BÄM! Da ist das Ding! Alle 6 Kontinente vereint und die Taschen voll Gold!');
+    document.getElementById('modal-title').innerText = 'KAPITÄNS-TRIUMPH!';
+    document.getElementById('modal-content').innerHTML = `
+      <h1 style="color:gold;">KULINARISCHER WELTMEISTER!</h1>
+      <p>Du bist im Heimathafen eingelaufen mit allen 6 Medaillons und ${this.gold} Goldbarren!</p>
+      <p>Stefan wirft die Betonmisch-Pfanne an – heute Nacht wird gefeiert!</p>
+    `;
+    document.getElementById('modal-actions').innerHTML = `<button class="btn-epic" onclick="location.reload()">Nochmal kapern!</button>`;
+    document.getElementById('event-modal').classList.add('active');
+  }
+};
+</script>
+</body>
+</html>
