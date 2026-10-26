@@ -43,16 +43,16 @@
     animation: screenShake 0.45s cubic-bezier(.36,.07,.19,.97) both;
   }
   @keyframes screenShake {
-    10%, 90% { transform: translate3d(-4px, 2px, 0); }
-    20%, 80% { transform: translate3d(6px, -4px, 0); }
-    30%, 50%, 70% { transform: translate3d(-8px, 6px, 0); }
-    40%, 60% { transform: translate3d(8px, -6px, 0); }
+    10%, 90% { transform: translate3d(-5px, 3px, 0); }
+    20%, 80% { transform: translate3d(7px, -5px, 0); }
+    30%, 50%, 70% { transform: translate3d(-9px, 7px, 0); }
+    40%, 60% { transform: translate3d(9px, -7px, 0); }
   }
 
   #damage-flash {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle, transparent 40%, rgba(200,0,0,0.8) 100%);
+    background: radial-gradient(circle, transparent 35%, rgba(220,0,0,0.85) 100%);
     opacity: 0;
     pointer-events: none;
     z-index: 90;
@@ -71,7 +71,7 @@
 
   /* SPLASH */
   #splash-screen {
-    background: url('Pics/title.png') center/cover no-repeat;
+    background: url('title.png') center/cover no-repeat;
     justify-content: flex-end;
     align-items: center;
     padding-bottom: 50px;
@@ -125,7 +125,7 @@
   #map-view {
     flex: 1;
     position: relative;
-    background: url('Pics/map.png') center/contain no-repeat #d3be96;
+    background: url('map.png') center/contain no-repeat #d3be96;
     overflow: hidden;
   }
   #map-svg {
@@ -136,7 +136,7 @@
     pointer-events: none;
   }
   .route-line {
-    stroke: rgba(184, 134, 11, 0.7);
+    stroke: rgba(184, 134, 11, 0.75);
     stroke-width: 3;
     stroke-dasharray: 6 6;
   }
@@ -168,7 +168,7 @@
     to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffcc; }
   }
 
-  /* SHIP WITH SAILING & BOBBING PHYSICS */
+  /* SHIP */
   #ship-wrapper {
     position: absolute;
     width: 48px;
@@ -190,15 +190,17 @@
     50% { transform: translateY(-5px) rotate(3deg); }
   }
 
-  /* 3D DICE SYSTEM */
+  /* ====================================================================
+     ULTRA-SCHARFER 3D KNOCHEN-WÜRFEL (REAL PIPS)
+  ==================================================================== */
   #dice-arena {
     position: absolute;
     top: 50%;
     left: 45%;
     transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    perspective: 600px;
+    width: 90px;
+    height: 90px;
+    perspective: 700px;
     pointer-events: none;
     display: none;
     z-index: 60;
@@ -212,25 +214,39 @@
   }
   .dice-face {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, #fff9ea, #d8bc88);
-    border: 3px solid #5a3d1b;
-    border-radius: 12px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px;
-    font-weight: bold;
-    color: #3b220c;
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle at 35% 35%, #ffffff, #f7ecd5 70%, #d8bf96 100%);
+    border: 3px solid #4a2f13;
+    border-radius: 16px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.25), 0 8px 25px rgba(0,0,0,0.8);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 10px;
   }
-  .face-1 { transform: rotateY(0deg) translateZ(40px); }
-  .face-6 { transform: rotateY(180deg) translateZ(40px); }
-  .face-2 { transform: rotateY(-90deg) translateZ(40px); }
-  .face-5 { transform: rotateY(90deg) translateZ(40px); }
-  .face-3 { transform: rotateX(90deg) translateZ(40px); }
-  .face-4 { transform: rotateX(-90deg) translateZ(40px); }
+  .pip {
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle at 35% 35%, #333, #0a0502);
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.4);
+  }
+  .pip.red {
+    width: 26px;
+    height: 26px;
+    background: radial-gradient(circle at 35% 35%, #ff4d4d, #990000);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.7), 0 0 8px rgba(255,0,0,0.4);
+  }
+
+  .face-1 { transform: rotateY(0deg) translateZ(45px); }
+  .face-6 { transform: rotateY(180deg) translateZ(45px); }
+  .face-2 { transform: rotateY(-90deg) translateZ(45px); }
+  .face-5 { transform: rotateY(90deg) translateZ(45px); }
+  .face-3 { transform: rotateX(90deg) translateZ(45px); }
+  .face-4 { transform: rotateX(-90deg) translateZ(45px); }
 
   /* CAPTAIN SIDEBAR */
   #captain-sidebar {
@@ -280,10 +296,10 @@
   .btn-turn:hover:not(:disabled) { transform: translateY(-2px); background: linear-gradient(180deg, #b22222, #600000); }
   .btn-turn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* BOTTOM STECKBRETT (HUD) */
+  /* BOTTOM STECKBRETT */
   #bottom-hud {
     height: 135px;
-    background: url('Pics/board.png') center/cover no-repeat #1b120c;
+    background: url('board.png') center/cover no-repeat #1b120c;
     border-top: 3px solid var(--dark-gold);
     display: flex;
     align-items: center;
@@ -297,7 +313,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-image: url('Pics/medals.png');
+    background-image: url('medals.png');
     background-size: 300% 200%;
     filter: grayscale(100%) opacity(0.3);
     border: 2px dashed #666;
@@ -341,7 +357,7 @@
     transform: scale(1.1);
   }
 
-  /* FLYING COIN PARTICLES */
+  /* FLYING COINS */
   .flying-coin {
     position: absolute;
     width: 28px;
@@ -371,7 +387,7 @@
     background: #fff8e7;
     color: #2b180a;
     width: 90%;
-    max-width: 620px;
+    max-width: 640px;
     border: 4px solid var(--dark-gold);
     border-radius: 14px;
     padding: 24px;
@@ -387,6 +403,52 @@
   .modal-title { font-size: 22px; color: var(--crimson); margin-bottom: 12px; text-transform: uppercase; }
   .modal-timer { height: 8px; background: #ddd; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
   .timer-fill { height: 100%; background: var(--crimson); width: 100%; }
+  
+  /* BATTLE ARENA UI */
+  .battle-stage {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 15px 0;
+  }
+  .fighter-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 130px;
+  }
+  .fighter-portrait {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--dark-gold);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+  .battle-vs {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--crimson);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .static-dice {
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: #111;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .static-dice.enemy { background: #8b0000; color: #fff; border-color: #ffd700; }
+
   .quiz-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
   .btn-answer {
     background: #fdf5e6;
@@ -401,7 +463,7 @@
   }
   .btn-answer:hover { background: #ffe4b5; transform: scale(1.02); }
   .btn-close-modal {
-    margin-top: 20px;
+    margin-top: 15px;
     background: var(--dark-wood);
     color: var(--gold);
     border: 2px solid var(--gold);
@@ -418,47 +480,71 @@
 <div id="game-container">
   <div id="damage-flash"></div>
 
-  <!-- 1. SPLASH SCREEN -->
+  <!-- 1. SPLASH -->
   <div id="splash-screen" class="screen active">
     <button class="btn-epic" onclick="Game.start()">Leinen Los &amp; Kaperfahrt!</button>
   </div>
 
-  <!-- 2. MAIN PLAY SCREEN -->
+  <!-- 2. MAIN SCREEN -->
   <div id="main-screen" class="screen">
-    
-    <!-- TOP HUD -->
     <div id="top-hud">
-      <div>📍 HAFEN: <span id="current-location" class="hud-badge">HAMBURG (EUROPA)</span></div>
+      <div>📍 HAFEN: <span id="current-location" class="hud-badge">HAMBURG / LISSABON</span></div>
       <div>⏳ REISETAG: <span id="travel-days" class="hud-badge">1 / 30</span></div>
       <div>💰 GOLDPINS: <span id="gold-count" class="hud-badge">10 / 50</span></div>
     </div>
 
-    <!-- WORKSPACE -->
     <div id="play-area">
-      <!-- MAP -->
       <div id="map-view">
         <svg id="map-svg"></svg>
         <div id="nodes-container"></div>
         
-        <!-- 3D DICE -->
+        <!-- 3D DICE MIT ECHTEN PIPS -->
         <div id="dice-arena">
           <div id="dice-cube">
-            <div class="dice-face face-1">⚀</div>
-            <div class="dice-face face-2">⚁</div>
-            <div class="dice-face face-3">⚂</div>
-            <div class="dice-face face-4">⚃</div>
-            <div class="dice-face face-5">⚄</div>
-            <div class="dice-face face-6">⚅</div>
+            <!-- 1 -->
+            <div class="dice-face face-1">
+              <div></div><div></div><div></div>
+              <div></div><div class="pip red"></div><div></div>
+              <div></div><div></div><div></div>
+            </div>
+            <!-- 2 -->
+            <div class="dice-face face-2">
+              <div class="pip"></div><div></div><div></div>
+              <div></div><div></div><div></div>
+              <div></div><div></div><div class="pip"></div>
+            </div>
+            <!-- 3 -->
+            <div class="dice-face face-3">
+              <div class="pip"></div><div></div><div></div>
+              <div></div><div class="pip"></div><div></div>
+              <div></div><div></div><div class="pip"></div>
+            </div>
+            <!-- 4 -->
+            <div class="dice-face face-4">
+              <div class="pip"></div><div></div><div class="pip"></div>
+              <div></div><div></div><div></div>
+              <div class="pip"></div><div></div><div class="pip"></div>
+            </div>
+            <!-- 5 -->
+            <div class="dice-face face-5">
+              <div class="pip"></div><div></div><div class="pip"></div>
+              <div></div><div class="pip"></div><div></div>
+              <div class="pip"></div><div></div><div class="pip"></div>
+            </div>
+            <!-- 6 -->
+            <div class="dice-face face-6">
+              <div class="pip"></div><div></div><div class="pip"></div>
+              <div class="pip"></div><div></div><div class="pip"></div>
+              <div class="pip"></div><div></div><div class="pip"></div>
+            </div>
           </div>
         </div>
 
-        <!-- SHIP -->
         <div id="ship-wrapper">
           <img id="player-ship" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 65 Q50 90 90 65 L80 80 Q50 95 20 80 Z' fill='%23654321'/><path d='M50 15 L50 65 M48 20 L80 40 L50 45 Z' fill='%23ffffff' stroke='%23000'/></svg>" alt="Schiff">
         </div>
       </div>
 
-      <!-- SIDEBAR -->
       <div id="captain-sidebar">
         <div id="captain-avatar"></div>
         <div id="captain-dialogue"></div>
@@ -468,7 +554,6 @@
       </div>
     </div>
 
-    <!-- BOTTOM HUD (STECKBRETT) -->
     <div id="bottom-hud">
       <div id="medals-rack">
         <div id="medal-europa" class="medal-slot medal-europa" title="Europa"></div>
@@ -480,7 +565,6 @@
       </div>
       <div id="pins-rack"></div>
     </div>
-
   </div>
 
   <!-- MODAL -->
@@ -496,23 +580,18 @@
 </div>
 
 <script>
-/* ====================================================================
-   ASSET-PFADE
-==================================================================== */
 const ASSETS = {
-  title: 'Pics/title.png',
-  map: 'Pics/map.png',
-  stefanNormal: 'Pics/stefan_normal.png',
-  stefanBurn: 'Pics/stefan_burn.png',
-  stefanWin: 'Pics/stefan_win.png',
-  board: 'Pics/board.png',
-  medals: 'Pics/medals.png',
-  actions: 'Pics/actions.png'
+  title: 'title.png',
+  map: 'map.png',
+  stefanNormal: 'stefan_normal.png',
+  stefanBurn: 'stefan_burn.png',
+  stefanWin: 'stefan_win.png',
+  board: 'board.png',
+  medals: 'medals.png',
+  actions: 'actions.png',
+  pirateEnemy: 'pirate_enemy.png' // Lädt deinen neuen Feind, falls vorhanden!
 };
 
-/* ====================================================================
-   SYNTHETISCHER SOUND-GENERATOR (Web Audio API)
-==================================================================== */
 const Sound = {
   ctx: null,
   init() {
@@ -560,6 +639,18 @@ const Sound = {
         osc.start(t + i * 0.09);
         osc.stop(t + i * 0.09 + 0.3);
       });
+    } else if (type === 'clash') {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(440, t);
+      osc.frequency.exponentialRampToValueAtTime(80, t + 0.25);
+      gain.gain.setValueAtTime(0.4, t);
+      gain.gain.linearRampToValueAtTime(0.01, t + 0.25);
+      osc.start(t);
+      osc.stop(t + 0.25);
     } else if (type === 'wrong' || type === 'danger') {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -588,9 +679,6 @@ const Sound = {
   }
 };
 
-/* ====================================================================
-   WELTKARTEN-WEGPUNKTE (NODES)
-==================================================================== */
 const NODES = [
   { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', x: 48, y: 28, type: 'port', neighbors: ['nordatlantik', 'westafrika'] },
   { id: 'nordatlantik', name: 'Nordatlantik', continent: 'europa', x: 34, y: 26, type: 'battle', neighbors: ['eu_start', 'nordamerika', 'karibik'] },
@@ -608,7 +696,6 @@ const NODES = [
   { id: 'australien', name: 'Sydney / Korallenmeer', continent: 'australien', x: 86, y: 72, type: 'quiz', neighbors: ['indischer_ozean', 'asien_ost', 'kap_hoorn'] }
 ];
 
-/* FRAGENKATALOG */
 const QUESTIONS = [
   { c: 'europa', q: 'Wie nennt man das feine Schneiden von Gemüse in 1 mm dünne Streifen?', a: ['Julienne', 'Brunoise', 'Chiffonade', 'Batonnet'], correct: 0, tip: 'Julienne! Wenn die zu dick sind, fliegen sie bei mir über Bord!' },
   { c: 'europa', q: 'Welche Zutat gehört auf keinen Fall in eine traditionelle Sauce Hollandaise?', a: ['Mehl', 'Eigelb', 'Geklärte Butter', 'Zitronensaft'], correct: 0, tip: 'Hollandaise ist eine reine Emulsion – Mehl hat da absolut nix verloren!' },
@@ -624,9 +711,6 @@ const QUESTIONS = [
   { c: 'stefan', q: 'Mit welchem Show-Gerät rührte Stefan auf der Essener Messe Riesen-Portionen an?', a: ['Betonmischmaschine', 'Dampfwalze', 'Schweißbrenner', 'Kettensäge'], correct: 0, tip: 'Die Betonmisch-Pfanne! Da wurde gerührt wie auf der Großbaustelle!' }
 ];
 
-/* ====================================================================
-   SPIEL-LOGIK & GAME JUICE ENGINE
-==================================================================== */
 const Game = {
   days: 1,
   maxDays: 30,
@@ -682,7 +766,6 @@ const Game = {
     document.getElementById('captain-dialogue').innerHTML = `<strong>Stefan:</strong><br>„${text}“`;
   },
 
-  /* SCREEN SHAKE & FLASH */
   triggerDamageEffect() {
     Sound.play('danger');
     const container = document.getElementById('game-container');
@@ -695,7 +778,6 @@ const Game = {
     }, 450);
   },
 
-  /* FLIEGENDE GOLDMÜNZEN ANIMATION */
   spawnFlyingCoins(amount) {
     const startX = window.innerWidth / 2;
     const startY = window.innerHeight / 2;
@@ -916,30 +998,102 @@ const Game = {
     actions.innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Weitersegeln</button>`;
   },
 
+  /* ====================================================================
+     DAS NEUE VISUELLE SEESCHLACHT-DUELL (FACE-OFF!)
+  ==================================================================== */
   openBattle() {
-    Sound.play('roll');
     const modal = document.getElementById('event-modal');
-    const pRoll = Math.floor(Math.random() * 6) + 1;
-    const eRoll = Math.floor(Math.random() * 6) + 1;
-    const diff = Math.abs(pRoll - eRoll);
+    document.getElementById('modal-title').innerText = '⚔️ KAPER-DUELL IM NEBEL!';
+    
+    // Prüfen, ob pirate_enemy vorhanden ist, sonst Fallback auf actions.png Skull
+    const enemyImg = ASSETS.pirateEnemy;
 
-    let html = `<h2>⚔️ ENTER-GEFECHT!</h2><p>Du würfelst eine <strong>${pRoll}</strong>. Der Gegner würfelt eine <strong>${eRoll}</strong>.</p>`;
-    if (pRoll >= eRoll) {
-      this.spawnFlyingCoins(diff);
-      this.gold = Math.min(50, this.gold + diff);
-      this.setCaptainMood('win', 'Sauber geentert! Beute gemacht!');
-      html += `<p style="color:green;">SIEG! Du erbeutest <strong>+${diff} Goldpins!</strong></p>`;
-    } else {
-      this.triggerDamageEffect();
-      this.gold = Math.max(0, this.gold - diff);
-      this.setCaptainMood('burn', 'Verdammte Seeräuber, die haben uns gerupft!');
-      html += `<p style="color:red;">NIEDERLAGE! Du verlierst <strong>-${diff} Goldpins!</strong></p>`;
-    }
-    this.updateHUD();
-    document.getElementById('modal-title').innerText = 'SEESCHLACHT';
-    document.getElementById('modal-content').innerHTML = html;
-    document.getElementById('modal-actions').innerHTML = `<button class="btn-close-modal" onclick="Game.closeModal()">Weiter</button>`;
+    document.getElementById('modal-content').innerHTML = `
+      <p style="font-size:15px; margin-bottom:10px;">Ein berüchtigtes Piratenschiff blockiert deinen Kurs! Käpt'n Knorrenbart fordert dich zum Duell!</p>
+      
+      <div class="battle-stage">
+        <!-- SPIELER -->
+        <div class="fighter-card">
+          <div class="fighter-portrait" style="background-image:url('${ASSETS.stefanNormal}');"></div>
+          <strong>DU (STEFAN)</strong>
+          <div id="player-dice-box" class="static-dice">?</div>
+        </div>
+
+        <div class="battle-vs">VS</div>
+
+        <!-- GEGNER -->
+        <div class="fighter-card">
+          <div class="fighter-portrait" id="enemy-portrait" style="background-image:url('${enemyImg}'); background-color:#3a1100;"></div>
+          <strong>KNORRENBART</strong>
+          <div id="enemy-dice-box" class="static-dice enemy">?</div>
+        </div>
+      </div>
+
+      <div id="battle-result-text" style="font-size:16px; min-height:24px; font-weight:bold;"></div>
+    `;
+
+    document.getElementById('modal-actions').innerHTML = `
+      <button id="btn-fight" class="btn-epic" style="font-size:18px; padding:10px 30px;" onclick="Game.resolveBattle()">⚔️ Knochen werfen!</button>
+    `;
+
+    // Fallback falls pirate_enemy.png (noch) nicht existiert
+    const imgTest = new Image();
+    imgTest.onerror = () => {
+      const p = document.getElementById('enemy-portrait');
+      if (p) {
+        p.style.backgroundImage = `url('${ASSETS.actions}')`;
+        p.style.backgroundPosition = '100% 100%';
+        p.style.backgroundSize = '200% 200%';
+      }
+    };
+    imgTest.src = enemyImg;
+
     modal.classList.add('active');
+  },
+
+  resolveBattle() {
+    Sound.play('clash');
+    const btn = document.getElementById('btn-fight');
+    btn.disabled = true;
+
+    const pBox = document.getElementById('player-dice-box');
+    const eBox = document.getElementById('enemy-dice-box');
+    const resText = document.getElementById('battle-result-text');
+
+    // Würfel-Schüttel-Effekt
+    let rolls = 0;
+    const interval = setInterval(() => {
+      pBox.innerText = Math.floor(Math.random() * 6) + 1;
+      eBox.innerText = Math.floor(Math.random() * 6) + 1;
+      rolls++;
+      if (rolls >= 8) {
+        clearInterval(interval);
+        
+        const pRoll = Math.floor(Math.random() * 6) + 1;
+        const eRoll = Math.floor(Math.random() * 6) + 1;
+        pBox.innerText = pRoll;
+        eBox.innerText = eRoll;
+        const diff = Math.max(1, Math.abs(pRoll - eRoll));
+
+        if (pRoll >= eRoll) {
+          Sound.play('win');
+          this.spawnFlyingCoins(diff);
+          this.gold = Math.min(50, this.gold + diff);
+          this.setCaptainMood('win', 'Ha! Voll auf die Zwölf! Seine Schatzkiste gehört uns!');
+          resText.innerHTML = `<span style="color:green;">SIEG! Knorrenbart geschlagen! +${diff} Goldpins erbeutet!</span>`;
+        } else {
+          this.triggerDamageEffect();
+          this.gold = Math.max(0, this.gold - diff);
+          this.setCaptainMood('burn', 'Verdammter Knorrenbart! Der hat uns ganz schön abkassiert!');
+          resText.innerHTML = `<span style="color:red;">NIEDERLAGE! Du verlierst -${diff} Goldpins!</span>`;
+        }
+        
+        this.updateHUD();
+        document.getElementById('modal-actions').innerHTML = `
+          <button class="btn-close-modal" onclick="Game.closeModal()">Kurs fortsetzen</button>
+        `;
+      }
+    }, 80);
   },
 
   openTreasure() {
