@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Freibeuter der Meere – Privateers of the Seas</title>
 <style>
   :root {
@@ -15,23 +15,44 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: 'Georgia', serif;
-    background: #090e13;
-    color: #fff;
+  
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #000;
     overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: fixed;
+    font-family: 'Georgia', serif;
+    color: #fff;
   }
 
+  /* PORTRAIT DREH-HINWEIS */
+  #rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #090e13;
+    z-index: 99999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    color: var(--gold);
+  }
+  @media screen and (orientation: portrait) and (max-width: 900px) {
+    #rotate-overlay { display: flex; }
+  }
+
+  /* FESTE SPIELBÜHNE (1334x750) - WIRD AUTOMATISCH AUF DISPLAY-GRÖSSE SKALIERT */
   #game-container {
-    width: 100vw;
-    max-width: 1334px;
-    height: 100vh;
-    max-height: 750px;
-    position: relative;
+    width: 1334px;
+    height: 750px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    transform-origin: center center;
     background: #000;
     box-shadow: 0 0 50px rgba(0,0,0,0.9);
     overflow: hidden;
@@ -178,7 +199,6 @@
     z-index: 12;
   }
 
-  /* OZEAN-DREHKREUZE */
   .node-point.ocean-hub {
     width: 38px;
     height: 38px;
@@ -189,7 +209,6 @@
     z-index: 15;
   }
 
-  /* BOSS-MEDAILLON-KNOTENPUNKTE */
   .node-point.boss-node {
     width: 52px;
     height: 52px;
@@ -213,7 +232,6 @@
     box-shadow: 0 0 20px #00ff66;
   }
 
-  /* HAMBURG ENDGAME BEACON */
   .node-point.hamburg-goal {
     border-color: #ffd700 !important;
     background: radial-gradient(circle, #ffcc00, #ff6600) !important;
@@ -236,7 +254,6 @@
     to { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 25px #00ffff; }
   }
 
-  /* BLINKENDE SEEROUTEN-LANDEBAHN */
   .node-point.path-waypoint {
     border-color: #00ffff !important;
     background: #002b3d !important;
@@ -302,7 +319,7 @@
     50% { transform: translateY(-5px) rotate(3deg); }
   }
 
-  /* 3D DICE SYSTEM */
+  /* 3D DICE */
   #dice-arena {
     position: absolute;
     top: 50%;
@@ -569,19 +586,8 @@
   .timer-fill { height: 100%; background: var(--crimson); width: 100%; transition: width 0.15s linear; }
   
   /* BATTLE ARENA */
-  .battle-stage {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 15px 0;
-  }
-  .fighter-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 130px;
-  }
+  .battle-stage { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
+  .fighter-card { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 130px; }
   .fighter-portrait {
     width: 100px;
     height: 100px;
@@ -693,6 +699,13 @@
 </style>
 </head>
 <body>
+
+<!-- DREH-HINWEIS FÜR HOCHFORMAT -->
+<div id="rotate-overlay">
+  <div style="font-size: 55px; margin-bottom: 15px;">📱🔄</div>
+  <h2 style="color: #ffd700; font-size: 24px; margin-bottom: 10px;">SCHIFF KLAR ZUM WENDEN!</h2>
+  <p style="font-size: 15px; max-width: 320px; line-height: 1.4;">Bitte drehe dein Smartphone ins Querformat (Landscape), um in See zu stechen!</p>
+</div>
 
 <div id="game-container">
   <div id="damage-flash"></div>
@@ -817,6 +830,21 @@
 </div>
 
 <script>
+/* ====================================================================
+   AUTO-SCALE ENGINE FÜR JEDES HANDY & TABLET (PERFEKTES 16:9 SCALING)
+==================================================================== */
+function resizeGameView() {
+  const container = document.getElementById('game-container');
+  if (!container) return;
+  const targetW = 1334;
+  const targetH = 750;
+  const scale = Math.min(window.innerWidth / targetW, window.innerHeight / targetH);
+  container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+window.addEventListener('resize', resizeGameView);
+window.addEventListener('orientationchange', () => setTimeout(resizeGameView, 250));
+document.addEventListener('DOMContentLoaded', resizeGameView);
+
 const ASSETS = {
   title: 'title.png',
   map: 'map.png',
@@ -1047,17 +1075,16 @@ const Sound = {
 };
 
 /* ====================================================================
-   VOLL VERNETZTE WELTKARTE (ALLE RICHTUNGEN OFFEN!)
+   WELTKARTE (VOLL VERNETZT IN ALLE RICHTUNGEN)
 ==================================================================== */
 const NODES = [
-  // 1. EUROPA & START
   { id: 'eu_start', name: 'Hamburg / Lissabon', continent: 'europa', isBoss: true, x: 48, y: 28, type: 'boss_quiz', neighbors: ['channel', 'canaries', 'north_atlantic_1', 'hub_atlantic'] },
   { id: 'channel', name: 'Ärmelkanal', x: 44, y: 24, type: 'wind', neighbors: ['eu_start', 'north_atlantic_1'] },
   { id: 'north_atlantic_1', name: 'Neufundlandbank', x: 38, y: 24, type: 'wreck', neighbors: ['channel', 'eu_start', 'newfoundland', 'hub_atlantic'] },
   { id: 'newfoundland', name: 'Neufundland Nebel', x: 32, y: 25, type: 'battle', neighbors: ['north_atlantic_1', 'boston', 'bermuda'] },
   { id: 'boston', name: 'Boston Reede', x: 27, y: 28, type: 'flotsam', neighbors: ['newfoundland', 'na_boss', 'bermuda'] },
 
-  // OZEAN-DREHKREUZ 1: ATLANTIK (Verbindet Nord- und Südhalbkugel)
+  // OZEAN-DREHKREUZ 1: ATLANTIK
   { id: 'hub_atlantic', name: 'Atlantik-Drehkreuz (Azoren)', isHub: true, x: 38, y: 36, type: 'hub', neighbors: ['eu_start', 'na_boss', 'bermuda', 'carib_1', 'canaries', 'dakar', 'sa_north', 'recife'] },
 
   // 2. NORDAMERIKA (BOSS)
@@ -1068,7 +1095,7 @@ const NODES = [
   { id: 'tortuga', name: 'Tortuga (Piratenbucht)', x: 26, y: 46, type: 'port', neighbors: ['carib_1', 'panama', 'sa_north', 'sa_boss'] },
   { id: 'panama', name: 'Panama Isthmus', x: 22, y: 52, type: 'treasure', neighbors: ['tortuga', 'sa_boss', 'hub_pacific', 'chile'] },
 
-  // 3. SÜDAMERIKA (BOSS: PERU) - JETZT VOLL VERNETZT!
+  // 3. SÜDAMERIKA (BOSS: PERU)
   { id: 'sa_north', name: 'Orinoco Mündung', x: 30, y: 54, type: 'wreck', neighbors: ['tortuga', 'sa_boss', 'recife', 'hub_atlantic'] },
   { id: 'sa_boss', name: 'Peru / Amazonien', continent: 'suedamerika', isBoss: true, x: 29, y: 64, type: 'boss_quiz', neighbors: ['panama', 'sa_north', 'chile', 'recife', 'rio', 'hub_pacific'] },
   { id: 'recife', name: 'Recife Kap', x: 37, y: 62, type: 'wind', neighbors: ['sa_north', 'sa_boss', 'rio', 'tristan', 'dakar', 'hub_atlantic'] },
@@ -1430,9 +1457,6 @@ const Game = {
     wrapper.style.top = `${node.y}%`;
   },
 
-  /* ====================================================================
-     KURS-WAHL MIT INTERAKTIVER VORSCHAU (BELIEBIG TESTBAR!)
-  ==================================================================== */
   prepareCourseSelection() {
     this.selectedCourseNeighbor = null;
     this.clearTrajectory();
@@ -1455,11 +1479,9 @@ const Game = {
 
   handleNodeClick(clickedId) {
     const curr = NODES.find(n => n.id === this.currentNode);
-    // Klick auf einen Nachbarn setzt/wechselt den Kurs sofort interaktiv!
     if (curr.neighbors.includes(clickedId)) {
       document.querySelectorAll('.node-point').forEach(el => el.classList.remove('selectable-course'));
       
-      // Nachbarn wieder als wählbar anzeigen, damit man den Kurs jederzeit ändern kann
       curr.neighbors.forEach(nid => {
         const el = document.getElementById('node-' + nid);
         if (el) el.classList.add('selectable-course');
@@ -1472,7 +1494,6 @@ const Game = {
       btnRoll.disabled = false;
       btnRoll.innerText = TXT[currentLang].rollBtn + ` [Kurs: ${chosenNode.name.split('(')[0].trim()}]`;
 
-      // ROUTEN-VORSCHAU FÜR DEN GEWÄHLTEN KURS SOFORT ANZEIGEN (3 Schritte Vorschau)
       const previewTraj = this.calculateTrajectory(clickedId, 3);
       this.highlightTrajectory(previewTraj);
 
@@ -1481,9 +1502,6 @@ const Game = {
     }
   },
 
-  /* ====================================================================
-     WÜRFELN MIT EXAKTER SEEROUTEN-TRAJEKTORIE
-  ==================================================================== */
   rollDice() {
     if (!this.selectedCourseNeighbor) return;
     Sound.play('roll');
@@ -1494,7 +1512,6 @@ const Game = {
     const cube = document.getElementById('dice-cube');
     arena.style.display = 'block';
 
-    // Würfel rollt 1 bis 4 Schritte
     const steps = Math.floor(Math.random() * 4) + 1;
     this.diceResult = steps;
 
@@ -1509,7 +1526,6 @@ const Game = {
     const target = rotations[steps];
     cube.style.transform = `rotateX(${target.x + extraTurns}deg) rotateY(${target.y + extraTurns}deg)`;
 
-    // BERECHNE DIE FINALE SEEROUTE FÜR DIE GEWÜRFELTE SCHRITTANZAHL
     const trajectory = this.calculateTrajectory(this.selectedCourseNeighbor, steps);
     this.highlightTrajectory(trajectory);
 
@@ -1622,17 +1638,12 @@ const Game = {
     }, 600);
   },
 
-  /* ====================================================================
-     EREIGNIS-TRIGGER (EXAKTER TREFFER FÜR MEDAILLONS!)
-  ==================================================================== */
   triggerNodeEvent(node) {
-    // 1. ENDSPIEL: Hamburg erreichen mit allen 6 Medaillons & >= 25 Gold
     if (node.id === 'eu_start' && this.earnedMedals.size >= 6 && this.gold >= 25) {
       this.triggerVictory();
       return;
     }
 
-    // 2. BOSS-QUIZ: NUR BEI DIREKTER PUNKTGELANDUNG!
     if (node.isBoss) {
       if (!this.earnedMedals.has(node.continent)) {
         this.openQuiz(node.continent);
